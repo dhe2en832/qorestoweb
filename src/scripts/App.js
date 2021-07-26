@@ -12,7 +12,7 @@ const Home = () => {
 const NotFound = () => {
   return (
     <div>
-      <p>404. The Page Is Not Found</p>
+      <p>404. Halaman Tidak Ditemukan</p>
     </div>
   );
 };
@@ -20,7 +20,7 @@ const NotFound = () => {
 export default function App() {
   return (
     <BrowserRouter basename="/researchCSA">
-      <Suspense fallback={'Please Wait...'}>
+      <Suspense fallback={'Sedang Memuat...'}>
         <Switch>
           <Route exact path="/" component={Home} />
           <Route path="/404" component={NotFound} />
@@ -30,3 +30,4 @@ export default function App() {
     </BrowserRouter>
   );
 }
+ 
