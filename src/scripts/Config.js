@@ -1,0 +1,15 @@
+const Config = {
+  BASE_URL: 'http://192.168.100.85/api',
+  SECRET_KEY: '0c7b17ce3bb2c05a74eed4ec38e2f709',
+  DEFAULT_LANGUAGE: 'id-ID',
+  CACHE_NAME: 'webappCSA',
+  CACHE_VERSION: 1.0,
+  DATABASE_NAME: 'webappCSA-DB',
+  DATABASE_VERSION: 1.0,
+  DATE_DEFAULT_FORMAT: 'DD/MM/YYYY',
+  DATE_POST_FORMAT: 'YYYYMMDD',
+  TIME_POST_FORMAT: 'HH:mm:ss',
+  IDLE_TIMEOUT: 86400000,
+};
+
+export default Config;
