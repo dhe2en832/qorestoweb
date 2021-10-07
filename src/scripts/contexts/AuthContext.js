@@ -2,10 +2,11 @@ import React, { createContext, useContext } from 'react';
 import { useIdleTimer } from 'react-idle-timer';
 import Config from '../Config';
 
-// import AlertDialog from '../components/AlertDialog';
-// import AlertDialogNested from '../components/AlertDialogNested';
+import AlertDialog from '../components/AlertDialog';
+import AlertDialogNested from '../components/AlertDialogNested';
 import useLocalStorage from '../hooks/useLocalStorage';
-// import ApiRoute from '../routes/ApiRoute';
+import { typesError } from '../utils/types-error';
+import ApiRoute from '../routes/ApiRoute';
 
 const authContext = createContext();
 
@@ -25,45 +26,51 @@ function useProvideAuth() {
   const [sessionKey, setSessionKey] = useLocalStorage('sessionKey', null);
   const [sessionID, setSessionID] = useLocalStorage('sessionID', null);
 
-  const signin = async (data, cb, isForm) => {
-    setLoggedIn(true);
-    setUserID(data.cuserid);
-    setSessionTimeout(false);
-    setSessionKey('CSAComputerKeyword');
-    setSessionID('CSAComputerID');
-    cb();
-  };
-
   // const signin = async (data, cb, isForm) => {
-  //   try {
-  //     const res = await fetch(ApiRoute.LOGIN_X, {
-  //       method: 'POST',
-  //       headers: {
-  //         'content-type': 'application/json',
-  //         'x-user': data.cuserid,
-  //         'x-password': data.cpassw,
-  //       },
-  //       body: JSON.stringify({
-  //         action: 'login',
-  //       }),
-  //     });
-  //     const resJson = await res.json();
-  //     console.log(resJson);
-  //     if (resJson.result === true) {
-  //       setLoggedIn(true);
-  //       setUserID(data.cuserid);
-  //       setSessionTimeout(false);
-  //       setSessionKey(resJson.onsuccess.sessionKey || 'Not Set');
-  //       setSessionID(resJson.onsuccess.sessionID || 'Not Set');
-  //       cb();
-  //     } else throw resJson.onfail.cerror;
-  //   } catch (error) {
-  //     const messageError = ['error', 'Terjadi Kesalahan', error];
-  //     isForm
-  //       ? AlertDialogNested('LoginForm', ...messageError)
-  //       : AlertDialog(...messageError);
-  //   }
+  //   setLoggedIn(true);
+  //   setUserID(data.cuserid);
+  //   setSessionTimeout(false);
+  //   setSessionKey('CSAComputerKeyword');
+  //   setSessionID('CSAComputerID');
+  //   cb();
   // };
+
+  const signin = async (data, cb, isForm) => {
+    try {
+      const res = await fetch(ApiRoute.LOGIN_X, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'x-user': data.cuserid,
+          'x-password': data.cpassw,
+        },
+        body: JSON.stringify({
+          action: 'login',
+        }),
+      });
+      const resSessionKey = await res.headers.get('secretkey');
+      const resSessionID = await res.headers.get('sessionid');
+      const resJson = await res.json();
+      console.log(resJson);
+      if (resJson.result === true) {
+        setLoggedIn(true);
+        setUserID(data.cuserid);
+        setSessionTimeout(false);
+        setSessionKey(resSessionKey);
+        setSessionID(resSessionID);
+        cb();
+      } else if (resJson.result === false) {
+        throw resJson.onfail.cerror;
+      } else throw resJson.message;
+    } catch (error) {
+      const messageError = [
+        'error',
+        'Salah',
+        error === typesError.EMPTY_USER.msg ? typesError.EMPTY_USER.res : error,
+      ];
+      isForm ? AlertDialogNested('LoginForm', ...messageError) : AlertDialog(...messageError);
+    }
+  };
 
   const signout = (cb) => {
     setLoggedIn(false);

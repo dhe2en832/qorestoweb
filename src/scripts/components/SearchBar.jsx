@@ -53,8 +53,8 @@ function SearchBar({ name, label, change, submit }) {
               <IconButton
                 aria-label={`Search Input for ${label}`}
                 onClick={submit}
-                onMouseDown={submit}
                 edge="end"
+                color="secondary"
               >
                 <SearchIcon />
               </IconButton>

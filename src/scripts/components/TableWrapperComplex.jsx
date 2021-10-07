@@ -17,7 +17,7 @@ import Avatar from '@mui/material/Avatar';
 import ActionIcon from '@mui/icons-material/MoreVert';
 import NoImage from '../../images/no-thumbnail.png';
 import useResponsive from '../hooks/useResponsive';
-import { dateToString, toCurrency } from '../utils/formatter';
+import { stringToDate, toCurrency } from '../utils/formatter';
 import { EditElem, DeleteElem } from './ButtonActions';
 import DataNotFound from './DataNotFound';
 import TablePaginationActions from './TablePaginationActions';
@@ -83,6 +83,12 @@ function TableWrapperComplex({
       borderBottomLeftRadius: '0.2em',
       borderBottomRightRadius: '0.2em',
       marginBottom: isLookup ? 0 : theme.spacing(2),
+    },
+    tablePaginationActions: {
+      '&& .MuiTablePagination-root': {
+        display: 'flex',
+        flexDirection: 'column',
+      },
     },
     stickyBody: {
       position: 'sticky',
@@ -191,7 +197,7 @@ function TableWrapperComplex({
                       key={(keyName.replace(/\s/g, '') + '_btc_' + index).toString()}
                     >
                       {data.type === 'text' && data.value}
-                      {data.type === 'date' && dateToString(data.value)}
+                      {data.type === 'date' && stringToDate(data.value)}
                       {data.type === 'image' && (
                         <LazyLoad height={50} style={{ display: 'flex', justifyContent: 'center' }}>
                           <Avatar
@@ -208,8 +214,11 @@ function TableWrapperComplex({
                   ))}
                   {!isLookup && (
                     <TableCell align="center">
-                      <EditElem id={row[keyID]} url={keyURL} />
-                      <DeleteElem click={(event) => handleDelete(event, row[keyID], keyName)} />
+                      <EditElem id={row['key']} url={keyURL} />
+                      <DeleteElem
+                        click={(event) => handleDelete(event, row['key'], keyName)}
+                        disabled
+                      />
                     </TableCell>
                   )}
                 </TableRow>
@@ -239,7 +248,7 @@ function TableWrapperComplex({
           </Grid>
           <Grid item>
             <TablePagination
-              rowsPerPageOptions={[5, 10, 25, 50, 100]}
+              rowsPerPageOptions={[5, 7, 10, 11, 25, 50, 100]}
               component="div"
               count={listCount || 0}
               rowsPerPage={limit}
@@ -251,6 +260,7 @@ function TableWrapperComplex({
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
               ActionsComponent={TablePaginationActions}
+              sx={styles.tablePaginationActions}
             />
           </Grid>
         </Grid>

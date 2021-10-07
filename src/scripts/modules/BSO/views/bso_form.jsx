@@ -3,10 +3,12 @@ import { useParams } from 'react-router-dom';
 import SpacerContainer from '../../../components/SpacerContainer';
 import AlertDialog from '../../../components/AlertDialog';
 import GrandTotalWrapper from '../../../components/GrandTotalWrapper';
-import useRedirectToHome from '../../../hooks/useRedirectToHome';
+import useRedirectToParentLocation from '../../../hooks/useRedirectToParentLocation';
 import usePopupLogin from '../../../hooks/usePopupLogin';
 import useReducers from '../../../hooks/useReducers';
 import useReducersItem from '../../../hooks/useReducersItem';
+import useActions from '../../../hooks/useActions';
+import useActionsItem from '../../../hooks/useActionsItem';
 import { dateToString } from '../../../utils/formatter';
 import { typesError } from '../../../utils/types-error';
 import { totalerafterdiscandtax, grandtotaler } from '../../../utils/calculate';
@@ -22,6 +24,7 @@ import BSOFormItem from './bso_form__item';
 export default function BSOForm({ mode }) {
   const [headers, dispatchHeaders] = useReducer(useReducers, BSODHEAD);
   const [items, dispatchItems] = useReducer(useReducersItem, []);
+  const [openHeader, setOpenHeader] = useState(true);
   const [isEditHeader, setIsEditHeader] = useState(false);
   const [isEditItem, setIsEditItem] = useState(false);
   const [isSubmit, setIsSubmit] = useState(false);
@@ -31,7 +34,7 @@ export default function BSOForm({ mode }) {
   const [grandTotal, setGrandTotal] = useState(0);
 
   const { id } = useParams();
-  const { redirectToHome } = useRedirectToHome();
+  const { redirectToParentLocation } = useRedirectToParentLocation();
   const { isLoginPopup, loginFormPopup, handleOpenLoginPopup } = usePopupLogin();
 
   const headersDiscount = headers[BSOFHEAD.NPCTDISC];
@@ -64,33 +67,68 @@ export default function BSOForm({ mode }) {
     isEditHeader === false && isEditItem === false && grandTotalCalculate();
   }, [isEditHeader, isEditItem, grandTotalCalculate]);
 
-  // useEffect(() => {
-  //   const putOrderDataToEditForm = async () => {
-  //     try {
-  //       const fetchGetOrder = await bso_api.getById(id);
-  //       if (fetchGetOrder.result === true) {
-  //         dispatchHeaders({
-  //           type: useActions.EDIT_STATE,
-  //           payload: fetchGetOrder.onsuccess.data.soHeaderInfo,
-  //         });
-  //         dispatchItems({
-  //           type: useActionsItem.EDIT_STATE,
-  //           payload: fetchGetOrder.onsuccess.data.lineItemsInfo,
-  //         });
-  //       } else throw fetchGetOrder.onfail.cerror;
-  //     } catch (error) {
-  //       AlertDialog(
-  //         'error',
-  //         `Gagal Mengambil Data ${confName}`,
-  //         error,
-  //         redirectToParentLocation,
-  //       );
-  //     }
-  //   };
-  //   if (mode === 'edit') {
-  //     putOrderDataToEditForm();
-  //   }
-  // }, [mode, id, dispatchHeaders, dispatchItems, redirectToParentLocation]);
+  useEffect(() => {
+    const putOrderDataToEditForm = async () => {
+      try {
+        const dataOptions = {
+          key: id,
+          listfields: [
+            BSOFHEAD.DSODATE,
+            BSOFHEAD.CSONUM,
+            BSOFHEAD.DNEEDDATE,
+            BSOFHEAD.CREMARK,
+            BSOFHEAD.CUSTOMER._.CCUSID,
+            BSOFHEAD.CCUSTPO,
+            BSOFHEAD.CSHPTONAME,
+            BSOFHEAD.CSHPTOADR1,
+            BSOFHEAD.CSHPTOADR2,
+            BSOFHEAD.CSHPTOKOTA,
+            BSOFHEAD.CSHPTOUP,
+            BSOFHEAD.NDUEDAYS,
+            BSOFHEAD.NPCTDISC,
+            BSOFHEAD.NPCTPPN,
+            BSOFHEAD.CWHSEID,
+            BSOFHEAD.CSALESID,
+            BSOFHEAD.CSOFOOT1,
+            BSOFHEAD.CSOFOOT2,
+            BSOFHEAD.CSOFOOT3,
+          ],
+          listfields2: [
+            BSOFITEM.NLINE,
+            BSOFITEM.CSTOCODE,
+            BSOFITEM.CSTONAME,
+            BSOFITEM.CUOM,
+            BSOFITEM.NHRGJUA,
+            BSOFITEM.NQSO,
+            BSOFITEM.NDISC,
+            BSOFITEM.NRPDISC,
+          ],
+        };
+        const fetchGetOrder = await bso_api.getRec(dataOptions);
+        if (fetchGetOrder.result === true) {
+          const { ccusid, dneeddate, bitmso, ...bhdso } = fetchGetOrder.data;
+          dispatchHeaders({
+            type: useActions.EDIT_STATE,
+            payload: {
+              customer: { ccusid, cinitial: '', cnotelp: '', cemail: '' },
+              dneeddate: dneeddate.trim() || null,
+              ...bhdso,
+            },
+          });
+          dispatchItems({
+            type: useActionsItem.EDIT_STATE,
+            payload: bitmso,
+          });
+        } else if (fetchGetOrder.result) throw fetchGetOrder.onfail.cerror;
+        else throw fetchGetOrder.message;
+      } catch (error) {
+        AlertDialog('error', `Gagal Mengambil Data ${confName}`, error, redirectToParentLocation);
+      }
+    };
+    if (mode === 'edit') {
+      putOrderDataToEditForm();
+    }
+  }, [mode, id, dispatchHeaders, dispatchItems, redirectToParentLocation]);
 
   const handleSubmitOrder = async () => {
     setIsSubmit(true);
@@ -127,13 +165,15 @@ export default function BSOForm({ mode }) {
             <p>Customer Name: {ccusnam}</p>
             <p>Sales Order ID: {csonum}</p>
           </>,
-          redirectToHome
+          redirectToParentLocation
         );
       } else if (fetchPostOrder.result === false) {
         const regExNewLine = /(?:\r\n|\r|\n)/g;
         const errorMain = fetchPostOrder.onfail.cerror.replace(regExNewLine, '<br />');
-        const errorMoreInfo = fetchPostOrder.moreinfo.Error.replace(regExNewLine, '<br />');
-        const errorAll = errorMain + errorMoreInfo;
+        const errorMoreInfo = fetchPostOrder.moreinfo.Error;
+        const errorAll =
+          errorMain +
+          (errorMoreInfo !== undefined ? errorMoreInfo.replace(regExNewLine, '<br />') : '');
         throw errorAll;
       } else {
         throw fetchPostOrder.message;
@@ -151,13 +191,13 @@ export default function BSOForm({ mode }) {
           );
           break;
         case typesError.FETCH.msg:
-          AlertDialog('error', 'Terjadi Kesalahan', typesError.FETCH.res);
+          AlertDialog('error', 'Salah', typesError.FETCH.res);
           break;
         case typesError.ITEMS.msg:
-          AlertDialog('error', 'Terjadi Kesalahan', typesError.ITEMS.res);
+          AlertDialog('error', 'Salah', typesError.ITEMS.res);
           break;
         default:
-          AlertDialog('error', 'Terjadi Kesalahan', error);
+          AlertDialog('error', 'Salah', error);
           break;
       }
     } finally {
@@ -175,6 +215,8 @@ export default function BSOForm({ mode }) {
         isLoginPopup={isLoginPopup}
         handleOpenLoginPopup={handleOpenLoginPopup}
         setIsEditHeader={setIsEditHeader}
+        openHeader={openHeader}
+        setOpenHeader={setOpenHeader}
       />
       <BSOFormItem
         items={items}
@@ -185,6 +227,8 @@ export default function BSOForm({ mode }) {
         handleOpenLoginPopup={handleOpenLoginPopup}
         isEditItem={isEditItem}
         setIsEditItem={setIsEditItem}
+        openHeader={openHeader}
+        setOpenHeader={setOpenHeader}
       />
       <SpacerContainer />
       <GrandTotalWrapper
@@ -195,6 +239,16 @@ export default function BSOForm({ mode }) {
         grandTotal={grandTotal}
         submit={handleSubmitOrder}
         isSubmit={isSubmit}
+        isEditDiscPPN={true}
+        handleChangeDiscPPN={(event) =>
+          dispatchHeaders({
+            type: useActions.CHANGE_NUMBER,
+            field: event.target.name,
+            payload: event.target.value,
+          })
+        }
+        headers={headers}
+        setIsEditHeader={setIsEditHeader}
       />
     </>
   );

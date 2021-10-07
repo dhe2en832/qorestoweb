@@ -1,10 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
+import ToastBar from '../components/ToastBar';
+import { typesError } from '../utils/types-error';
 
 export default function useLookup({
   initLookupDetails,
   dispatch,
   useActions,
   payloadScheme,
+  dataLookupNeeds,
   isLoginPopup,
 }) {
   const [lookupDetails, setLookupDetails] = useState(initLookupDetails || {});
@@ -12,6 +15,7 @@ export default function useLookup({
     show: false,
     accessorName: '',
     nextInputName: '',
+    dataSource: null,
   });
   const [isFocus, setIsFocus] = useState({
     focus: false,
@@ -24,33 +28,35 @@ export default function useLookup({
       [name]: value,
     });
   };
-  const handleOpenLookup = (accessorName, nextInputName) => {
+  const handleOpenLookup = (accessorName, nextInputName, dataSource) => {
     setShowLookup({
       show: true,
       accessorName,
       nextInputName,
+      dataSource,
     });
   };
   const handleCloseLookup = (isChoosed = false) => {
     try {
-      if (isChoosed === true)
+      if (isChoosed === true) {
         setIsFocus({
           focus: true,
           targetName: showLookup.nextInputName,
         });
-      else {
+      } else {
         setIsFocus({
           focus: true,
           targetName: showLookup.accessorName,
         });
       }
     } catch (error) {
-      console.log(error);
+      ToastBar('error', error, 3000, () => {}, 'bottom-end');
     } finally {
       setShowLookup({
         show: false,
-        name: '',
+        accessorName: '',
         nextInputName: '',
+        dataSource: null,
       });
     }
   };
@@ -75,19 +81,14 @@ export default function useLookup({
       payload,
     });
   };
-  const handleCheckLookup = async (
-    id,
-    accessorName,
-    nextInputName,
-    dataSource,
-  ) => {
-    if (
-      showLookup.show === false &&
-      isLoginPopup === false &&
-      isFocus.focus === false
-    ) {
+  const handleCheckLookup = async (id, accessorName, nextInputName, dataSource) => {
+    if (showLookup.show === false && isLoginPopup === false && isFocus.focus === false) {
       try {
-        const getSourceByID = await dataSource.getById(id || 'null');
+        const dataOptions = {
+          key: id,
+          listfields: dataLookupNeeds(accessorName),
+        };
+        const getSourceByID = await dataSource.getRec(dataOptions);
         if (getSourceByID.result === true) {
           payloadScheme({
             accessorName,
@@ -95,40 +96,60 @@ export default function useLookup({
             handleStateFromLookup,
             handleStateFromLookupChild,
             handleStateFromLookupMany,
-            row: getSourceByID.onsuccess.data,
+            row: getSourceByID.data,
           });
-        } else {
-          handleOpenLookup(accessorName, nextInputName);
-        }
+        } else if (getSourceByID.result === false)
+          handleOpenLookup(accessorName, nextInputName, dataSource);
+        else throw getSourceByID.message;
       } catch (error) {
-        console.log(error);
+        ToastBar(
+          'error',
+          error === typesError.FETCH.msg ? typesError.FETCH.res : error,
+          3000,
+          () => {
+            setIsFocus({ focus: true, targetName: accessorName });
+          },
+          'bottom-end'
+        );
       }
     } else {
       return false;
     }
   };
-  const handleChooseLookup = (event, row) => {
+  const handleChooseLookup = async (event, row) => {
     event.preventDefault();
-    payloadScheme({
-      accessorName: showLookup.accessorName,
-      changeLookupDetails,
-      handleStateFromLookup,
-      handleStateFromLookupChild,
-      handleStateFromLookupMany,
-      row,
-    });
-    handleCloseLookup(true);
+    try {
+      const dataOptions = {
+        key: row.key,
+        listfields: dataLookupNeeds(showLookup.accessorName),
+      };
+      const getSourceByID = await showLookup.dataSource.getRec(dataOptions);
+      if (getSourceByID.result === true) {
+        handleCloseLookup(true);
+        payloadScheme({
+          accessorName: showLookup.accessorName,
+          changeLookupDetails,
+          handleStateFromLookup,
+          handleStateFromLookupChild,
+          handleStateFromLookupMany,
+          row: getSourceByID.data,
+        });
+      } else if (getSourceByID.result === false) throw getSourceByID.onfail.cerror;
+      else throw getSourceByID.message;
+    } catch (error) {
+      ToastBar('error', error, 3000, () => {}, 'bottom-end');
+    }
   };
 
   useEffect(() => {
-    if (isFocus.focus === true && isFocus.targetName !== '') {
+    if (showLookup.show === false && isFocus.focus === true && isFocus.targetName !== '') {
       inputRef.current[isFocus.targetName].focus();
       setIsFocus({
         focus: false,
         targetName: '',
       });
     }
-  }, [isFocus, setIsFocus]);
+  }, [isFocus, setIsFocus, showLookup]);
 
   return {
     lookupDetails,

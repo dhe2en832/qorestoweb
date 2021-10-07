@@ -68,7 +68,7 @@ export default memo(
             value={value}
             sx={styles.textField}
             autoComplete="off"
-            multiline={true}
+            multiline={false}
             disabled={disabled}
           />
         </FormControl>

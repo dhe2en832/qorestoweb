@@ -1,24 +1,43 @@
 import { useState, useEffect } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import AlertDialog from '../components/AlertDialog';
-import ConfirmDialog from '../components/ConfirmDialog';
+// import ConfirmDialog from '../components/ConfirmDialog';
 import { typesError } from '../utils/types-error';
 import useSearch from './useSearch';
 import useRedirectToLogin from './useRedirectToLogin';
 
-export default function useTableLists({ dataSource, headCells, confPrimKey, confName }) {
+export default function useTableLists({
+  dataSource,
+  headCells,
+  confPrimKey,
+  confName,
+  sortDataBy,
+}) {
   const url = useRouteMatch().path;
   const { redirectToLogin } = useRedirectToLogin();
-  const listfields = new Array(headCells.map((thead) => thead.id));
-  console.log(listfields);
   const [lists, setLists] = useState([]);
+  const [listCount, setListCount] = useState(null);
   const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(0);
-  const [filterBy, setFilterBy] = useState(confPrimKey);
-  const { search, handleSearch } = useSearch();
+  const [limit, setLimit] = useState(5);
+  const [page, setPage] = useState(0);
+  const [indexKey, setIndexKey] = useState(2);
   const [textFilter, setTextFilterBy] = useState('');
-  const searchLabel = headCells.filter((data) => data.id === filterBy).map((label) => label.label);
+  const { search, handleSearch } = useSearch();
+  const [submitSearch, setSubmitSearch] = useState({ submitted: false, value: '' });
+  const searchLabel = sortDataBy
+    .filter((data) => data.index === indexKey)
+    .map((label) => label.title)[0];
   const [loading, setLoading] = useState(false);
+
+  const handleSubmitSearch = () => {
+    setSubmitSearch({
+      submitted: true,
+      value: search,
+    });
+    setListCount(null);
+    setOffset(0);
+    setPage(0);
+  };
 
   //#region handleDelete
   // const handleDelete = (event, id) => {
@@ -64,31 +83,47 @@ export default function useTableLists({ dataSource, headCells, confPrimKey, conf
         const listFieldsMap = headCells.map((head) => head.id);
         const dataOptions = {
           offset,
-          limit,
+          limit: listCount === null ? 0 : limit,
           listfields: listFieldsMap,
-          query: {},
+          query: {
+            keysearch: {
+              index: indexKey,
+              search: submitSearch.value,
+            },
+            textfilter: {
+              search: textFilter,
+            },
+          },
         };
-        console.log(dataOptions);
         const getDatas = await dataSource.getList(dataOptions);
         if (getDatas.result === true) {
-          setLists(getDatas.data);
+          if (listCount === null) setListCount(getDatas.metadata.total);
+          else setLists(getDatas.data);
         } else if (getDatas.result === false) {
-        } else {
-          throw getDatas.message;
-        }
+          throw getDatas.onfail.cerror;
+        } else throw getDatas.message;
       } catch (error) {
         switch (error) {
           case typesError.SECRET_KEY.msg:
-            AlertDialog('error', 'Session Telah Habis.', <p>Gagal Ambil Data {confName}</p>);
+            AlertDialog('error', ...typesError.SECRET_KEY.res, redirectToLogin);
+            break;
+          case typesError.SESSION_INVALID.msg:
+            AlertDialog('error', ...typesError.SESSION_INVALID.res, redirectToLogin);
+            break;
+          case typesError.SESSION_LOCKED.msg:
+            typesError.SESSION_LOCKED.res();
+            break;
+          case typesError.SESSION_TIMEOUT.msg:
+            AlertDialog('error', ...typesError.SESSION_TIMEOUT.res, redirectToLogin);
             break;
           case typesError.FETCH.msg:
-            AlertDialog('error', 'Terjadi Kesalahan', typesError.FETCH.res);
+            AlertDialog('error', 'Salah', typesError.FETCH.res);
             break;
           case typesError.ITEMS.msg:
-            AlertDialog('error', 'Terjadi Kesalahan', typesError.ITEMS.res);
+            AlertDialog('error', 'Salah', typesError.ITEMS.res);
             break;
           default:
-            AlertDialog('error', 'Terjadi Kesalahan', error);
+            AlertDialog('error', 'Salah', error);
             break;
         }
       } finally {
@@ -99,17 +134,35 @@ export default function useTableLists({ dataSource, headCells, confPrimKey, conf
     return () => {
       setLists([]);
     };
-  }, [dataSource, headCells, redirectToLogin, filterBy, confName, offset, limit]);
+  }, [
+    dataSource,
+    headCells,
+    listCount,
+    indexKey,
+    confName,
+    offset,
+    limit,
+    submitSearch,
+    setSubmitSearch,
+    textFilter,
+    redirectToLogin,
+  ]);
 
   return {
     url,
     loading,
     searchLabel,
     handleSearch,
-    filterBy,
-    setFilterBy,
+    handleSubmitSearch,
+    indexKey,
+    setIndexKey,
     lists,
-    offset,
+    listCount,
+    setListCount,
+    setOffset,
     limit,
+    setLimit,
+    page,
+    setPage,
   };
 }

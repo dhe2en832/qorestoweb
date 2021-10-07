@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import useActionsItem from './useActionsItem';
 import LookupStock from '../modules/BSTOCK/views/bstock_lookup';
-import bstock_api from '../modules/BSTOCK/controller/bstock_api';
-import { headCells } from '../modules/BSTOCK/model/bstock_table';
+import bstock_api from '../modules/BSTOCK/controllers/bstock_api';
+import { headCells } from '../modules/BSTOCK/models/bstock_table';
 
 export default function useLookupsItemStock({
   items,
@@ -89,9 +89,8 @@ export default function useLookupsItemStock({
         const getStockById = await bstock_api.getRec(dataOptions);
         if (getStockById.result === true) {
           handleUpdateItemStock(getStockById.data, index);
-        } else if (getStockById.result === false) {
-          handleOpenItemStock(index, name, nextFocus);
-        } else throw getStockById.message;
+        } else if (getStockById.result === false) handleOpenItemStock(index, name, nextFocus);
+        else throw getStockById.message;
       } catch (error) {
         console.log(error);
       }
@@ -102,8 +101,8 @@ export default function useLookupsItemStock({
 
   const handleChooseItemStock = (event, stock) => {
     event.preventDefault();
-    handleUpdateItemStock(stock, lookupItemStock.fromItemIndex);
     handleCloseItemStock(true);
+    handleUpdateItemStock(stock, lookupItemStock.fromItemIndex);
   };
 
   const lookupItemStockElem = () => {

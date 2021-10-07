@@ -131,7 +131,7 @@ export default function useForms({
             </p>,
             handleOpenLoginPopup,
           ])
-        : (messageError = ['error', 'Terjadi Kesalahan', error]);
+        : (messageError = ['error', 'Salah', error]);
       isLookup
         ? AlertDialogNested(idElem, ...messageError)
         : AlertDialog(...messageError);

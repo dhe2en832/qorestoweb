@@ -4,13 +4,12 @@ import ModalWrapper from '../../../components/ModalWrapper';
 import ToolbarSimple from '../../../components/ToolbarSimple';
 import TableWrapperComplex from '../../../components/TableWrapperComplex';
 import useTableListsLookup from '../../../hooks/useTableListsLookup';
-import useResponsive from '../../../hooks/useResponsive';
 import AlertContainer from '../../../components/AlertContainer';
 
-import bstock_api from '../controller/bstock_api';
-import { headCells, bodyCells } from '../model/bstock_table';
-import { confName, confPrimKey, confSecKey } from '../model/bstock_config';
-import { BSTOCKSR } from '../model/bstock_sort';
+import bstock_api from '../controllers/bstock_api';
+import { headCells, bodyCells } from '../models/bstock_table';
+import { confName, confPrimKey, confSecKey } from '../models/bstock_config';
+import { BSTOCKSR } from '../models/bstock_sort';
 
 export default memo(function BSTOCKLookup({
   lookup,
@@ -20,13 +19,11 @@ export default memo(function BSTOCKLookup({
   handleOpenLoginPopup,
 }) {
   const {
-    idElem,
+    idElemLookup,
     loading,
     searchLabel,
     handleSearch,
     handleSubmitSearch,
-    indexKey,
-    setIndexKey,
     lists,
     listCount,
     setListCount,
@@ -45,7 +42,6 @@ export default memo(function BSTOCKLookup({
     isLoginPopup,
     handleOpenLoginPopup,
   });
-  const { smUp } = useResponsive();
 
   return (
     <ModalWrapper
@@ -63,11 +59,11 @@ export default memo(function BSTOCKLookup({
         />
       }
     >
-      {loading ? (
-        <ProgressLoader />
-      ) : (
-        <>
-          <AlertContainer idElem={idElem} />
+      <>
+        <AlertContainer idElem={idElemLookup} />
+        {loading ? (
+          <ProgressLoader />
+        ) : (
           <TableWrapperComplex
             keyName={confName}
             keyID={confPrimKey}
@@ -84,8 +80,8 @@ export default memo(function BSTOCKLookup({
             isLookup={true}
             lookupFunc={getChoosed}
           />
-        </>
-      )}
+        )}
+      </>
     </ModalWrapper>
   );
 });

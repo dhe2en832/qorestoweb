@@ -1,8 +1,6 @@
-import { useState } from 'react';
 import { dateToString } from '../utils/formatter';
 
 export default function useFormsHeader({ dispatchHeaders, useActions }) {
-  const [openHeader, setOpenHeader] = useState(true);
   const handleChangeString = (event) => {
     dispatchHeaders({
       type: useActions.CHANGE_STRING,
@@ -57,8 +55,6 @@ export default function useFormsHeader({ dispatchHeaders, useActions }) {
   };
 
   return {
-    openHeader,
-    setOpenHeader,
     handleChangeString,
     handleChangeStringChild,
     handleChangeNumber,

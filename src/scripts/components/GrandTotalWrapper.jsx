@@ -1,6 +1,8 @@
 import React, { memo, useState } from 'react';
 import PropTypes from 'prop-types';
+import NumberFormat from 'react-number-format';
 import Container from '@mui/material/Container';
+import InputBase from '@mui/material/InputBase';
 import Grid from '@mui/material/Grid';
 import Collapse from '@mui/material/Collapse';
 import Hidden from '@mui/material/Hidden';
@@ -21,6 +23,10 @@ function GrandTotalWrapper({
   grandTotal,
   submit,
   isSubmit,
+  isEditDiscPPN,
+  handleChangeDiscPPN,
+  headers,
+  setIsEditHeader,
 }) {
   const theme = useTheme();
   const styles = {
@@ -44,6 +50,7 @@ function GrandTotalWrapper({
       borderRadius: '5px',
       width: '100%',
     },
+    input: { width: '5.5ch', background: '#fff', padding: '0 5px', height: '2ch' },
   };
   const [openTotal, setOpenTotal] = useState(false);
   const totalRender = () => {
@@ -59,28 +66,71 @@ function GrandTotalWrapper({
             </Grid>
           </Grid>
           <Grid container>
-            <Grid item container xs justifyContent="flex-start">
-              Discount {discount || 0}%:
+            <Grid item container xs justifyContent="flex-start" spacing={1} alignItems="center">
+              {isEditDiscPPN ? (
+                <>
+                  <Grid item>Disc </Grid>
+                  <Grid item>
+                    <NumberFormat
+                      name={'npctdisc'}
+                      type="tel"
+                      sx={styles.input}
+                      decimalScale={2}
+                      fixedDecimalScale={true}
+                      autoComplete="off"
+                      customInput={InputBase}
+                      onBlur={() => setIsEditHeader && setIsEditHeader(false)}
+                      onFocus={(event) => {
+                        event.target.select();
+                        setIsEditHeader && setIsEditHeader(true);
+                      }}
+                      onChange={handleChangeDiscPPN}
+                      value={headers['npctdisc']}
+                    />{' '}
+                    %
+                  </Grid>
+                </>
+              ) : (
+                <Grid item>Disc. {discount || 0} %:</Grid>
+              )}
             </Grid>
             <Grid item container xs justifyContent="flex-end">
-              <CurrencyFormat
-                prefix="Rp"
-                value={amounter(total || 0, discount || 0)}
-              />
+              <CurrencyFormat prefix="Rp" value={amounter(total || 0, discount || 0)} />
             </Grid>
           </Grid>
           <Grid container>
-            <Grid item container xs justifyContent="flex-start">
-              Tax {tax || 0}%:
+            <Grid item container xs justifyContent="flex-start" spacing={1} alignItems="center">
+              {isEditDiscPPN ? (
+                <>
+                  <Grid item>PPN </Grid>
+                  <Grid item>
+                    <NumberFormat
+                      name={'npctppn'}
+                      type="tel"
+                      sx={styles.input}
+                      decimalScale={2}
+                      fixedDecimalScale={true}
+                      autoComplete="off"
+                      customInput={InputBase}
+                      onBlur={() => setIsEditHeader && setIsEditHeader(false)}
+                      onFocus={(event) => {
+                        event.target.select();
+                        setIsEditHeader && setIsEditHeader(true);
+                      }}
+                      onChange={handleChangeDiscPPN}
+                      value={headers['npctppn']}
+                    />{' '}
+                    %
+                  </Grid>
+                </>
+              ) : (
+                <Grid item>PPN {tax || 0} %:</Grid>
+              )}
             </Grid>
             <Grid item container xs justifyContent="flex-end">
-              <CurrencyFormat
-                prefix="Rp"
-                value={taxer(total || 0, discount || 0, tax || 0)}
-              />
+              <CurrencyFormat prefix="Rp" value={taxer(total || 0, discount || 0, tax || 0)} />
             </Grid>
           </Grid>
-
           {adjustment_description !== '' && (
             <>
               <hr />
@@ -89,10 +139,7 @@ function GrandTotalWrapper({
                   Total,Disc,Tax:
                 </Grid>
                 <Grid item container xs justifyContent="flex-end">
-                  <CurrencyFormat
-                    prefix="Rp"
-                    value={totalAfterDiscAndTax || 0}
-                  />
+                  <CurrencyFormat prefix="Rp" value={totalAfterDiscAndTax || 0} />
                 </Grid>
               </Grid>
             </>
@@ -131,14 +178,7 @@ function GrandTotalWrapper({
         </Grid>
       </Hidden>
       <Grid container spacing={1}>
-        <Grid
-          item
-          container
-          xs={6}
-          md={4}
-          justifyContent="flex-start"
-          alignContent="flex-end"
-        >
+        <Grid item container xs={6} md={4} justifyContent="flex-start" alignContent="flex-end">
           <Button
             variant="contained"
             sx={styles.button}
@@ -162,11 +202,7 @@ function GrandTotalWrapper({
             onClick={() => setOpenTotal(!openTotal)}
             aria-label="hide-show-grandtotal"
           >
-            {openTotal ? (
-              <FoldIcon fontSize="small" />
-            ) : (
-              <UnfoldIcon fontSize="small" />
-            )}
+            {openTotal ? <FoldIcon fontSize="small" /> : <UnfoldIcon fontSize="small" />}
           </Button>
         </Grid>
       </Grid>
@@ -176,18 +212,12 @@ function GrandTotalWrapper({
 
 GrandTotalWrapper.propTypes = {
   total: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-  discount: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
-    .isRequired,
+  discount: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   tax: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-  totalAfterDiscAndTax: PropTypes.oneOfType([
-    PropTypes.number,
-    PropTypes.string,
-  ]).isRequired,
+  totalAfterDiscAndTax: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   adjustment_description: PropTypes.string,
-  adjustment: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
-    .isRequired,
-  grandTotal: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
-    .isRequired,
+  adjustment: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+  grandTotal: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   submit: PropTypes.func.isRequired,
   isSubmit: PropTypes.bool.isRequired,
 };

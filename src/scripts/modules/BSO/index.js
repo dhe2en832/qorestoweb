@@ -1,6 +1,7 @@
 import React, { Suspense } from 'react';
 import { Switch, Route, Redirect, useRouteMatch } from 'react-router-dom';
 import ProgressLoader from '../../components/ProgressLoader';
+import BSOList from './views/bso_list';
 import BSOForm from './views/bso_form';
 
 export default function BSO() {
@@ -9,7 +10,9 @@ export default function BSO() {
     <>
       <Suspense fallback={<ProgressLoader />}>
         <Switch>
-          <Route exact path={path} component={() => <BSOForm mode="add" />} />
+          <Route exact path={path} component={BSOList} />
+          <Route exact path={`${path}/add`} component={() => <BSOForm mode="add" />} />
+          <Route exact path={`${path}/edit/:id`} component={() => <BSOForm mode="edit" />} />
           <Redirect from="*" to="/404" />
         </Switch>
       </Suspense>

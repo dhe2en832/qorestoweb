@@ -1,6 +1,7 @@
 const Config = {
   BASE_URL: 'http://192.168.100.85/api',
-  SECRET_KEY: '0c7b17ce3bb2c05a74eed4ec38e2f709',
+  SESSION_KEY: () => JSON.parse(window.localStorage.getItem('sessionKey')),
+  SESSION_ID: () => JSON.parse(window.localStorage.getItem('sessionID')),
   DEFAULT_LANGUAGE: 'id-ID',
   CACHE_NAME: 'webappCSA',
   CACHE_VERSION: 1.0,

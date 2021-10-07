@@ -1,14 +1,15 @@
 import Config from '../../../Config';
 import ApiRoute from '../../../routes/ApiRoute';
 
-class bstock_api {
+class bwhse_api {
   static async getList(data) {
     try {
-      const res = await fetch(ApiRoute.BSTOCK_X, {
+      const res = await fetch(ApiRoute.BWHSE_X, {
         method: 'POST',
         headers: {
           'content-type': 'application/json',
-          secretKey: Config.SECRET_KEY,
+          secretkey: Config.SESSION_KEY(),
+          sessionid: Config.SESSION_ID(),
         },
         body: JSON.stringify({ action: 'getlist', ...data }, null, 2),
       });
@@ -20,11 +21,12 @@ class bstock_api {
   }
   static async getRec(data) {
     try {
-      const res = await fetch(ApiRoute.BSTOCK_X, {
+      const res = await fetch(ApiRoute.BWHSE_X, {
         method: 'POST',
         headers: {
           'content-type': 'application/json',
-          secretKey: Config.SECRET_KEY,
+          secretkey: Config.SESSION_KEY(),
+          sessionid: Config.SESSION_ID(),
         },
         body: JSON.stringify({ action: 'getrec', ...data }, null, 2),
       });
@@ -36,4 +38,4 @@ class bstock_api {
   }
 }
 
-export default bstock_api;
+export default bwhse_api;

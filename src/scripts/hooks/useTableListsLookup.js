@@ -14,7 +14,7 @@ export default function useTableListsLookup({
   isLoginPopup,
   handleOpenLoginPopup,
 }) {
-  const idElem = `Lookup${confName.replace(/\/| /g, '')}`;
+  const idElemLookup = `Lookup${confName.replace(/\/| /g, '')}`;
   const [lists, setLists] = useState([]);
   const [listCount, setListCount] = useState(null);
   const [offset, setOffset] = useState(0);
@@ -26,7 +26,7 @@ export default function useTableListsLookup({
   const [submitSearch, setSubmitSearch] = useState({ submitted: false, value: '' });
   const searchLabel = sortDataBy
     .filter((data) => data.index === indexKey)
-    .map((label) => label.title);
+    .map((label) => label.title)[0];
   const [loading, setLoading] = useState(false);
 
   const handleSubmitSearch = () => {
@@ -58,7 +58,6 @@ export default function useTableListsLookup({
             },
           },
         };
-        console.log(dataOptions);
         const getDatas = await dataSource.getList(dataOptions);
         if (getDatas.result === true) {
           if (listCount === null) setListCount(getDatas.metadata.total);
@@ -70,21 +69,39 @@ export default function useTableListsLookup({
         switch (error) {
           case typesError.SECRET_KEY.msg:
             AlertDialogNested(
-              idElem,
+              idElemLookup,
               'error',
-              'Session Telah Habis.',
-              <p>Gagal Lookup Data {confName}</p>,
-              () => handleOpenLoginPopup()
+              ...typesError.SECRET_KEY.res,
+              handleOpenLoginPopup
+            );
+            break;
+          case typesError.SESSION_INVALID.msg:
+            AlertDialogNested(
+              idElemLookup,
+              'error',
+              ...typesError.SESSION_INVALID.res,
+              handleOpenLoginPopup
+            );
+            break;
+          case typesError.SESSION_LOCKED.msg:
+            typesError.SESSION_LOCKED.res();
+            break;
+          case typesError.SESSION_TIMEOUT.msg:
+            AlertDialogNested(
+              idElemLookup,
+              'error',
+              ...typesError.SESSION_TIMEOUT.res,
+              handleOpenLoginPopup
             );
             break;
           case typesError.FETCH.msg:
-            AlertDialogNested(idElem, 'error', 'Terjadi Kesalahan', typesError.FETCH.res);
+            AlertDialogNested(idElemLookup, 'error', 'Salah', typesError.FETCH.res);
             break;
           case typesError.ITEMS.msg:
-            AlertDialogNested(idElem, 'error', 'Terjadi Kesalahan', typesError.ITEMS.res);
+            AlertDialogNested(idElemLookup, 'error', 'Salah', typesError.ITEMS.res);
             break;
           default:
-            AlertDialogNested(idElem, 'error', 'Terjadi Kesalahan', error);
+            AlertDialogNested(idElemLookup, 'error', 'Salah', error);
             break;
         }
       } finally {
@@ -92,7 +109,7 @@ export default function useTableListsLookup({
       }
     };
     // if (showPopupFormAdd === false && isLoginPopup === false) getList();
-    isLoginPopup === false && getList();
+    if (isLoginPopup === false) getList();
     return () => {
       setLists([]);
     };
@@ -102,18 +119,17 @@ export default function useTableListsLookup({
     listCount,
     indexKey,
     confName,
-    idElem,
+    idElemLookup,
     offset,
     limit,
     submitSearch,
-    setSubmitSearch,
     textFilter,
     isLoginPopup,
     handleOpenLoginPopup,
   ]);
 
   return {
-    idElem,
+    idElemLookup,
     loading,
     searchLabel,
     handleSearch,

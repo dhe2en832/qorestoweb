@@ -30,7 +30,6 @@ import useResponsive from '../../../hooks/useResponsive';
 import useFormsItem from '../../../hooks/useFormsItem';
 import useLookupsItemStock from '../../../hooks/useLookupsItemStock';
 
-
 import { BSOFITEM } from '../model/bso_field';
 
 export default memo(function BSOForm_Items({
@@ -42,6 +41,7 @@ export default memo(function BSOForm_Items({
   handleOpenLoginPopup,
   isEditItem,
   setIsEditItem,
+  setOpenHeader,
 }) {
   const { theme, smDown } = useResponsive();
   const styles = {
@@ -104,17 +104,16 @@ export default memo(function BSOForm_Items({
           'error',
           `${label || name} tidak boleh kosong!`,
           3000,
-          () =>
-            setIsFocusStock({
+          async () =>
+            await setIsFocusStock({
               focus: true,
               targetName: name,
               targetIndex: index,
             }),
-          smDown ? 'bottom-end' : 'top-end'
+          'bottom-end'
         );
-      } else {
-        handleCheckItemStock(value, index, name, nextfocus);
-      }
+        handleOpenItemStock(index, name, nextfocus);
+      } else handleCheckItemStock(value, index, name, nextfocus);
     }
   };
 
@@ -131,7 +130,7 @@ export default memo(function BSOForm_Items({
               targetName: name,
               targetIndex: index,
             }),
-          smDown ? 'bottom-end' : 'top-end'
+          'bottom-end'
         );
       }
     }
@@ -264,7 +263,10 @@ export default memo(function BSOForm_Items({
                 variant="contained"
                 color="primary"
                 size="small"
-                onClick={handleAddItem}
+                onClick={() => {
+                  setOpenHeader(false);
+                  handleAddItem();
+                }}
                 disabled={isEditItem}
               >
                 Tambah Item
@@ -399,7 +401,10 @@ export default memo(function BSOForm_Items({
                     variant="contained"
                     color="primary"
                     size="small"
-                    onClick={handleAddItem}
+                    onClick={() => {
+                      setOpenHeader(false);
+                      handleAddItem();
+                    }}
                     disabled={isEditItem}
                   >
                     Tambah Item

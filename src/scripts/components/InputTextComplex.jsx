@@ -5,20 +5,8 @@ import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 
 function InputTextComplex(
-  {
-    name,
-    nextFocus,
-    label,
-    type,
-    change,
-    blur,
-    value,
-    dataSrc,
-    enterEvent,
-    fullWidth,
-    disabled,
-  },
-  ref,
+  { name, nextFocus, label, type, change, blur, value, dataSrc, enterEvent, fullWidth, disabled },
+  ref
 ) {
   const styles = {
     textField: {
@@ -35,7 +23,7 @@ function InputTextComplex(
     }
     switch (event.key) {
       case 'Enter':
-        enterEvent && enterEvent(name, nextFocus);
+        enterEvent && enterEvent(name, nextFocus, dataSrc);
         event.preventDefault();
         break;
       default:
