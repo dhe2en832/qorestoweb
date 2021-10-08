@@ -270,17 +270,22 @@ export default memo(function BSOForm_Headers({
                   </Grid>
                   <Grid item>
                     <Typography variant="body2" component="h3">
-                      Customer: {headers[BSOFHEAD.CUSTOMER._.CCUSID] || '-'}
+                      Customer: {headers[BSOFHEAD.CUSTOMER.AS][BSOFHEAD.CUSTOMER._.CCUSID] || '-'}
                     </Typography>
                   </Grid>
                   <Grid item>
                     <Typography variant="body2" component="h3">
-                      Gudang: {headers[BSOFHEAD.CUSTOMER._.CCUSID] || '-'}
+                      Nama Customer: {lookupDetails[BSOFHEAD.CUSTOMER._.CCUSID]}
                     </Typography>
                   </Grid>
                   <Grid item>
                     <Typography variant="body2" component="h3">
-                      Sales Person: {headers[BSOFHEAD.CUSTOMER._.CCUSID] || '-'}
+                      Gudang: {headers[BSOFHEAD.CWHSEID] || '-'}
+                    </Typography>
+                  </Grid>
+                  <Grid item>
+                    <Typography variant="body2" component="h3">
+                      Sales Person: {headers[BSOFHEAD.CSALESID] || '-'}
                     </Typography>
                   </Grid>
                 </Grid>

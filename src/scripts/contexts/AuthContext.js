@@ -51,7 +51,6 @@ function useProvideAuth() {
       const resSessionKey = await res.headers.get('secretkey');
       const resSessionID = await res.headers.get('sessionid');
       const resJson = await res.json();
-      console.log(resJson);
       if (resJson.result === true) {
         setLoggedIn(true);
         setUserID(data.cuserid);
@@ -63,12 +62,23 @@ function useProvideAuth() {
         throw resJson.onfail.cerror;
       } else throw resJson.message;
     } catch (error) {
-      const messageError = [
-        'error',
-        'Salah',
-        error === typesError.EMPTY_USER.msg ? typesError.EMPTY_USER.res : error,
-      ];
-      isForm ? AlertDialogNested('LoginForm', ...messageError) : AlertDialog(...messageError);
+      let messageError;
+      switch (error) {
+        case typesError.FETCH.msg:
+          messageError = typesError.FETCH.res;
+          break;
+        case typesError.EMPTY_USER.msg:
+          messageError = typesError.EMPTY_USER.res;
+          break;
+        default: {
+          if (error.message === typesError.FETCH.msg) messageError = typesError.FETCH.res;
+          else messageError = error;
+          break;
+        }
+      }
+      isForm
+        ? AlertDialogNested('LoginForm', 'error', 'Salah', messageError)
+        : AlertDialog('error', 'Salah', messageError);
     }
   };
 

@@ -20,6 +20,7 @@ export default function useTableListsLookup({
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(5);
   const [page, setPage] = useState(0);
+  const [openKeySearchDlg, setOpenKeySearchDlg] = useState(false);
   const [indexKey, setIndexKey] = useState(2);
   const [textFilter, setTextFilterBy] = useState('');
   const { search, handleSearch } = useSearch();
@@ -134,6 +135,8 @@ export default function useTableListsLookup({
     searchLabel,
     handleSearch,
     handleSubmitSearch,
+    openKeySearchDlg,
+    setOpenKeySearchDlg,
     indexKey,
     setIndexKey,
     lists,

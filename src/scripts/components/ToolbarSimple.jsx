@@ -1,11 +1,13 @@
 import React, { memo } from 'react';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import useTheme from '@mui/material/styles/useTheme';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import AddIcon from '@mui/icons-material/Add';
+import SortIcon from '@mui/icons-material/Sort';
 import SearchBar from './SearchBar';
 
 function ToolbarSimple({
@@ -16,6 +18,7 @@ function ToolbarSimple({
   setSearch,
   setSearchLabel,
   setSubmitSearch,
+  setOpenKeySearchDlg,
   onClickAdd,
 }) {
   const theme = useTheme();
@@ -29,7 +32,13 @@ function ToolbarSimple({
           </Button>
         </Grid>
       )}
-      <Grid item container xs={showAdd ? 9 : 12} justifyContent={smUp ? 'flex-end' : 'flex-start'}>
+      <Grid
+        item
+        container
+        xs={showAdd ? 9 : 12}
+        alignItems="center"
+        justifyContent={smUp ? 'flex-end' : 'flex-start'}
+      >
         <Grid item>
           {showSwitch && (
             <FormControlLabel
@@ -37,6 +46,11 @@ function ToolbarSimple({
               label={'Catalog View'}
             />
           )}
+        </Grid>
+        <Grid item>
+          <IconButton onClick={() => setOpenKeySearchDlg(true)}>
+            <SortIcon color="primary" size="large" />
+          </IconButton>
         </Grid>
         <Grid item>
           <SearchBar

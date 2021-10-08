@@ -1,11 +1,9 @@
 import React from 'react';
 import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
 import ProgressLoader from '../../../components/ProgressLoader';
-import SearchBar from '../../../components/SearchBar';
-import { AddElem } from '../../../components/ButtonActions';
 import TableWrapperComplex from '../../../components/TableWrapperComplex';
+import KeySearchDialog from '../../../components/KeySearchDialog';
+import ToolbarComplex from '../../../components/ToolbarComplex';
 import useTableLists from '../../../hooks/useTableLists';
 
 import bso_api from '../controller/bso_api';
@@ -20,6 +18,8 @@ export default function BSOList() {
     searchLabel,
     handleSearch,
     handleSubmitSearch,
+    openKeySearchDlg,
+    setOpenKeySearchDlg,
     indexKey,
     setIndexKey,
     lists,
@@ -40,24 +40,22 @@ export default function BSOList() {
 
   return (
     <Container maxWidth="xl">
-      <Grid container alignItems="center" justifyContent="space-between" spacing={1}>
-        <Grid item>
-          <Typography variant="h6" component="h1">
-            Master {confName}
-          </Typography>
-        </Grid>
-        <Grid item>
-          <AddElem url={url} title={confName} />
-        </Grid>
-        <Grid item>
-          <SearchBar
-            name="searchBar_list"
-            label={searchLabel}
-            change={handleSearch}
-            submit={handleSubmitSearch}
-          />
-        </Grid>
-      </Grid>
+      <KeySearchDialog
+        confName={confName}
+        openKeySearchDlg={openKeySearchDlg}
+        setOpenKeySearchDlg={setOpenKeySearchDlg}
+        sortDataBy={BSOSR}
+        indexKey={indexKey}
+        setIndexKey={setIndexKey}
+      />
+      <ToolbarComplex
+        confName={confName}
+        url={url}
+        setOpenKeySearchDlg={setOpenKeySearchDlg}
+        searchLabel={searchLabel}
+        handleSearch={handleSearch}
+        handleSubmitSearch={handleSubmitSearch}
+      />
       {loading ? (
         <ProgressLoader />
       ) : (

@@ -5,6 +5,7 @@ import ToolbarSimple from '../../../components/ToolbarSimple';
 import TableWrapperComplex from '../../../components/TableWrapperComplex';
 import useTableListsLookup from '../../../hooks/useTableListsLookup';
 import AlertContainer from '../../../components/AlertContainer';
+import KeySearchDialog from '../../../components/KeySearchDialog';
 
 import bstock_api from '../controllers/bstock_api';
 import { headCells, bodyCells } from '../models/bstock_table';
@@ -24,6 +25,10 @@ export default memo(function BSTOCKLookup({
     searchLabel,
     handleSearch,
     handleSubmitSearch,
+    openKeySearchDlg,
+    setOpenKeySearchDlg,
+    indexKey,
+    setIndexKey,
     lists,
     listCount,
     setListCount,
@@ -56,10 +61,19 @@ export default memo(function BSTOCKLookup({
           setSearch={handleSearch}
           setSubmitSearch={handleSubmitSearch}
           setSearchLabel={searchLabel}
+          setOpenKeySearchDlg={setOpenKeySearchDlg}
         />
       }
     >
       <>
+        <KeySearchDialog
+          confName={confName}
+          openKeySearchDlg={openKeySearchDlg}
+          setOpenKeySearchDlg={setOpenKeySearchDlg}
+          sortDataBy={BSTOCKSR}
+          indexKey={indexKey}
+          setIndexKey={setIndexKey}
+        />
         <AlertContainer idElem={idElemLookup} />
         {loading ? (
           <ProgressLoader />
