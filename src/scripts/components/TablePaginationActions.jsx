@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import useTheme from '@mui/material/styles/useTheme';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
@@ -10,10 +11,13 @@ import LastPageIcon from '@mui/icons-material/LastPage';
 
 function TablePaginationActions(props) {
   const theme = useTheme();
+  const smUp = useMediaQuery(theme.breakpoints.up('sm'));
   const styles = {
     root: {
       flexShrink: 0,
-      marginLeft: theme.spacing(2.5),
+      marginLeft: theme.spacing(smUp ? 3.5 : 0),
+      gridColumn: 'span 3',
+      justifySelf: 'center',
     },
   };
   const { count, page, rowsPerPage, onPageChange } = props;
@@ -36,7 +40,6 @@ function TablePaginationActions(props) {
 
   return (
     <>
-      <br />
       <Box sx={styles.root}>
         <IconButton
           onClick={handleFirstPageButtonClick}

@@ -3,6 +3,7 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import SortIcon from '@mui/icons-material/Sort';
+import FilterIcon from '@mui/icons-material/FilterAlt';
 import useResponsive from '../hooks/useResponsive';
 import SearchBar from './SearchBar';
 import { AddElem } from './ButtonActions';
@@ -11,6 +12,7 @@ export default function ToolbarComplex({
   confName,
   url,
   setOpenKeySearchDlg,
+  setOpenTextFilterDlg,
   searchLabel,
   handleSearch,
   handleSubmitSearch,
@@ -41,7 +43,7 @@ export default function ToolbarComplex({
         md={6}
         item
         container
-        justifyContent={mdDown ? 'space-between' : 'flex-end'}
+        justifyContent={mdDown ? 'flex-start' : 'flex-end'}
         alignItems="center"
       >
         <Grid item>
@@ -50,6 +52,11 @@ export default function ToolbarComplex({
           </IconButton>
         </Grid>
         <Grid item>
+          <IconButton onClick={() => (setOpenTextFilterDlg ? setOpenTextFilterDlg(true) : {})}>
+            <FilterIcon color="primary" size="large" />
+          </IconButton>
+        </Grid>
+        <Grid item xs={mdDown ? 8 : 'auto'}>
           <SearchBar
             name="searchBar_list"
             label={searchLabel}

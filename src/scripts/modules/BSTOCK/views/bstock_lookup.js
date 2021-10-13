@@ -6,6 +6,7 @@ import TableWrapperComplex from '../../../components/TableWrapperComplex';
 import useTableListsLookup from '../../../hooks/useTableListsLookup';
 import AlertContainer from '../../../components/AlertContainer';
 import KeySearchDialog from '../../../components/KeySearchDialog';
+import TextFilterDialog from '../../../components/TextFilterDialog';
 
 import bstock_api from '../controllers/bstock_api';
 import { headCells, bodyCells } from '../models/bstock_table';
@@ -29,6 +30,9 @@ export default memo(function BSTOCKLookup({
     setOpenKeySearchDlg,
     indexKey,
     setIndexKey,
+    openTextFilterDlg,
+    setOpenTextFilterDlg,
+    handleTextFilter,
     lists,
     listCount,
     setListCount,
@@ -62,6 +66,7 @@ export default memo(function BSTOCKLookup({
           setSubmitSearch={handleSubmitSearch}
           setSearchLabel={searchLabel}
           setOpenKeySearchDlg={setOpenKeySearchDlg}
+          setOpenTextFilterDlg={setOpenTextFilterDlg}
         />
       }
     >
@@ -73,6 +78,12 @@ export default memo(function BSTOCKLookup({
           sortDataBy={BSTOCKSR}
           indexKey={indexKey}
           setIndexKey={setIndexKey}
+        />
+        <TextFilterDialog
+          confTextFilter={'Nama Items/Stock'}
+          openTextFilterDlg={openTextFilterDlg}
+          setOpenTextFilterDlg={setOpenTextFilterDlg}
+          handleTextFilter={handleTextFilter}
         />
         <AlertContainer idElem={idElemLookup} />
         {loading ? (

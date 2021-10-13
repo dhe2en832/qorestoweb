@@ -6,6 +6,7 @@ import TableWrapperComplex from '../../../components/TableWrapperComplex';
 import useTableListsLookup from '../../../hooks/useTableListsLookup';
 import AlertContainer from '../../../components/AlertContainer';
 import KeySearchDialog from '../../../components/KeySearchDialog';
+import TextFilterDialog from '../../../components/TextFilterDialog';
 
 import bcust_api from '../controllers/bcust_api';
 import { headCells, bodyCells } from '../models/bcust_table';
@@ -27,6 +28,9 @@ export default memo(function BCUSTLookup({
     handleSubmitSearch,
     openKeySearchDlg,
     setOpenKeySearchDlg,
+    openTextFilterDlg,
+    setOpenTextFilterDlg,
+    handleTextFilter,
     indexKey,
     setIndexKey,
     lists,
@@ -62,6 +66,7 @@ export default memo(function BCUSTLookup({
           setSubmitSearch={handleSubmitSearch}
           setSearchLabel={searchLabel}
           setOpenKeySearchDlg={setOpenKeySearchDlg}
+          setOpenTextFilterDlg={setOpenTextFilterDlg}
         />
       }
     >
@@ -73,6 +78,12 @@ export default memo(function BCUSTLookup({
           sortDataBy={BCUSTSR}
           indexKey={indexKey}
           setIndexKey={setIndexKey}
+        />
+        <TextFilterDialog
+          confTextFilter={'Nama Customer'}
+          openTextFilterDlg={openTextFilterDlg}
+          setOpenTextFilterDlg={setOpenTextFilterDlg}
+          handleTextFilter={handleTextFilter}
         />
         <AlertContainer idElem={idElemLookup} />
         {loading ? (

@@ -6,6 +6,7 @@ import TableWrapperComplex from '../../../components/TableWrapperComplex';
 import useTableListsLookup from '../../../hooks/useTableListsLookup';
 import AlertContainer from '../../../components/AlertContainer';
 import KeySearchDialog from '../../../components/KeySearchDialog';
+import TextFilterDialog from '../../../components/TextFilterDialog';
 
 import bsalesp_api from '../controllers/bsalesp_api';
 import { headCells, bodyCells } from '../models/bsalesp_table';
@@ -29,6 +30,9 @@ export default memo(function BSALESPLookup({
     setOpenKeySearchDlg,
     indexKey,
     setIndexKey,
+    openTextFilterDlg,
+    setOpenTextFilterDlg,
+    handleTextFilter,
     lists,
     listCount,
     setListCount,
@@ -62,6 +66,7 @@ export default memo(function BSALESPLookup({
           setSubmitSearch={handleSubmitSearch}
           setSearchLabel={searchLabel}
           setOpenKeySearchDlg={setOpenKeySearchDlg}
+          setOpenTextFilterDlg={setOpenTextFilterDlg}
         />
       }
     >
@@ -73,6 +78,12 @@ export default memo(function BSALESPLookup({
           sortDataBy={BSALESPSR}
           indexKey={indexKey}
           setIndexKey={setIndexKey}
+        />
+        <TextFilterDialog
+          confTextFilter={'Nama Sales Person'}
+          openTextFilterDlg={openTextFilterDlg}
+          setOpenTextFilterDlg={setOpenTextFilterDlg}
+          handleTextFilter={handleTextFilter}
         />
         <AlertContainer idElem={idElemLookup} />
         {loading ? (

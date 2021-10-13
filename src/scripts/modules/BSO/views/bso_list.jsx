@@ -3,6 +3,7 @@ import Container from '@mui/material/Container';
 import ProgressLoader from '../../../components/ProgressLoader';
 import TableWrapperComplex from '../../../components/TableWrapperComplex';
 import KeySearchDialog from '../../../components/KeySearchDialog';
+import TextFilterDialog from '../../../components/TextFilterDialog';
 import ToolbarComplex from '../../../components/ToolbarComplex';
 import useTableLists from '../../../hooks/useTableLists';
 
@@ -22,6 +23,9 @@ export default function BSOList() {
     setOpenKeySearchDlg,
     indexKey,
     setIndexKey,
+    openTextFilterDlg,
+    setOpenTextFilterDlg,
+    handleTextFilter,
     lists,
     listCount,
     setListCount,
@@ -48,10 +52,17 @@ export default function BSOList() {
         indexKey={indexKey}
         setIndexKey={setIndexKey}
       />
+      <TextFilterDialog
+        confTextFilter={'Nama Customer (x)'}
+        openTextFilterDlg={openTextFilterDlg}
+        setOpenTextFilterDlg={setOpenTextFilterDlg}
+        handleTextFilter={handleTextFilter}
+      />
       <ToolbarComplex
         confName={confName}
         url={url}
         setOpenKeySearchDlg={setOpenKeySearchDlg}
+        setOpenTextFilterDlg={setOpenTextFilterDlg}
         searchLabel={searchLabel}
         handleSearch={handleSearch}
         handleSubmitSearch={handleSubmitSearch}

@@ -40,7 +40,7 @@ function TableWrapperComplex({
   lookupFunc,
   handleDelete,
 }) {
-  const { theme, mdUp } = useResponsive();
+  const { theme, mdUp, smUp } = useResponsive();
   const styles = {
     tableContainer: {
       width: '100%',
@@ -56,6 +56,7 @@ function TableWrapperComplex({
       minWidth: 450,
     },
     tableDenser: {
+      display: smUp ? 'inline-flex' : 'none',
       marginLeft: theme.spacing(1),
       '& .MuiFormControlLabel-label': {
         fontSize: '0.875rem',
@@ -85,9 +86,13 @@ function TableWrapperComplex({
       marginBottom: isLookup ? 0 : theme.spacing(2),
     },
     tablePaginationActions: {
-      '&& .MuiTablePagination-root': {
-        display: 'flex',
-        flexDirection: 'column',
+      '& .MuiTablePagination-toolbar': {
+        paddingLeft: '8px',
+        display: smUp ? 'flex' : 'grid',
+        gridTemplateColumns: '1fr 1fr 1fr',
+      },
+      '& .MuiTablePagination-spacer': {
+        display: 'none',
       },
     },
     stickyBody: {
@@ -95,7 +100,7 @@ function TableWrapperComplex({
       top: 0,
       left: 0,
       zIndex: 1,
-      background: theme.palette.background.default,
+      background: mdUp ? '' : theme.palette.background.default,
     },
     stickyHeader: {
       position: 'sticky',
@@ -148,7 +153,11 @@ function TableWrapperComplex({
   return (
     <>
       <TableContainer sx={styles.tableContainer} component={mdUp ? Paper : Grid}>
-        <Table sx={styles.table} aria-label="table-complex" size={dense ? 'small' : 'medium'}>
+        <Table
+          sx={styles.table}
+          aria-label="table-complex"
+          size={smUp ? (dense ? 'small' : 'medium') : 'small'}
+        >
           <TableHead sx={styles.tableHeader}>
             <TableRow>
               {headCells.map((headCell, index) => (
@@ -225,7 +234,7 @@ function TableWrapperComplex({
               ))
             )}
             {emptyRows > 0 && (
-              <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
+              <TableRow sx={{ height: (dense ? 33 : 53) * emptyRows }}>
                 <TableCell colSpan={headCells.length + 1} />
               </TableRow>
             )}
@@ -238,6 +247,7 @@ function TableWrapperComplex({
           alignItems="center"
           justifyContent="space-between"
           sx={styles.tablePagination}
+          spacing={0}
         >
           <Grid item>
             <FormControlLabel
@@ -248,7 +258,7 @@ function TableWrapperComplex({
           </Grid>
           <Grid item>
             <TablePagination
-              rowsPerPageOptions={[5, 7, 10, 11, 25, 50, 100]}
+              rowsPerPageOptions={[5, 10, 25, 50, 100]}
               component="div"
               count={listCount || 0}
               rowsPerPage={limit}

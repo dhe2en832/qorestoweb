@@ -44,6 +44,7 @@ export default function KeySearchDialog({
                 value={indexKey}
                 onChange={handleChange}
                 input={<OutlinedInput label="Age" />}
+                autoFocus
               >
                 {sortDataBy.map((data, index) => (
                   <MenuItem key={('keySearchDlg' + index).toString()} value={data.index}>

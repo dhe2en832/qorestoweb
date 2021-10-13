@@ -301,6 +301,7 @@ export default memo(function BSOForm_Headers({
                     value={headers[BSOFHEAD.DSODATE]}
                     change={handleChangeDate}
                     blur={handleValidationDate}
+                    autoFocus={true}
                   />
                   <InputText
                     ref={(el) => (inputRef.current[BSOFHEAD.CSONUM] = el)}

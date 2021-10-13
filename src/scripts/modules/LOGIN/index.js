@@ -61,6 +61,7 @@ function Login({ isForm, afterLogin }) {
                 }
                 type="text"
                 onChange={handleChange}
+                autoFocus
               />
             </FormControl>
           </Grid>

@@ -5,7 +5,7 @@ import DatePicker from '@mui/lab/DatePicker';
 import AdapterMoment from '@mui/lab/AdapterMoment';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 
-function InputDate({ label, name, value, change, blur }, ref) {
+function InputDate({ label, name, value, change, blur, autoFocus }, ref) {
   const [isDateOpen, setIsDateOpen] = useState(false);
   const styles = {
     datepickerField: {
@@ -36,9 +36,8 @@ function InputDate({ label, name, value, change, blur }, ref) {
               InputLabelProps={{
                 shrink: true,
               }}
-              onBlur={() =>
-                blur && isDateOpen === false && blur(value, name, label)
-              }
+              onBlur={() => blur && isDateOpen === false && blur(value, name, label)}
+              autoFocus={autoFocus || false}
             />
           )}
           InputProps={{
@@ -47,8 +46,7 @@ function InputDate({ label, name, value, change, blur }, ref) {
           InputAdornmentProps={{
             position: 'end',
             sx: styles.datepickerIcon,
-            onBlur: () =>
-              blur && isDateOpen === false && blur(value, name, label),
+            onBlur: () => blur && isDateOpen === false && blur(value, name, label),
           }}
           onChange={(date) => change(date, name)}
           onOpen={() => setIsDateOpen(true)}

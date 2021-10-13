@@ -8,6 +8,7 @@ import useTheme from '@mui/material/styles/useTheme';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import AddIcon from '@mui/icons-material/Add';
 import SortIcon from '@mui/icons-material/Sort';
+import FilterIcon from '@mui/icons-material/FilterAlt';
 import SearchBar from './SearchBar';
 
 function ToolbarSimple({
@@ -19,6 +20,7 @@ function ToolbarSimple({
   setSearchLabel,
   setSubmitSearch,
   setOpenKeySearchDlg,
+  setOpenTextFilterDlg,
   onClickAdd,
 }) {
   const theme = useTheme();
@@ -52,7 +54,14 @@ function ToolbarSimple({
             <SortIcon color="primary" size="large" />
           </IconButton>
         </Grid>
-        <Grid item>
+        {setOpenTextFilterDlg && (
+          <Grid item>
+            <IconButton onClick={() => (setOpenTextFilterDlg ? setOpenTextFilterDlg(true) : {})}>
+              <FilterIcon color="primary" size="large" />
+            </IconButton>
+          </Grid>
+        )}
+        <Grid item xs={smUp ? 'auto' : 8}>
           <SearchBar
             name="searchLookup"
             label={setSearchLabel}

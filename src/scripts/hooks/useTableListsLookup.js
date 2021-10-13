@@ -22,7 +22,8 @@ export default function useTableListsLookup({
   const [page, setPage] = useState(0);
   const [openKeySearchDlg, setOpenKeySearchDlg] = useState(false);
   const [indexKey, setIndexKey] = useState(2);
-  const [textFilter, setTextFilterBy] = useState('');
+  const [openTextFilterDlg, setOpenTextFilterDlg] = useState(false);
+  const [textFilter, setTextFilter] = useState('');
   const { search, handleSearch } = useSearch();
   const [submitSearch, setSubmitSearch] = useState({ submitted: false, value: '' });
   const searchLabel = sortDataBy
@@ -35,6 +36,13 @@ export default function useTableListsLookup({
       submitted: true,
       value: search,
     });
+    setListCount(null);
+    setOffset(0);
+    setPage(0);
+  };
+
+  const handleTextFilter = (value) => {
+    setTextFilter(value);
     setListCount(null);
     setOffset(0);
     setPage(0);
@@ -139,6 +147,9 @@ export default function useTableListsLookup({
     setOpenKeySearchDlg,
     indexKey,
     setIndexKey,
+    openTextFilterDlg,
+    setOpenTextFilterDlg,
+    handleTextFilter,
     lists,
     listCount,
     setListCount,
