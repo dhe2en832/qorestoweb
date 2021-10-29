@@ -5,7 +5,7 @@ import DatePicker from '@mui/lab/DatePicker';
 import AdapterMoment from '@mui/lab/AdapterMoment';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 
-function InputDate({ label, name, value, change, blur, autoFocus }, ref) {
+function InputDate({ label, name, value, change, blur, autoFocus, disabled }, ref) {
   const [isDateOpen, setIsDateOpen] = useState(false);
   const styles = {
     datepickerField: {
@@ -52,6 +52,7 @@ function InputDate({ label, name, value, change, blur, autoFocus }, ref) {
           onOpen={() => setIsDateOpen(true)}
           onClose={() => setIsDateOpen(false)}
           value={value}
+          disabled={disabled}
         />
       </LocalizationProvider>
     </Grid>

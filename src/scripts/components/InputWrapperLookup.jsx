@@ -4,7 +4,7 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import useResponsive from '../hooks/useResponsive';
 
-function InputWrapperLookup({ children, lookup }) {
+function InputWrapperLookup({ children, lookup, disabled }) {
   const { mdUp } = useResponsive();
   const styles = {
     multiLineEllipsis: {
@@ -21,7 +21,11 @@ function InputWrapperLookup({ children, lookup }) {
         {children}
       </Grid>
       <Grid item xs={12} md={4}>
-        <Typography sx={styles.multiLineEllipsis} variant="caption" color="secondary">
+        <Typography
+          sx={styles.multiLineEllipsis}
+          variant="caption"
+          color={disabled ? 'InactiveCaptionText' : 'secondary'}
+        >
           {lookup ? lookup : ' ( - ) '}
         </Typography>
       </Grid>

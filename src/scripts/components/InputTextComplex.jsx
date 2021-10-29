@@ -33,7 +33,7 @@ function InputTextComplex(
 
   return (
     <Grid item xs={12}>
-      <FormControl size="small" fullWidth={fullWidth}>
+      <FormControl size="small" fullWidth={fullWidth} disabled={disabled}> 
         <InputLabel sx={styles.textLabel} htmlFor={'textInput_' + name}>
           {label}
         </InputLabel>
@@ -50,7 +50,6 @@ function InputTextComplex(
           value={value}
           sx={styles.textField}
           autoComplete="off"
-          disabled={disabled}
         />
       </FormControl>
     </Grid>

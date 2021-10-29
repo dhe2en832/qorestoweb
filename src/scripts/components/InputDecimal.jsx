@@ -26,8 +26,9 @@ const InputDecimal = memo(
         decimalScale,
         fixedDecimalScale,
         setIsEditHeader,
+        disabled,
       },
-      ref,
+      ref
     ) => {
       const styles = {
         decimalInput: {
@@ -62,11 +63,8 @@ const InputDecimal = memo(
 
       return (
         <Grid item xs={12}>
-          <FormControl sx={styles.decimalField} variant="outlined" size="small">
-            <InputLabel
-              sx={styles.decimalLabel}
-              htmlFor={'decimalInput_' + name}
-            >
+          <FormControl sx={styles.decimalField} variant="outlined" size="small" disabled={disabled}>
+            <InputLabel sx={styles.decimalLabel} htmlFor={'decimalInput_' + name}>
               {label}
             </InputLabel>
             <NumberFormat
@@ -103,15 +101,17 @@ const InputDecimal = memo(
                     edge="start"
                     onClick={() => decrease(name, step)}
                     aria-label={'decimal-input-decrease-icon-' + name}
+                    disabled={disabled}
                   >
-                    <MinusIcon fontSize="small" color="error" />
+                    <MinusIcon fontSize="small" color={disabled ? 'disabled' : 'error'} />
                   </IconButton>
                   <IconButton
                     edge="end"
                     onClick={() => increase(name, step)}
                     aria-label={'decimal-input-increase-icon-' + name}
+                    disabled={disabled}
                   >
-                    <PlusIcon fontSize="small" color="primary" />
+                    <PlusIcon fontSize="small" color={disabled ? 'disabled' : 'primary'} />
                   </IconButton>
                 </InputAdornment>
               }
@@ -119,8 +119,8 @@ const InputDecimal = memo(
           </FormControl>
         </Grid>
       );
-    },
-  ),
+    }
+  )
 );
 
 InputDecimal.propTypes = {
