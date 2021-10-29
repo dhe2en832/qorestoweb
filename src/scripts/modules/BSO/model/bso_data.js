@@ -1,6 +1,6 @@
 import { dateToString } from '../../../utils/formatter';
 export const BSODHEAD = {
-  dsodate: dateToString(new Date('2021/07/21')),
+  dsodate: dateToString(new Date()),
   csonum: '?',
   dneeddate: null,
   cremark: '',
@@ -10,7 +10,7 @@ export const BSODHEAD = {
     cnotelp: '',
     cemail: '',
   },
-  ccustpo: '',
+  ccustpo: '?',
   cshpcode: '',
   cshpname: '',
   cshptoname: '',
