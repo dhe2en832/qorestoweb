@@ -119,18 +119,19 @@ export default function useForms({
         isLookup
           ? AlertDialogNested(idElem, ...messageSuccess, lookupFunc)
           : AlertDialog(...messageSuccess, redirectToParentLocation);
-      } else throw fetchPost.onfail.cerror;
+      } else if (fetchPost.result === false) throw fetchPost.onfail.cerror;
+      else throw fetchPost.message
     } catch (error) {
       let messageError;
       error === errorType.tokenFailed
         ? (messageError = [
-            'error',
-            'Session Telah Habis.',
-            <p>
-              Gagal {captionSubmit} Data {initName}
-            </p>,
-            handleOpenLoginPopup,
-          ])
+          'error',
+          'Session Telah Habis.',
+          <p>
+            Gagal {captionSubmit} Data {initName}
+          </p>,
+          handleOpenLoginPopup,
+        ])
         : (messageError = ['error', 'Salah', error]);
       isLookup
         ? AlertDialogNested(idElem, ...messageError)
@@ -147,7 +148,8 @@ export default function useForms({
             type: useActions.EDIT_STATE,
             payload: lists.onsuccess.data,
           });
-        else throw lists.onfail.cerror;
+        else if (lists.result === false) throw lists.onfail.cerror;
+        else throw lists.message;
       } catch (error) {
         AlertDialog(
           'error',
