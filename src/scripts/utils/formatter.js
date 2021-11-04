@@ -6,6 +6,11 @@ export const toCurrency = (value) => {
   return formatter + '.00';
 };
 
+export const convertNewLine = (text) => {
+  const regExp = [/(?:\r\n|\r|\n)/g, '<br/>']
+  return text.replace(...regExp);
+};
+
 export const stringToDate = (string) => {
   return moment(string, Config.DATE_POST_FORMAT).format(Config.DATE_DEFAULT_FORMAT);
 };
