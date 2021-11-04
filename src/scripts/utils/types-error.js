@@ -1,6 +1,6 @@
 export const typesError = {
   SECRET_KEY: {
-    msg: 'Secret Key tidak valid',
+    msg: 'Secret Key tidak valid\r\n',
     res: [
       'Secret Key tidak valid',
       <div style={{ textAlign: 'center' }}>
