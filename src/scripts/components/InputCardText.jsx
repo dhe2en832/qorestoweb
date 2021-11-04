@@ -17,13 +17,15 @@ export default memo(
       blur,
       disabled,
       fullWidth,
+      setWidth,
       setIsEditItem,
     },
-    ref,
+    ref
   ) {
     const styles = {
       textField: {
         height: 33,
+        ...(setWidth && { width: setWidth }),
       },
       textLabel: {
         marginTop: '-2.5px',
@@ -58,5 +60,5 @@ export default memo(
         </FormControl>
       </Grid>
     );
-  }),
+  })
 );

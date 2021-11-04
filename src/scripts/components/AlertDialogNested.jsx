@@ -8,7 +8,7 @@ export default function AlertDialogNested(
   html = <p></p>,
   afterClose = () => {},
   timer = 0,
-  showConfirmButton = true,
+  showConfirmButton = true
 ) {
   const reactSwal = withReactContent(
     Swal.mixin({
@@ -17,9 +17,9 @@ export default function AlertDialogNested(
       },
       target: `#AlertDialogNested_${id}`,
       timerProgressBar: true,
-    }),
+    })
   );
-  reactSwal.fire({
+  return reactSwal.fire({
     icon,
     title,
     html,

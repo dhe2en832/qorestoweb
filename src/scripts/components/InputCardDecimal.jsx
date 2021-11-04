@@ -26,9 +26,10 @@ const InputCardDecimal = memo(
         step,
         decimalScale,
         fixedDecimalScale,
+        setWidth,
         setIsEditItem,
       },
-      ref,
+      ref
     ) => {
       const styles = {
         decimalInput: {
@@ -38,8 +39,12 @@ const InputCardDecimal = memo(
           marginTop: '-2.5px',
         },
         decimalField: {
-          maxWidth: '80%',
-          minWidth: '15ch',
+          ...(setWidth
+            ? { width: setWidth }
+            : {
+                maxWidth: '80%',
+                minWidth: '15ch',
+              }),
         },
       };
       const handleKeyPress = (event) => {
@@ -64,10 +69,7 @@ const InputCardDecimal = memo(
       return (
         <Grid item xs={12}>
           <FormControl sx={styles.decimalField} variant="outlined" size="small">
-            <InputLabel
-              sx={styles.decimalLabel}
-              htmlFor={'decimalInput_' + name}
-            >
+            <InputLabel sx={styles.decimalLabel} htmlFor={'decimalInput_' + name}>
               {label}
             </InputLabel>
             <NumberFormat
@@ -137,8 +139,8 @@ const InputCardDecimal = memo(
           </FormControl>
         </Grid>
       );
-    },
-  ),
+    }
+  )
 );
 
 InputCardDecimal.propTypes = {

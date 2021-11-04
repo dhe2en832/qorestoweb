@@ -9,18 +9,8 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 const InputCardCurrency = memo(
   forwardRef(
     (
-      {
-        index,
-        label,
-        name,
-        change,
-        blur,
-        prefix,
-        value,
-        fullWidth,
-        setIsEditItem,
-      },
-      ref,
+      { index, label, name, change, blur, prefix, value, fullWidth, setWidth, setIsEditItem },
+      ref
     ) => {
       const styles = {
         currencyForm: {
@@ -28,6 +18,7 @@ const InputCardCurrency = memo(
         },
         currencyField: {
           height: 33,
+          ...(setWidth && { width: setWidth }),
         },
         currencyInput: {
           textAlign: 'right',
@@ -44,10 +35,7 @@ const InputCardCurrency = memo(
             sx={styles.currencyForm}
             fullWidth={fullWidth}
           >
-            <InputLabel
-              sx={styles.currencyLabel}
-              htmlFor={'currencyInputCard' + name}
-            >
+            <InputLabel sx={styles.currencyLabel} htmlFor={'currencyInputCard' + name}>
               {label}
             </InputLabel>
             <NumberFormat
@@ -76,8 +64,8 @@ const InputCardCurrency = memo(
           </FormControl>
         </Grid>
       );
-    },
-  ),
+    }
+  )
 );
 
 InputCardCurrency.defaultProps = {

@@ -9,20 +9,7 @@ import PlusIcon from '@mui/icons-material/Add';
 
 const InputTableDecimal = memo(
   forwardRef(
-    (
-      {
-        index,
-        name,
-        value,
-        change,
-        blur,
-        increase,
-        decrease,
-        step,
-        setIsEditItem,
-      },
-      ref,
-    ) => {
+    ({ index, name, value, change, blur, increase, decrease, step, setIsEditItem }, ref) => {
       const styles = {
         decimalForm: {
           margin: 0,
@@ -113,8 +100,8 @@ const InputTableDecimal = memo(
           />
         </FormControl>
       );
-    },
-  ),
+    }
+  )
 );
 
 InputTableDecimal.defaultProps = {

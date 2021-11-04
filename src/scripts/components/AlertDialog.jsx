@@ -17,7 +17,7 @@ export default function AlertDialog(
       timerProgressBar: true,
     })
   );
-  reactSwal.fire({
+  return reactSwal.fire({
     icon,
     title,
     html,

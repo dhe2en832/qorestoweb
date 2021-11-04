@@ -4,15 +4,15 @@ import InputBase from '@mui/material/InputBase';
 
 export default memo(
   forwardRef(function InputTableText(
-    { index, name, value, type, maxLength, change, blur, setIsEditItem },
-    ref,
+    { index, name, value, type, maxLength, change, blur, setIsEditItem, setWidth },
+    ref
   ) {
     const styles = {
       textForm: {
         margin: 0,
       },
       textField: {
-        width: '13ch',
+        width: setWidth ? setWidth : '13ch',
       },
     };
 
@@ -38,5 +38,5 @@ export default memo(
         />
       </FormControl>
     );
-  }),
+  })
 );

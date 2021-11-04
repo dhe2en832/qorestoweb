@@ -21,7 +21,7 @@ export default memo(
       }
       switch (event.key) {
         case 'Enter':
-          enterEvent && enterEvent(index, name, nextFocus);
+          enterEvent && enterEvent(index, name);
           event.preventDefault();
           break;
         default:

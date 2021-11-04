@@ -14,7 +14,7 @@ export default function ConfirmDialog(
       },
     })
   );
-  reactSwal
+  return reactSwal
     .fire({
       icon: 'warning',
       title,

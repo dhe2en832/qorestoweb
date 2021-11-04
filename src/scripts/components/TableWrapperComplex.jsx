@@ -40,7 +40,7 @@ function TableWrapperComplex({
   lookupFunc,
   handleDelete,
 }) {
-  const { theme, mdUp, smUp } = useResponsive();
+  const { theme, mdUp, smUp, smDown } = useResponsive();
   const styles = {
     tableContainer: {
       width: '100%',
@@ -80,10 +80,9 @@ function TableWrapperComplex({
     },
     tablePagination: {
       backgroundColor: theme.palette.grey[300],
-      padding: theme.spacing(1),
       borderBottomLeftRadius: '0.2em',
       borderBottomRightRadius: '0.2em',
-      marginBottom: isLookup ? 0 : theme.spacing(2),
+      marginBottom: isLookup ? 0 : theme.spacing(1),
     },
     tablePaginationActions: {
       '& .MuiTablePagination-toolbar': {
@@ -93,6 +92,12 @@ function TableWrapperComplex({
       },
       '& .MuiTablePagination-spacer': {
         display: 'none',
+      },
+      '& .MuiTablePagination-selectLabel': {
+        ...(smDown && { marginBottom: 0, marginLeft: 1 }),
+      },
+      '& .MuiTablePagination-displayedRows': {
+        ...(smDown && { marginBottom: 0 }),
       },
     },
     stickyBody: {
@@ -171,8 +176,12 @@ function TableWrapperComplex({
                 </TableCell>
               ))}
               {!isLookup && (
-                <TableCell align="center" padding="none" sx={styles.stickyHeaderSecondary}>
-                  <ActionIcon />
+                <TableCell
+                  align="center"
+                  padding="none"
+                  sx={{ ...styles.stickyHeaderSecondary, ...(dense && { paddingTop: 0.8 }) }}
+                >
+                  <ActionIcon fontSize="small" />
                 </TableCell>
               )}
             </TableRow>
