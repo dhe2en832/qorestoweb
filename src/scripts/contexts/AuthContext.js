@@ -52,15 +52,20 @@ function useProvideAuth() {
       const resSessionID = await res.headers.get('sessionid');
       const resJson = await res.json();
       if (resJson.result === true) {
-        setLoggedIn(true);
-        setUserID(data.cuserid);
-        setSessionTimeout(false);
-        setSessionKey(resSessionKey);
-        setSessionID(resSessionID);
+        if (isForm) {
+          window.localStorage.setItem('sessionKey', JSON.stringify(resSessionKey));
+          window.localStorage.setItem('sessionID', JSON.stringify(resSessionID));
+          window.localStorage.setItem('userID', data.cuserid);
+        } else {
+          setLoggedIn(true);
+          setUserID(data.cuserid);
+          setSessionTimeout(false);
+          setSessionKey(resSessionKey);
+          setSessionID(resSessionID);
+        }
         cb();
-      } else if (resJson.result === false) {
-        throw resJson.onfail.cerror;
-      } else throw resJson.message;
+      } else if (resJson.result === false) throw resJson.onfail.cerror;
+      else throw resJson.message;
     } catch (error) {
       let messageError;
       switch (error) {
