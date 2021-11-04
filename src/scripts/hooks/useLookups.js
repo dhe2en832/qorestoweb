@@ -50,7 +50,7 @@ export default function useLookup({
         });
       }
     } catch (error) {
-      ToastBar('error', error, 3000, () => {}, 'bottom-end');
+      ToastBar('error', error, 3000, () => { }, 'bottom-end');
     } finally {
       setShowLookup({
         show: false,
@@ -99,7 +99,15 @@ export default function useLookup({
             row: getSourceByID.data,
           });
         } else if (getSourceByID.result === false)
-          handleOpenLookup(accessorName, nextInputName, dataSource);
+          ToastBar(
+            'error',
+            getSourceByID.onfail.cerror,
+            3000,
+            () => {
+              handleOpenLookup(accessorName, nextInputName, dataSource);
+            },
+            'bottom-end'
+          );
         else throw getSourceByID.message;
       } catch (error) {
         ToastBar(
@@ -137,7 +145,7 @@ export default function useLookup({
       } else if (getSourceByID.result === false) throw getSourceByID.onfail.cerror;
       else throw getSourceByID.message;
     } catch (error) {
-      ToastBar('error', error, 3000, () => {}, 'bottom-end');
+      ToastBar('error', error, 3000, () => { }, 'bottom-end');
     }
   };
 
