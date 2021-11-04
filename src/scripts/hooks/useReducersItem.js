@@ -33,7 +33,7 @@ const useReducersItem = (state, action) => {
 
   switch (action.type) {
     case useActionsItem.ADD_ITEM:
-      return [...state, { ...action.payload }];
+      return [...state, { ...action.payload, ...(state.length > 0 ? { nline: state[state.length - 1]['nline'] + 1 } : { nline: 1 }) }];
     case useActionsItem.REMOVE_ITEM: {
       const data = [...state];
       data.splice(action.index, 1);
