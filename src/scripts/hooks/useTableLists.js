@@ -86,6 +86,7 @@ export default function useTableLists({
   //#endregion
 
   useEffect(() => {
+    let isActive = true;
     const getLists = async () => {
       try {
         setLoading(true);
@@ -104,7 +105,6 @@ export default function useTableLists({
             },
           },
         };
-        console.log(textFilter);
         const getDatas = await dataSource.getList(dataOptions);
         if (getDatas.result === true) {
           if (listCount === null) setListCount(getDatas.metadata.total);
@@ -140,10 +140,8 @@ export default function useTableLists({
         setLoading(false);
       }
     };
-    getLists();
-    return () => {
-      setLists([]);
-    };
+    if (isActive === true) getLists();
+    return () => isActive = false;
   }, [
     dataSource,
     headCells,

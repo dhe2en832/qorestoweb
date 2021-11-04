@@ -49,6 +49,7 @@ export default function useTableListsLookup({
   };
 
   useEffect(() => {
+    let isActive = true;
     const getList = async () => {
       try {
         setLoading(true);
@@ -118,10 +119,8 @@ export default function useTableListsLookup({
       }
     };
     // if (showPopupFormAdd === false && isLoginPopup === false) getList();
-    if (isLoginPopup === false) getList();
-    return () => {
-      setLists([]);
-    };
+    if (isLoginPopup === false && isActive === true) getList();
+    return () => isActive = false;
   }, [
     dataSource,
     headCells,
