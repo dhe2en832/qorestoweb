@@ -17,19 +17,27 @@ export default function useFormsItem({
   };
 
   const handleRemoveItem = (index) => {
+    setIsAddItem(false);
     dispatchItems({
       type: useActionsItem.REMOVE_ITEM,
-      index: index,
+      index,
     });
-    setIsAddItem(false);
   };
+
+  const handleRevertItem = (index, data) => {
+    dispatchItems({
+      type: useActionsItem.LOOKUP_ITEM_FROM_STOCK,
+      payload: data,
+      index,
+    })
+  }
 
   const handleChangeString = (event, index) => {
     dispatchItems({
       type: useActionsItem.CHANGE_STRING,
       field: event.target.name,
       payload: event.target.value,
-      index: index,
+      index,
     });
   };
 
@@ -38,7 +46,7 @@ export default function useFormsItem({
       type: useActionsItem.CHANGE_NUMBER,
       field: event.target.name,
       payload: event.target.value,
-      index: index,
+      index,
       initQtyItemKey,
     });
   };
@@ -48,7 +56,7 @@ export default function useFormsItem({
       type: useActionsItem.INCREASE_NUMBER,
       field: name,
       payload: step,
-      index: index,
+      index,
       initQtyItemKey,
     });
   };
@@ -58,7 +66,7 @@ export default function useFormsItem({
       type: useActionsItem.DECREASE_NUMBER,
       field: name,
       payload: step,
-      index: index,
+      index,
       initQtyItemKey,
     });
   };
@@ -68,7 +76,7 @@ export default function useFormsItem({
       type: useActionsItem.CHANGE_CURRENCY,
       field: name,
       payload: values.value,
-      index: index,
+      index,
       initQtyItemKey,
     });
   };
@@ -78,7 +86,7 @@ export default function useFormsItem({
       type: useActionsItem.CHANGE_DISCOUNT_AMOUNT,
       field: name,
       payload: values.value,
-      index: index,
+      index,
       initQtyItemKey,
     });
   };
@@ -86,6 +94,7 @@ export default function useFormsItem({
   return {
     handleAddItem,
     handleRemoveItem,
+    handleRevertItem,
     handleChangeString,
     handleChangeNumber,
     handleIncreaseNumber,
@@ -93,5 +102,6 @@ export default function useFormsItem({
     handleChangeCurrency,
     handleChangeDiscAmount,
     isAddItem,
+    setIsAddItem,
   };
 }
