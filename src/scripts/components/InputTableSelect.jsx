@@ -5,8 +5,8 @@ import MenuItem from '@mui/material/MenuItem';
 
 export default memo(
   forwardRef(function InputTableSelect(
-    { index, name, label, value, change, blur, options, setIsEditItem },
-    ref,
+    { index, name, label, value, change, blur, options, setIsEditItem, disabled },
+    ref
   ) {
     const styles = {
       selectForm: {
@@ -18,7 +18,7 @@ export default memo(
       },
     };
     return (
-      <FormControl variant="outlined" size="small" sx={styles.selectForm}>
+      <FormControl variant="outlined" size="small" sx={styles.selectForm} disabled={disabled}>
         <Select
           inputRef={ref}
           name={name}
@@ -45,5 +45,5 @@ export default memo(
         </Select>
       </FormControl>
     );
-  }),
+  })
 );

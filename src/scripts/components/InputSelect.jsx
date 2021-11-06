@@ -22,7 +22,7 @@ const InputSelect = memo(
     };
     return (
       <Grid item xs={12}>
-        <FormControl variant="outlined" size="small" sx={styles.selectForm}>
+        <FormControl variant="outlined" size="small" sx={styles.selectForm} disabled={disabled}>
           <InputLabel sx={styles.selectLabel} id={'selectInput_label_' + name}>
             {label}
           </InputLabel>
@@ -38,7 +38,6 @@ const InputSelect = memo(
             label={label}
             sx={styles.selectField}
             value={value}
-            disabled={disabled}
           >
             {options.map((option, index) => (
               <MenuItem

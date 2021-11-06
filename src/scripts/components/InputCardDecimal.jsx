@@ -69,7 +69,7 @@ const InputCardDecimal = memo(
 
       return (
         <Grid item xs={12}>
-          <FormControl sx={styles.decimalField} variant="outlined" size="small">
+          <FormControl sx={styles.decimalField} variant="outlined" size="small" disabled={disabled}>
             <InputLabel sx={styles.decimalLabel} htmlFor={'decimalInput_' + name}>
               {label}
             </InputLabel>

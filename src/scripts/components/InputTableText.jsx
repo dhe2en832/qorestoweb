@@ -4,7 +4,7 @@ import InputBase from '@mui/material/InputBase';
 
 export default memo(
   forwardRef(function InputTableText(
-    { index, name, value, type, maxLength, change, blur, setIsEditItem, setWidth },
+    { index, name, value, type, maxLength, change, blur, setIsEditItem, setWidth, disabled },
     ref
   ) {
     const styles = {
@@ -17,7 +17,7 @@ export default memo(
     };
 
     return (
-      <FormControl size="small" sx={styles.textForm}>
+      <FormControl size="small" sx={styles.textForm} disabled={disabled}>
         <InputBase
           id={'textInputTable_' + name}
           key={'txt_inp_table_' + name}

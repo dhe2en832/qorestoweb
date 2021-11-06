@@ -44,7 +44,7 @@ const InputTableDecimal = memo(
       };
 
       return (
-        <FormControl size="small" sx={styles.decimalForm}>
+        <FormControl size="small" sx={styles.decimalForm} disabled={disabled}>
           <NumberFormat
             sx={styles.decimalField}
             inputRef={ref}

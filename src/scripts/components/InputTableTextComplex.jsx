@@ -4,7 +4,7 @@ import InputBase from '@mui/material/InputBase';
 
 export default memo(
   forwardRef(function InputTableTextComplex(
-    { index, name, nextFocus, value, type, maxLength, change, blur, enterEvent, setIsEditItem },
+    { index, name, nextFocus, value, type, maxLength, change, blur, enterEvent, setIsEditItem, disabled },
     ref
   ) {
     const styles = {
@@ -29,7 +29,7 @@ export default memo(
       }
     };
     return (
-      <FormControl size="small" sx={styles.textForm}>
+      <FormControl size="small" sx={styles.textForm} disabled={disabled}>
         <InputBase
           id={'textInputTableCmplx_' + name}
           key={'txt_inp_table_cpx_' + name}

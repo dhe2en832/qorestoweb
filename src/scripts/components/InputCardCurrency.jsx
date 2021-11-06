@@ -9,7 +9,19 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 const InputCardCurrency = memo(
   forwardRef(
     (
-      { index, label, name, change, blur, prefix, value, fullWidth, setWidth, setIsEditItem },
+      {
+        index,
+        label,
+        name,
+        change,
+        blur,
+        prefix,
+        value,
+        fullWidth,
+        setWidth,
+        setIsEditItem,
+        disabled,
+      },
       ref
     ) => {
       const styles = {
@@ -34,6 +46,7 @@ const InputCardCurrency = memo(
             size="small"
             sx={styles.currencyForm}
             fullWidth={fullWidth}
+            disabled={disabled}
           >
             <InputLabel sx={styles.currencyLabel} htmlFor={'currencyInputCard' + name}>
               {label}

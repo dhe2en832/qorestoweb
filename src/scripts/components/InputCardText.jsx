@@ -33,7 +33,7 @@ export default memo(
     };
     return (
       <Grid item container xs={12}>
-        <FormControl size="small" fullWidth={fullWidth}>
+        <FormControl size="small" fullWidth={fullWidth} disabled={disabled}>
           <InputLabel sx={styles.textLabel} htmlFor={'textInput_' + name}>
             {label}
           </InputLabel>
@@ -55,7 +55,6 @@ export default memo(
             sx={styles.textField}
             autoComplete="off"
             multiline={false}
-            disabled={disabled}
           />
         </FormControl>
       </Grid>
