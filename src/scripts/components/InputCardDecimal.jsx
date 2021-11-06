@@ -106,7 +106,7 @@ const InputCardDecimal = memo(
                   >
                     <IconButton
                       edge="start"
-                      onClick={(event) => {
+                      onMouseDown={(event) => {
                         decrease(name, step, index);
                         event.preventDefault();
                       }}
@@ -126,7 +126,7 @@ const InputCardDecimal = memo(
                   >
                     <IconButton
                       edge="end"
-                      onClick={(event) => {
+                      onMouseDown={(event) => {
                         increase(name, step, index);
                         event.preventDefault();
                       }}
