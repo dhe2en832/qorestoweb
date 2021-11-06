@@ -9,7 +9,10 @@ import PlusIcon from '@mui/icons-material/Add';
 
 const InputTableDecimal = memo(
   forwardRef(
-    ({ index, name, value, change, blur, increase, decrease, step, setIsEditItem }, ref) => {
+    (
+      { index, name, value, change, blur, increase, decrease, step, setIsEditItem, disabled },
+      ref
+    ) => {
       const styles = {
         decimalForm: {
           margin: 0,
@@ -73,8 +76,9 @@ const InputTableDecimal = memo(
                   edge="start"
                   onClick={() => decrease(name, step, index)}
                   aria-label={'decimal-input-table-decrease-icon-' + name}
+                  disabled={disabled}
                 >
-                  <MinusIcon fontSize="small" color="error" />
+                  <MinusIcon fontSize="small" color={disabled ? 'disabled' : 'error'} />
                 </IconButton>
               </InputAdornment>
             }
@@ -91,8 +95,9 @@ const InputTableDecimal = memo(
                   edge="end"
                   onClick={() => increase(name, step, index)}
                   aria-label={'decimal-input-table-increase-icon-' + name}
+                  disabled={disabled}
                 >
-                  <PlusIcon fontSize="small" color="primary" />
+                  <PlusIcon fontSize="small" color={disabled ? 'disabled' : 'primary'} />
                 </IconButton>
               </InputAdornment>
             }
@@ -110,6 +115,7 @@ InputTableDecimal.defaultProps = {
   decrease: () => {},
   change: () => {},
   blur: () => {},
+  disabled: false,
 };
 
 InputTableDecimal.displayName = 'InputTableDecimal';

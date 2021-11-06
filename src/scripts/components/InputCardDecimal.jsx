@@ -28,6 +28,7 @@ const InputCardDecimal = memo(
         fixedDecimalScale,
         setWidth,
         setIsEditItem,
+        disabled,
       },
       ref
     ) => {
@@ -105,13 +106,14 @@ const InputCardDecimal = memo(
                   >
                     <IconButton
                       edge="start"
-                      onMouseDown={(event) => {
+                      onClick={(event) => {
                         decrease(name, step, index);
                         event.preventDefault();
                       }}
                       aria-label={'decimal-input-decrease-icon-' + name}
+                      disabled={disabled}
                     >
-                      <MinusIcon fontSize="small" color="error" />
+                      <MinusIcon fontSize="small" color={disabled ? 'disabled' : 'error'} />
                     </IconButton>
                   </InputAdornment>
                   <InputAdornment
@@ -124,13 +126,14 @@ const InputCardDecimal = memo(
                   >
                     <IconButton
                       edge="end"
-                      onMouseDown={(event) => {
+                      onClick={(event) => {
                         increase(name, step, index);
                         event.preventDefault();
                       }}
                       aria-label={'decimal-input-increase-icon-' + name}
+                      disabled={disabled}
                     >
-                      <PlusIcon fontSize="small" color="primary" />
+                      <PlusIcon fontSize="small" color={disabled ? 'disabled' : 'primary'} />
                     </IconButton>
                   </InputAdornment>
                 </>
@@ -155,6 +158,7 @@ InputCardDecimal.propTypes = {
   increase: PropTypes.func.isRequired,
   decrease: PropTypes.func.isRequired,
   setIsEditItem: PropTypes.func,
+  disabled: PropTypes.bool,
 };
 
 InputCardDecimal.defaultProps = {
@@ -163,6 +167,7 @@ InputCardDecimal.defaultProps = {
   decrease: () => {},
   decimalScale: 2,
   fixedDecimalScale: true,
+  disabled: false,
 };
 
 InputCardDecimal.displayName = 'InputCardDecimal';

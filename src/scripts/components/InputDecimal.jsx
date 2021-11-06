@@ -134,6 +134,7 @@ InputDecimal.propTypes = {
   increase: PropTypes.func.isRequired,
   decrease: PropTypes.func.isRequired,
   setIsEditHeader: PropTypes.func,
+  disabled: PropTypes.bool,
 };
 
 InputDecimal.defaultProps = {
@@ -142,6 +143,7 @@ InputDecimal.defaultProps = {
   decrease: () => {},
   decimalScale: 2,
   fixedDecimalScale: true,
+  disabled: false,
 };
 
 InputDecimal.displayName = 'InputDecimal';
