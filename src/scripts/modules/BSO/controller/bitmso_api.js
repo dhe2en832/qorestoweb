@@ -70,6 +70,23 @@ class bitmso_api {
             return error;
         }
     }
+    static async delrec(data) {
+        try {
+            const res = await fetch(ApiRoute.BITMSO_X, {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json',
+                    secretkey: Config.SESSION_KEY(),
+                    sessionid: Config.SESSION_ID(),
+                },
+                body: JSON.stringify({ action: 'delrec', ...data }, null, 2),
+            });
+            const resJson = await res.json();
+            return resJson;
+        } catch (error) {
+            return error;
+        }
+    }
 }
 
 export default bitmso_api;
