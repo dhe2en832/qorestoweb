@@ -25,6 +25,7 @@ function GrandTotalWrapper({
   isSubmit,
   isEditDiscPPN,
   handleChangeDiscPPN,
+  disableDiscPPN,
   headers,
   setIsEditHeader,
 }) {
@@ -86,6 +87,7 @@ function GrandTotalWrapper({
                       }}
                       onChange={handleChangeDiscPPN}
                       value={headers['npctdisc']}
+                      disabled={disableDiscPPN}
                     />{' '}
                     %
                   </Grid>
@@ -119,6 +121,7 @@ function GrandTotalWrapper({
                       }}
                       onChange={handleChangeDiscPPN}
                       value={headers['npctppn']}
+                      disabled={disableDiscPPN}
                     />{' '}
                     %
                   </Grid>
@@ -186,7 +189,7 @@ function GrandTotalWrapper({
             onClick={submit}
             disabled={isSubmit}
           >
-            <b>{isSubmit ? 'Tunggu...' : 'Simpan'}</b>
+            <b>{isSubmit ? 'Tunggu...' : 'Keluar'}</b>
           </Button>
         </Grid>
         <Hidden mdDown>
@@ -220,6 +223,11 @@ GrandTotalWrapper.propTypes = {
   grandTotal: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   submit: PropTypes.func.isRequired,
   isSubmit: PropTypes.bool.isRequired,
+  isEditDiscPPN: PropTypes.bool,
+  handleChangeDiscPPN: PropTypes.func,
+  disableDiscPPN: PropTypes.bool,
+  headers: PropTypes.any,
+  setIsEditHeader: PropTypes.func,
 };
 
 GrandTotalWrapper.defaultProps = {
@@ -232,6 +240,11 @@ GrandTotalWrapper.defaultProps = {
   grandTotal: 0,
   submit: () => {},
   isSubmit: false,
+  isEditDiscPPN: false,
+  handleChangeDiscPPN: () => {},
+  disableDiscPPN: false,
+  headers: null,
+  setIsEditHeader: () => {},
 };
 
 export default memo(GrandTotalWrapper);
