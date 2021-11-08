@@ -16,6 +16,7 @@ export default function ToolbarComplex({
   searchLabel,
   handleSearch,
   handleSubmitSearch,
+  isOrder,
 }) {
   const { mdDown } = useResponsive();
   return (
@@ -31,7 +32,12 @@ export default function ToolbarComplex({
       >
         <Grid item>
           <Typography variant="h6" component="h1">
-            Master {confName}
+            {isOrder && (
+              <>
+                Order <span>&#8594;</span> {confName}
+              </>
+            )}
+            {!isOrder && <>Master {confName}</>}
           </Typography>
         </Grid>{' '}
         <Grid item>
