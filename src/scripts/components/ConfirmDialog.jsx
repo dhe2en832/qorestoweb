@@ -5,7 +5,8 @@ export default function ConfirmDialog(
   title = '',
   html = <p></p>,
   confirmText = '',
-  confirmed = () => {}
+  confirmed = () => {},
+  cancelled = () => {}
 ) {
   const reactSwal = withReactContent(
     Swal.mixin({
@@ -28,6 +29,8 @@ export default function ConfirmDialog(
     .then((result) => {
       if (result.isConfirmed) {
         confirmed();
+      } else {
+        cancelled();
       }
     });
 }
