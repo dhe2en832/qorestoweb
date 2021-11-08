@@ -87,13 +87,53 @@ function useProvideAuth() {
     }
   };
 
-  const signout = (cb) => {
-    setLoggedIn(false);
-    setSessionTimeout(false);
-    setUserID(null);
-    setSessionKey(null);
-    setSessionID(null);
-    cb();
+  // const signout = (cb) => {
+  //   setLoggedIn(false);
+  //   setSessionTimeout(false);
+  //   setUserID(null);
+  //   setSessionKey(null);
+  //   setSessionID(null);
+  //   cb();
+  // };
+
+  const signout = async (cb) => {
+    try {
+      const res = await fetch(ApiRoute.LOGIN_X, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'x-user': Config.SESSION_USER(),
+          secretkey: Config.SESSION_KEY(),
+          sessionid: Config.SESSION_ID(),
+        },
+        body: JSON.stringify({
+          action: 'logout',
+        }),
+      });
+      const resJson = await res.json();
+      if (resJson.result === true) {
+        setLoggedIn(false);
+        setSessionTimeout(false);
+        setUserID(null);
+        setSessionKey(null);
+        setSessionID(null);
+        cb();
+      } else if (resJson.result === false) throw resJson.onfail.cerror;
+      else throw resJson.message;
+    } catch (error) {
+      let messageError;
+      switch (error) {
+        case typesError.FETCH.msg:
+          messageError = typesError.FETCH.res;
+          break;
+        default: {
+          if (error.message === typesError.FETCH.msg) messageError = typesError.FETCH.res;
+          else messageError = error;
+          break;
+        }
+      }
+      AlertDialog('error', 'Salah', messageError);
+    }
   };
 
   const handleOnIdle = () => {
