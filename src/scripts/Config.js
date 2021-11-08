@@ -2,6 +2,7 @@ const Config = {
   BASE_URL: 'http://192.168.100.85/api',
   SESSION_KEY: () => JSON.parse(window.localStorage.getItem('sessionKey')),
   SESSION_ID: () => JSON.parse(window.localStorage.getItem('sessionID')),
+  SESSION_USER: () => JSON.parse(window.localStorage.getItem('userID')),
   DEFAULT_LANGUAGE: 'id-ID',
   CACHE_NAME: 'webappCSA',
   CACHE_VERSION: 1.0,
