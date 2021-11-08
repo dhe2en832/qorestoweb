@@ -66,6 +66,7 @@ export default function BSOList() {
         searchLabel={searchLabel}
         handleSearch={handleSearch}
         handleSubmitSearch={handleSubmitSearch}
+        isOrder={true}
       />
       {loading ? (
         <ProgressLoader />
