@@ -1,15 +1,23 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Zoom from '@mui/material/Zoom';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
+import useResponsive from '../hooks/useResponsive';
 
 export default function ScrollToTop({ children, anchorRef }) {
+  const { smUp, mdUp } = useResponsive();
+  const { pathname } = useLocation();
+  const checkIsForm = () => {
+    if (pathname.includes('add') || pathname.includes('edit')) return true;
+    else return false;
+  };
   const styles = {
     root: {
       position: 'fixed',
-      bottom: '8px',
-      right: '8px',
+      bottom: mdUp ? '42px' : '8px',
+      right: checkIsForm() ? (mdUp ? '8px' : smUp ? '46vw' : '42vw') : '8px',
       zIndex: `99`,
     },
   };
