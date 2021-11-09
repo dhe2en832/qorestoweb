@@ -18,7 +18,7 @@ export default function useTableLists({
   const [lists, setLists] = useState([]);
   const [listCount, setListCount] = useState(null);
   const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(5);
+  const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(0);
   const [openKeySearchDlg, setOpenKeySearchDlg] = useState(false);
   const [indexKey, setIndexKey] = useState(2);
