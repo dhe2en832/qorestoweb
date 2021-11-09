@@ -30,6 +30,20 @@ function Login({ isForm, afterLogin }) {
     });
   };
 
+  const handleKeyPress = (event) => {
+    if (event.defaultPrevented) {
+      return;
+    }
+    switch (event.key) {
+      case 'Enter':
+        login(event);
+        break;
+      default:
+        return;
+    }
+    event.preventDefault();
+  };
+
   let auth = useAuth();
   let history = useHistory();
   let location = useLocation();
@@ -77,6 +91,7 @@ function Login({ isForm, afterLogin }) {
                 }
                 type="password"
                 onChange={handleChange}
+                onKeyPress={handleKeyPress}
               />
             </FormControl>
           </Grid>
@@ -101,7 +116,7 @@ function Login({ isForm, afterLogin }) {
 
 Login.defaultProps = {
   isForm: false,
-  afterLogin: () => {},
+  afterLogin: () => { },
 };
 
 export default Login;
