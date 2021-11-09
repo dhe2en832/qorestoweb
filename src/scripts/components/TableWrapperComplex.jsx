@@ -86,7 +86,6 @@ function TableWrapperComplex({
     },
     tablePaginationActions: {
       '& .MuiTablePagination-toolbar': {
-        paddingLeft: '8px',
         display: smUp ? 'flex' : 'grid',
         gridTemplateColumns: '1fr 1fr 1fr',
       },
@@ -97,7 +96,7 @@ function TableWrapperComplex({
         ...(smDown && { marginBottom: 0, marginLeft: 1 }),
       },
       '& .MuiTablePagination-displayedRows': {
-        ...(smDown && { marginBottom: 0 }),
+        ...(smDown && { marginBottom: 0, marginRight: '5px' }),
       },
     },
     stickyBody: {
@@ -267,7 +266,7 @@ function TableWrapperComplex({
           </Grid>
           <Grid item>
             <TablePagination
-              rowsPerPageOptions={[5, 10, 25, 50, 100]}
+              rowsPerPageOptions={[10, 25, 50, 100]}
               component="div"
               count={listCount || 0}
               rowsPerPage={limit}
