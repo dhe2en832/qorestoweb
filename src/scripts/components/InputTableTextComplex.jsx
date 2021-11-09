@@ -4,7 +4,20 @@ import InputBase from '@mui/material/InputBase';
 
 export default memo(
   forwardRef(function InputTableTextComplex(
-    { index, name, nextFocus, value, type, maxLength, change, blur, enterEvent, setIsEditItem, disabled },
+    {
+      index,
+      name,
+      nextFocus,
+      value,
+      type,
+      maxLength,
+      change,
+      blur,
+      enterEvent,
+      setWidth,
+      setIsEditItem,
+      disabled,
+    },
     ref
   ) {
     const styles = {
@@ -12,7 +25,7 @@ export default memo(
         margin: 0,
       },
       textField: {
-        width: '13ch',
+        width: setWidth ? setWidth : '13ch',
       },
     };
     const handleKeyPress = (event) => {
