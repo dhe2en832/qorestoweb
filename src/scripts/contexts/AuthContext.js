@@ -55,7 +55,7 @@ function useProvideAuth() {
         if (isForm) {
           window.localStorage.setItem('sessionKey', JSON.stringify(resSessionKey));
           window.localStorage.setItem('sessionID', JSON.stringify(resSessionID));
-          window.localStorage.setItem('userID', data.cuserid);
+          window.localStorage.setItem('userID', JSON.stringify(data.cuserid));
         } else {
           setLoggedIn(true);
           setUserID(data.cuserid);
