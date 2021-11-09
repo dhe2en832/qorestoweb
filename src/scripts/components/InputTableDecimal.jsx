@@ -71,12 +71,14 @@ const InputTableDecimal = memo(
                   setIsEditItem(false);
                 }}
                 onFocus={() => setIsEditItem(true)}
+                sx={{ p: 0 }}
               >
                 <IconButton
                   edge="start"
                   onClick={() => decrease(name, step, index)}
                   aria-label={'decimal-input-table-decrease-icon-' + name}
                   disabled={disabled}
+                  size="small"
                 >
                   <MinusIcon fontSize="small" color={disabled ? 'disabled' : 'error'} />
                 </IconButton>
@@ -90,12 +92,14 @@ const InputTableDecimal = memo(
                   setIsEditItem(false);
                 }}
                 onFocus={() => setIsEditItem(true)}
+                sx={{ p: 0 }}
               >
                 <IconButton
                   edge="end"
                   onClick={() => increase(name, step, index)}
                   aria-label={'decimal-input-table-increase-icon-' + name}
                   disabled={disabled}
+                  size="small"
                 >
                   <PlusIcon fontSize="small" color={disabled ? 'disabled' : 'primary'} />
                 </IconButton>
