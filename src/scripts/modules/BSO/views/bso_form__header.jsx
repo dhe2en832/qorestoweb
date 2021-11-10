@@ -1,4 +1,4 @@
-import React, { useState, memo } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Collapse from '@mui/material/Collapse';
@@ -6,6 +6,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import FoldIcon from '@mui/icons-material/UnfoldLess';
 import UnfoldIcon from '@mui/icons-material/UnfoldMore';
+import SaveIcon from '@mui/icons-material/Save';
 import InputText from '../../../components/InputText';
 import InputTextComplex from '../../../components/InputTextComplex';
 import InputDate from '../../../components/InputDate';
@@ -13,11 +14,17 @@ import InputDate from '../../../components/InputDate';
 import InputDecimal from '../../../components/InputDecimal';
 import InputWrapperLookup from '../../../components/InputWrapperLookup';
 import ToastBar from '../../../components/ToastBar';
+import AlertDialog from '../../../components/AlertDialog';
 import useFormsHeader from '../../../hooks/useFormsHeader';
 import useActions from '../../../hooks/useActions';
 import useLookups from '../../../hooks/useLookups';
 import useResponsive from '../../../hooks/useResponsive';
 import { stringToDate } from '../../../utils/formatter';
+import { typesError } from '../../../utils/types-error';
+import { convertNewLine } from '../../../utils/formatter';
+
+// BSO
+import bso_api from '../controller/bso_api';
 
 // BCUST
 import BCUSTLookup from '../../BCUST/views/bcust_lookup';
@@ -42,12 +49,17 @@ export default memo(function BSOForm_Headers({
   mode,
   isLoginPopup,
   handleOpenLoginPopup,
+  isSavedHeader,
   setIsEditHeader,
+  setIsSavedHeader,
   openHeader,
   setOpenHeader,
+  customerId,
 }) {
   const { smUp } = useResponsive();
   const [openFoot, setOpenFoot] = useState(false);
+  const disableCheck = mode === 'edit' ? true : isSavedHeader ? true : false;
+
   const {
     handleChangeString,
     handleChangeStringChild,
@@ -139,6 +151,7 @@ export default memo(function BSOForm_Headers({
 
   const {
     lookupDetails,
+    changeLookupDetails,
     showLookup,
     handleCheckLookup,
     handleChooseLookup,
@@ -249,6 +262,92 @@ export default memo(function BSOForm_Headers({
     }
   };
 
+  const saveOrderHeader = async () => {
+    let moreInfo;
+    if (mode === 'add' && openHeader === true && isSavedHeader === false) {
+      try {
+        const dataOptions = {
+          data: { ...headers },
+        };
+        const fetchHeader = await bso_api.addrec(dataOptions);
+        moreInfo = fetchHeader.moreinfo;
+        if (fetchHeader.result === true) {
+          const { csonum } = fetchHeader.onsuccess;
+          ToastBar(
+            'success',
+            `Header SO#${csonum} Berhasil Disimpan!`,
+            3000,
+            () => {
+              setIsSavedHeader(true);
+              dispatchHeaders({
+                type: useActions.CHANGE_STRING,
+                field: BSOFHEAD.CSONUM,
+                payload: csonum,
+              });
+            },
+            'bottom-end'
+          );
+        } else if (fetchHeader.result === false) throw fetchHeader.onfail.cerror;
+        else throw fetchHeader.message;
+      } catch (error) {
+        switch (error) {
+          case typesError.SECRET_KEY.msg:
+            AlertDialog(
+              'error',
+              'Session Telah Habis.',
+              <p>Gagal Simpan Data Header</p>,
+              handleOpenLoginPopup
+            );
+            break;
+          case typesError.FETCH.msg:
+            AlertDialog('error', 'Salah', typesError.FETCH.res);
+            break;
+          default:
+            AlertDialog(
+              'error',
+              error,
+              moreInfo.Error ? convertNewLine(moreInfo.Error) : '',
+              () => {
+                setOpenHeader(true);
+                setIsFocus({
+                  focus: true,
+                  targetName: BSOFHEAD.DSODATE,
+                });
+              }
+            );
+            break;
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    let isActive = true;
+    async function getCustName() {
+      try {
+        const fetchCustName = await bcust_api.getRec({
+          key: customerId,
+          listfields: [BCUSTF.CCUSNAM],
+        });
+        if (fetchCustName.result === true) {
+          changeLookupDetails(BSOFHEAD.CUSTOMER._.CCUSID, fetchCustName.data[BCUSTF.CCUSNAM]);
+        } else if (fetchCustName.result === false) throw fetchCustName.onfail.cerror;
+        else throw fetchCustName.message;
+      } catch (error) {
+        ToastBar(
+          'error',
+          'Gagal Lookup Nama Customer (ccusid field)',
+          3000,
+          () => {},
+          'bottom-end'
+        );
+      }
+    }
+    if (mode === 'edit' && customerId !== '' && lookupDetails.ccusid === '' && isActive === true)
+      getCustName();
+    return () => (isActive = false);
+  }, [mode, customerId, lookupDetails, changeLookupDetails]);
+
   return (
     <>
       {showLookupElements()}
@@ -262,30 +361,45 @@ export default memo(function BSOForm_Headers({
                 </Typography>
               </Grid>
               {!openHeader && (
-                <Grid item container spacing={smUp ? 3 : 1} flexDirection={smUp ? 'row' : 'column'}>
+                <Grid item container spacing={smUp ? 1 : 0} flexDirection={smUp ? 'row' : 'column'}>
                   <Grid item>
                     <Typography variant="body2" component="h3">
-                      Tanggal SO: {stringToDate(headers[BSOFHEAD.DSODATE]) || '-'}
+                      Tgl. SO: <b>{stringToDate(headers[BSOFHEAD.DSODATE]) || '-'}</b>
+                    </Typography>
+                    {isSavedHeader && (
+                      <Typography variant="body2" component="h3">
+                        No. SO: <b>{headers[BSOFHEAD.CSONUM]}</b>
+                      </Typography>
+                    )}
+                  </Grid>
+                  <Grid item>
+                    <Typography variant="body2" component="h3">
+                      Customer:{' '}
+                      <b>
+                        {headers[BSOFHEAD.CUSTOMER.AS][BSOFHEAD.CUSTOMER._.CCUSID] || '-'}
+                        <br />
+                        {lookupDetails[BSOFHEAD.CUSTOMER._.CCUSID]}
+                      </b>
                     </Typography>
                   </Grid>
                   <Grid item>
                     <Typography variant="body2" component="h3">
-                      Customer: {headers[BSOFHEAD.CUSTOMER.AS][BSOFHEAD.CUSTOMER._.CCUSID] || '-'}
+                      Kirim Ke:{' '}
+                      <b>
+                        {headers[BSOFHEAD.CSHPTONAME]}
+                        <br />
+                        {headers[BSOFHEAD.CSHPTOADR1]}
+                        <br />
+                        {headers[BSOFHEAD.CSHPTOADR2]}
+                      </b>
                     </Typography>
                   </Grid>
                   <Grid item>
                     <Typography variant="body2" component="h3">
-                      Nama Customer: {lookupDetails[BSOFHEAD.CUSTOMER._.CCUSID]}
+                      Gudang Asal: <b>{headers[BSOFHEAD.CWHSEID] || '-'}</b>
                     </Typography>
-                  </Grid>
-                  <Grid item>
                     <Typography variant="body2" component="h3">
-                      Gudang: {headers[BSOFHEAD.CWHSEID] || '-'}
-                    </Typography>
-                  </Grid>
-                  <Grid item>
-                    <Typography variant="body2" component="h3">
-                      Sales Person: {headers[BSOFHEAD.CSALESID] || '-'}
+                      Sales Person: <b>{headers[BSOFHEAD.CSALESID] || '-'}</b>
                     </Typography>
                   </Grid>
                 </Grid>
@@ -302,6 +416,7 @@ export default memo(function BSOForm_Headers({
                     change={handleChangeDate}
                     blur={handleValidationDate}
                     autoFocus={true}
+                    disabled={disableCheck}
                   />
                   <InputText
                     ref={(el) => (inputRef.current[BSOFHEAD.CSONUM] = el)}
@@ -310,7 +425,7 @@ export default memo(function BSOForm_Headers({
                     type="text"
                     change={handleChangeString}
                     value={headers[BSOFHEAD.CSONUM]}
-                    disabled={mode === 'edit' ? true : false}
+                    disabled={disableCheck}
                     blur={handleValidation}
                   />
                   <InputDate
@@ -320,6 +435,7 @@ export default memo(function BSOForm_Headers({
                     value={headers[BSOFHEAD.DNEEDDATE]}
                     change={handleChangeDate}
                     // blur={handleValidationDate}
+                    disabled={disableCheck}
                   />
                   <InputText
                     ref={(el) => (inputRef.current[BSOFHEAD.CREMARK] = el)}
@@ -328,8 +444,12 @@ export default memo(function BSOForm_Headers({
                     type="text"
                     change={handleChangeString}
                     value={headers[BSOFHEAD.CREMARK]}
+                    disabled={disableCheck}
                   />
-                  <InputWrapperLookup lookup={lookupDetails[BSOFHEAD.CUSTOMER._.CCUSID]}>
+                  <InputWrapperLookup
+                    lookup={lookupDetails[BSOFHEAD.CUSTOMER._.CCUSID]}
+                    disabled={disableCheck}
+                  >
                     <InputTextComplex
                       ref={(el) => (inputRef.current[BSOFHEAD.CUSTOMER._.CCUSID] = el)}
                       label="ID Customer"
@@ -341,6 +461,7 @@ export default memo(function BSOForm_Headers({
                       value={headers[BSOFHEAD.CUSTOMER.AS][BSOFHEAD.CUSTOMER._.CCUSID]}
                       dataSrc={bcust_api}
                       enterEvent={handleOpenLookup}
+                      disabled={disableCheck}
                     />
                   </InputWrapperLookup>
                 </Grid>
@@ -353,6 +474,7 @@ export default memo(function BSOForm_Headers({
                     change={handleChangeString}
                     blur={handleValidation}
                     value={headers[BSOFHEAD.CCUSTPO]}
+                    disabled={disableCheck}
                   />
                   {/* <InputTextComplex
                     ref={(el) => (inputRef.current[BSOFHEAD.CSHPCODE] = el)}
@@ -361,10 +483,11 @@ export default memo(function BSOForm_Headers({
                     nextFocus={BSOFHEAD.CSHPTONAME}
                     type="text"
                     change={handleChangeString}
-                    // blur={handleValidationWithLookup}
+                    blur={handleValidationWithLookup}
                     value={headers[BSOFHEAD.CSHPCODE]}
-                    // dataSrc={ShipCodeSource}
-                    // enterEvent={handleOpenLookup}
+                    dataSrc={ShipCodeSource}
+                    enterEvent={handleOpenLookup}
+                    disabled={disableCheck}
                   />
                   <InputText
                     label="Nama Pengirim"
@@ -372,7 +495,7 @@ export default memo(function BSOForm_Headers({
                     type="text"
                     change={handleChangeString}
                     value={headers[BSOFHEAD.CSHPNAME]}
-                    // disabled
+                    disabled={disableCheck}
                   /> */}
                   <InputText
                     ref={(el) => (inputRef.current[BSOFHEAD.CSHPTONAME] = el)}
@@ -381,6 +504,7 @@ export default memo(function BSOForm_Headers({
                     type="text"
                     change={handleChangeString}
                     value={headers[BSOFHEAD.CSHPTONAME]}
+                    disabled={disableCheck}
                   />
                   <InputText
                     label="Alamat Pengiriman"
@@ -388,6 +512,7 @@ export default memo(function BSOForm_Headers({
                     type="text"
                     change={handleChangeString}
                     value={headers[BSOFHEAD.CSHPTOADR1]}
+                    disabled={disableCheck}
                   />
                   <InputText
                     label="Alamat Pengiriman..."
@@ -395,6 +520,7 @@ export default memo(function BSOForm_Headers({
                     type="text"
                     change={handleChangeString}
                     value={headers[BSOFHEAD.CSHPTOADR2]}
+                    disabled={disableCheck}
                   />
                   <InputText
                     label="Kota Pengiriman"
@@ -402,6 +528,7 @@ export default memo(function BSOForm_Headers({
                     type="text"
                     change={handleChangeString}
                     value={headers[BSOFHEAD.CSHPTOKOTA]}
+                    disabled={disableCheck}
                   />
                 </Grid>
                 <Grid item container spacing={1} xs={12} sm={6} md={3} lg={3}>
@@ -411,6 +538,7 @@ export default memo(function BSOForm_Headers({
                     type="text"
                     change={handleChangeString}
                     value={headers[BSOFHEAD.CSHPTOUP]}
+                    disabled={disableCheck}
                   />
                   {/* <InputText
                     label="Term. Pembayaran"
@@ -418,12 +546,14 @@ export default memo(function BSOForm_Headers({
                     type="text"
                     change={handleChangeString}
                     value={headers[BSOFHEAD.CPAYTRM]}
+                    disabled={disableCheck}
                   />
                   <InputCurrency
                     label="Uang Muka"
                     name={BSOFHEAD.NDP}
                     change={handleChangeCurrency}
                     value={headers[BSOFHEAD.NDP]}
+                    disabled={disableCheck}
                   /> */}
                   <InputDecimal
                     label="Jatuh Tempo"
@@ -435,6 +565,7 @@ export default memo(function BSOForm_Headers({
                     change={handleChangeNumber}
                     value={headers[BSOFHEAD.NDUEDAYS]}
                     placeholder="%"
+                    disabled={disableCheck}
                   />
                   <InputDecimal
                     label="Discount"
@@ -445,6 +576,7 @@ export default memo(function BSOForm_Headers({
                     value={headers[BSOFHEAD.NPCTDISC]}
                     placeholder="%"
                     setIsEditHeader={setIsEditHeader}
+                    disabled={disableCheck}
                   />
                   <InputDecimal
                     label="PPN"
@@ -455,6 +587,7 @@ export default memo(function BSOForm_Headers({
                     value={headers[BSOFHEAD.NPCTPPN]}
                     placeholder="%"
                     setIsEditHeader={setIsEditHeader}
+                    disabled={disableCheck}
                   />
                 </Grid>
                 <Grid item container spacing={1} xs={12} sm={6} md={3} lg={3}>
@@ -469,6 +602,7 @@ export default memo(function BSOForm_Headers({
                     value={headers[BSOFHEAD.CWHSEID]}
                     dataSrc={bwhse_api}
                     enterEvent={handleOpenLookup}
+                    disabled={disableCheck}
                   />
                   <InputTextComplex
                     ref={(el) => (inputRef.current[BSOFHEAD.CSALESID] = el)}
@@ -481,16 +615,18 @@ export default memo(function BSOForm_Headers({
                     value={headers[BSOFHEAD.CSALESID]}
                     dataSrc={bsalesp_api}
                     enterEvent={handleOpenLookup}
+                    disabled={disableCheck}
                   />
                   <Grid item container xs={12}>
                     <Button
                       ref={(el) => (inputRef.current['CFOOT_BUTTON'] = el)}
                       onClick={() => setOpenFoot(!openFoot)}
+                      variant="outlined"
                     >
                       Ket. Sales Order
                     </Button>
                     <Collapse in={openFoot}>
-                      <Grid item container spacing={1}>
+                      <Grid item container spacing={1} mt={0.1}>
                         <InputText
                           ref={(el) => (inputRef.current[BSOFHEAD.CSOFOOT1] = el)}
                           label="Ket. 1"
@@ -498,6 +634,7 @@ export default memo(function BSOForm_Headers({
                           type="text"
                           change={handleChangeString}
                           value={headers[BSOFHEAD.CSOFOOT1]}
+                          disabled={disableCheck}
                         />
                         <InputText
                           ref={(el) => (inputRef.current[BSOFHEAD.CSOFOOT2] = el)}
@@ -506,6 +643,7 @@ export default memo(function BSOForm_Headers({
                           type="text"
                           change={handleChangeString}
                           value={headers[BSOFHEAD.CSOFOOT2]}
+                          disabled={disableCheck}
                         />
                         <InputText
                           ref={(el) => (inputRef.current[BSOFHEAD.CSOFOOT3] = el)}
@@ -514,9 +652,17 @@ export default memo(function BSOForm_Headers({
                           type="text"
                           change={handleChangeString}
                           value={headers[BSOFHEAD.CSOFOOT3]}
+                          disabled={disableCheck}
                         />
                       </Grid>
                     </Collapse>
+                    {isSavedHeader && (
+                      <Grid container alignContent="center" mt={1}>
+                        <Typography color="green" fontWeight="100">
+                          Status: Tersimpan
+                        </Typography>
+                      </Grid>
+                    )}
                   </Grid>
                 </Grid>
               </Grid>
@@ -528,10 +674,21 @@ export default memo(function BSOForm_Headers({
                 variant="contained"
                 size="small"
                 color="secondary"
-                onClick={() => setOpenHeader(!openHeader)}
+                onClick={() => {
+                  setOpenHeader(!openHeader);
+                  saveOrderHeader();
+                }}
                 aria-label="hide-show-headers-qo"
               >
-                {openHeader ? <FoldIcon fontSize="small" /> : <UnfoldIcon fontSize="small" />}
+                {isSavedHeader ? (
+                  openHeader ? (
+                    <FoldIcon fontSize="small" />
+                  ) : (
+                    <UnfoldIcon fontSize="small" />
+                  )
+                ) : (
+                  <SaveIcon fontSize="small" />
+                )}
               </Button>
             </Grid>
           </Grid>

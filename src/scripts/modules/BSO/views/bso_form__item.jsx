@@ -1,4 +1,4 @@
-import React, { memo, useEffect } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
@@ -12,8 +12,12 @@ import TableCell from '@mui/material/TableCell';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
+import Grow from '@mui/material/Grow';
 import ActionIcon from '@mui/icons-material/MoreVert';
+import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Cancel';
 import TableWrapperSimple from '../../../components/TableWrapperSimple';
 import InputTableText from '../../../components/InputTableText';
 import InputTableTextComplex from '../../../components/InputTableTextComplex';
@@ -24,6 +28,7 @@ import InputCardTextComplex from '../../../components/InputCardTextComplex';
 import InputTableCurrency from '../../../components/InputTableCurrency';
 import InputTableDecimal from '../../../components/InputTableDecimal';
 import CurrencyFormat from '../../../components/CurrencyFormat';
+import ConfirmDialog from '../../../components/ConfirmDialog';
 import ToastBar from '../../../components/ToastBar';
 import { subtotaler } from '../../../utils/calculate';
 import useResponsive from '../../../hooks/useResponsive';
@@ -31,8 +36,12 @@ import useFormsItem from '../../../hooks/useFormsItem';
 import useLookupsItemStock from '../../../hooks/useLookupsItemStock';
 
 import { BSOFITEM } from '../model/bso_field';
+import bitmso_api from '../../BSO/controller/bitmso_api';
+import { typesError } from '../../../utils/types-error';
 
 export default memo(function BSOForm_Items({
+  salesOrderID,
+  warehouseID,
   items,
   dispatchItems,
   initQtyItemKey,
@@ -42,6 +51,8 @@ export default memo(function BSOForm_Items({
   isEditItem,
   setIsEditItem,
   setOpenHeader,
+  isSavedHeader,
+  isSubmit,
 }) {
   const { theme, smDown } = useResponsive();
   const styles = {
@@ -54,7 +65,7 @@ export default memo(function BSOForm_Items({
     },
     bodyCell: {
       '&:nth-of-type(odd)': {
-        backgroundColor: theme.palette.action.hover,
+        backgroundColor: theme.palette.grey[200],
       },
       '&& :focus-within': {
         backgroundColor: theme.palette.primary.light,
@@ -63,12 +74,40 @@ export default memo(function BSOForm_Items({
         paddingTop: theme.spacing(0.7),
         paddingBottom: theme.spacing(0.3),
       },
+      ':focus-within': {
+        backgroundColor: 'rgb(0 190 255 / 16%)',
+      },
     },
+  };
+  const [isChangeItem, setIsChangeItem] = useState(false);
+  const [isNewItem, setIsNewItem] = useState(false);
+  const [indexItem, setIndexItem] = useState(-1);
+  const [hideSaveItem, setHideSaveItem] = useState(true);
+  const [disableSaveItem, setDisableSaveItem] = useState(false);
+  const [tempItem, setTempItem] = useState({});
+  const disableAdd = isSubmit ? true : isSavedHeader ? (hideSaveItem ? false : true) : true;
+  const disableCheck = (index) => {
+    if (isChangeItem && indexItem !== index) return true;
+    else return false;
+  };
+  const disableDeleteCheck = (index) => {
+    if (isNewItem) return true;
+    else return disableCheck(index);
+  };
+  const resetStateItem = () => {
+    setIsAddItem(false);
+    setIsChangeItem(false);
+    setIsNewItem(false);
+    setIndexItem(-1);
+    setHideSaveItem(true);
+    setDisableSaveItem(false);
+    setTempItem({});
   };
 
   const {
     handleAddItem,
     handleRemoveItem,
+    handleRevertItem,
     handleChangeString,
     handleChangeNumber,
     handleIncreaseNumber,
@@ -76,6 +115,7 @@ export default memo(function BSOForm_Items({
     handleChangeCurrency,
     handleChangeDiscAmount,
     isAddItem,
+    setIsAddItem,
   } = useFormsItem({
     dispatchItems,
     initQtyItemKey,
@@ -113,7 +153,10 @@ export default memo(function BSOForm_Items({
           'bottom-end'
         );
         handleOpenItemStock(index, name, nextfocus);
-      } else handleCheckItemStock(value, index, name, nextfocus);
+      } else {
+        if (name === BSOFITEM.CSTOCODE && value !== tempItem[BSOFITEM.CSTOCODE])
+          handleCheckItemStock(value, index, name, nextfocus);
+      }
     }
   };
 
@@ -136,11 +179,202 @@ export default memo(function BSOForm_Items({
     }
   };
 
-  useEffect(() => {
-    if (isAddItem && items.length !== 0) {
-      itemsIDRef.current[BSOFITEM.CSTOCODE + '_' + (items.length - 1)].focus();
+  const handleEnterEvent = (index, name) => {
+    itemsIDRef.current[name + '_' + index.toString()].blur();
+  };
+
+  const handleFocusItem = (event, index) => {
+    if (event.target.name !== 'buttonIcon' || event.target.name !== BSOFITEM.NLINE) {
+      if (indexItem !== index && isChangeItem === false) {
+        setIsChangeItem(true);
+        setIndexItem(index);
+        setHideSaveItem(false);
+        setTempItem({ ...items[index] });
+      } else if (indexItem !== index && isChangeItem === true) {
+        const targetNameCheck = () => {
+          if (event.target.name === BSOFITEM.NLINE) return BSOFITEM.BSOFITEM.CSTOCODE;
+          else return event.target.name;
+        };
+        setIsFocusStock({
+          focus: true,
+          targetIndex: indexItem,
+          targetName: targetNameCheck() || BSOFITEM.CSTONAME,
+        });
+      }
+
+      if (event.target.name === BSOFITEM.CSTOCODE && event.target.value === '') {
+        setDisableSaveItem(true);
+      } else {
+        setDisableSaveItem(false);
+      }
     }
-  }, [items.length, itemsIDRef, isAddItem]);
+  };
+
+  const handleCreateItem = () => {
+    handleAddItem();
+    setOpenHeader(false);
+    setIsChangeItem(true);
+    setIsNewItem(true);
+    setIndexItem(items.length);
+    setHideSaveItem(false);
+    setTempItem({});
+  };
+
+  const handleDeleteItem = (index) => {
+    ConfirmDialog(
+      `Hapus Item`,
+      `Apakah anda yakin menghapus item line no. ${items[index][BSOFITEM.NLINE]}?`,
+      'Ya',
+      async () => {
+        try {
+          const dataOptions = {
+            key: {
+              csonum: salesOrderID,
+              nline: items[index][BSOFITEM.NLINE],
+            },
+          };
+          const fetchDelete = await bitmso_api.delrec(dataOptions);
+          if (fetchDelete.result === true) {
+            ToastBar(
+              'success',
+              `Hapus Item Line No. ${items[index][BSOFITEM.NLINE]} Berhasil`,
+              3000,
+              () => {
+                handleRemoveItem(index);
+                resetStateItem();
+              },
+              'bottom-end'
+            );
+          } else if (fetchDelete.result === false) throw fetchDelete.onfail.cerror;
+          else throw fetchDelete.message;
+        } catch (error) {
+          ToastBar(
+            'error',
+            `Gagal. ${error}`,
+            3000,
+            () => {
+              resetStateItem();
+            },
+            'bottom-end'
+          );
+        }
+      }
+    );
+  };
+
+  const handleSaveItem = async () => {
+    try {
+      const { nline, cstocode, cstoname, cuom, nqso, nhrgjua, ndisc, nrpdisc } = items[indexItem];
+      const floatQty = parseFloat(nqso);
+      const floatPrice = parseFloat(nhrgjua);
+      const floatDiscPercent = parseFloat(ndisc);
+      const floatDiscAmount = parseFloat(nrpdisc);
+      const dataOptions = {
+        ...(isNewItem === false && {
+          key: {
+            csonum: salesOrderID,
+            nline,
+          },
+        }),
+        data: {
+          ...(isNewItem && {
+            csonum: salesOrderID,
+            cwhseid: warehouseID,
+            nline,
+          }),
+          cstocode,
+          cstoname,
+          cuom,
+          nqso: floatQty,
+          nhrgjua: floatPrice,
+          ndisc: floatDiscPercent,
+          nrpdisc: floatDiscAmount,
+        },
+      };
+      let fetchPost;
+      if (isNewItem) {
+        fetchPost = await bitmso_api.addrec(dataOptions);
+      } else {
+        fetchPost = await bitmso_api.updrec(dataOptions);
+      }
+      if (fetchPost.result === true) {
+        ToastBar(
+          'success',
+          `${isNewItem ? 'Tambah' : 'Ubah'} Item Baris ${
+            items[indexItem][BSOFITEM.NLINE]
+          } Berhasil`,
+          3000,
+          () => {
+            resetStateItem();
+          },
+          'bottom-end'
+        );
+      } else if (fetchPost.result === false) throw fetchPost.onfail.cerror;
+      else throw fetchPost.message;
+    } catch (error) {
+      switch (error) {
+        case typesError.SESSION_INVALID.msg:
+        case typesError.SESSION_LOCKED.msg:
+        case typesError.SESSION_TIMEOUT.msg:
+          ToastBar(
+            'error',
+            `${error}`,
+            3000,
+            () => {
+              handleOpenLoginPopup();
+              setIsFocusStock({
+                focus: true,
+                targetIndex: indexItem,
+                targetName: BSOFITEM.CSTOCODE,
+              });
+            },
+            'bottom-end'
+          );
+          break;
+        default:
+          ToastBar(
+            'error',
+            `${error}`,
+            3000,
+            () => {
+              setIsFocusStock({
+                focus: true,
+                targetIndex: indexItem,
+                targetName: BSOFITEM.CSTOCODE,
+              });
+            },
+            'bottom-end'
+          );
+          break;
+      }
+    }
+  };
+
+  const handleCancelItem = () => {
+    ConfirmDialog(
+      'Batalkan Item',
+      <p style={{ textAlign: 'center' }}>
+        Apakah anda yakin akan membatalkan? <br /> Jika Item Line No.{' '}
+        {items[indexItem][BSOFITEM.NLINE]} ini baru, maka akan terhapus!
+      </p>,
+      'Ya',
+      () => {
+        if (isNewItem) {
+          setIsAddItem(false);
+          handleRemoveItem(indexItem);
+        } else handleRevertItem(indexItem, tempItem);
+        resetStateItem();
+      }
+    );
+  };
+
+  useEffect(() => {
+    if (items.length !== 0 && indexItem !== -1) {
+      if (isAddItem) {
+        itemsIDRef.current[BSOFITEM.CSTOCODE + '_' + indexItem].focus();
+      }
+    }
+  }, [items.length, itemsIDRef, isAddItem, indexItem]);
 
   return (
     <>
@@ -151,9 +385,22 @@ export default memo(function BSOForm_Items({
             <Grid item container xs={12} direction="row" spacing={1}>
               {items.map((item, index) => (
                 <Grid item key={('bso_items_card_' + index).toString()}>
-                  <Card elevation={4}>
+                  <Card tabIndex={-1} elevation={4}>
                     <CardContent>
-                      <Grid container spacing={1}>
+                      <Grid
+                        container
+                        spacing={1}
+                        onFocus={(event) => handleFocusItem(event, index)}
+                      >
+                        <InputCardText
+                          index={index}
+                          label="Line No."
+                          name={BSOFITEM.NLINE}
+                          type="text"
+                          value={item[BSOFITEM.NLINE]}
+                          setWidth={'9ch'}
+                          disabled={true}
+                        />
                         <InputCardTextComplex
                           index={index}
                           ref={(el) => (itemsIDRef.current[BSOFITEM.CSTOCODE + '_' + index] = el)}
@@ -166,7 +413,8 @@ export default memo(function BSOForm_Items({
                           maxLength={10}
                           value={item[BSOFITEM.CSTOCODE]}
                           setIsEditItem={setIsEditItem}
-                          enterEvent={handleOpenItemStock}
+                          enterEvent={handleEnterEvent}
+                          disabled={disableCheck(index)}
                         />
                         <InputCardText
                           index={index}
@@ -177,6 +425,7 @@ export default memo(function BSOForm_Items({
                           change={handleChangeString}
                           value={item[BSOFITEM.CSTONAME]}
                           fullWidth={true}
+                          disabled={disableCheck(index)}
                         />
                         <InputCardText
                           index={index}
@@ -186,16 +435,8 @@ export default memo(function BSOForm_Items({
                           type="text"
                           change={handleChangeString}
                           value={item[BSOFITEM.CUOM]}
-                        />
-                        <InputCardCurrency
-                          index={index}
-                          ref={(el) => (itemsIDRef.current[BSOFITEM.NHRGJUA + '_' + index] = el)}
-                          label={'Harga (Rp.)'}
-                          name={BSOFITEM.NHRGJUA}
-                          change={handleChangeCurrency}
-                          blur={handleValidationNumber}
-                          value={item[BSOFITEM.NHRGJUA]}
-                          setIsEditItem={setIsEditItem}
+                          setWidth={'10ch'}
+                          disabled={disableCheck(index)}
                         />
                         <InputCardDecimal
                           index={index}
@@ -208,6 +449,19 @@ export default memo(function BSOForm_Items({
                           blur={handleValidationNumber}
                           value={item[BSOFITEM.NQSO]}
                           setIsEditItem={setIsEditItem}
+                          setWidth={'19ch'}
+                          disabled={disableCheck(index)}
+                        />
+                        <InputCardCurrency
+                          index={index}
+                          ref={(el) => (itemsIDRef.current[BSOFITEM.NHRGJUA + '_' + index] = el)}
+                          label={'Harga (Rp.)'}
+                          name={BSOFITEM.NHRGJUA}
+                          change={handleChangeCurrency}
+                          blur={handleValidationNumber}
+                          value={item[BSOFITEM.NHRGJUA]}
+                          setIsEditItem={setIsEditItem}
+                          disabled={disableCheck(index)}
                         />
                         <InputCardDecimal
                           index={index}
@@ -218,6 +472,8 @@ export default memo(function BSOForm_Items({
                           change={handleChangeNumber}
                           value={item[BSOFITEM.NDISC]}
                           setIsEditItem={setIsEditItem}
+                          setWidth={'19ch'}
+                          disabled={disableCheck(index)}
                         />
                         <InputCardCurrency
                           index={index}
@@ -227,13 +483,16 @@ export default memo(function BSOForm_Items({
                           change={handleChangeDiscAmount}
                           value={item[BSOFITEM.NRPDISC]}
                           setIsEditItem={setIsEditItem}
+                          disabled={disableCheck(index)}
                         />
                       </Grid>
                     </CardContent>
                     <CardActions sx={{ px: 2, py: 0, background: '#eaeaea' }}>
                       <Grid container justifyContent="space-between">
                         <Grid item container xs={10} justifyContent="start" alignContent="center">
-                          <Typography pt={'8px'}>Subtotal :&nbsp;Rp</Typography>
+                          <Typography pt={'8px'} color={disableCheck(index) ? 'gray' : ''}>
+                            Subtotal :&nbsp;Rp
+                          </Typography>
                           <CurrencyFormat
                             from="table"
                             value={subtotaler(
@@ -241,17 +500,64 @@ export default memo(function BSOForm_Items({
                               item[BSOFITEM.NQSO] || 0,
                               item[BSOFITEM.NRPDISC] || 0
                             )}
+                            disabled={disableCheck(index)}
                           />
                         </Grid>
                         <Grid item xs={2}>
                           <IconButton
-                            onClick={() => handleRemoveItem(index)}
+                            onClick={() => !disableDeleteCheck(index) && handleDeleteItem(index)}
                             size="small"
-                            disabled={isEditItem}
+                            disabled={disableDeleteCheck(index) || isEditItem}
                           >
-                            <DeleteIcon color={isEditItem ? 'disabled' : 'error'} />
+                            <DeleteIcon
+                              color={
+                                disableDeleteCheck(index)
+                                  ? 'disabled'
+                                  : isEditItem
+                                  ? 'disabled'
+                                  : 'error'
+                              }
+                            />
                           </IconButton>
                         </Grid>
+                        {!hideSaveItem && indexItem === index && (
+                          <Grid
+                            container
+                            item
+                            xs={12}
+                            justifyContent="center"
+                            mb={1}
+                            p={1}
+                            borderRadius={2}
+                            bgcolor="whitesmoke"
+                          >
+                            <Grid>
+                              <Button
+                                variant="contained"
+                                color="secondary"
+                                size="small"
+                                startIcon={<SaveIcon />}
+                                onClick={handleSaveItem}
+                                disabled={disableSaveItem}
+                                sx={{ mr: 2 }}
+                              >
+                                Simpan
+                              </Button>
+                            </Grid>
+                            <Grid>
+                              <Button
+                                variant="contained"
+                                color="error"
+                                size="small"
+                                startIcon={<CancelIcon />}
+                                onClick={handleCancelItem}
+                                disabled={disableSaveItem}
+                              >
+                                Batal
+                              </Button>
+                            </Grid>
+                          </Grid>
+                        )}
                       </Grid>
                     </CardActions>
                   </Card>
@@ -259,29 +565,32 @@ export default memo(function BSOForm_Items({
               ))}
             </Grid>
             <Grid item container xs={12}>
-              <Button
-                variant="contained"
-                color="primary"
-                size="small"
-                onClick={() => {
-                  setOpenHeader(false);
-                  handleAddItem();
-                }}
-                disabled={isEditItem}
-              >
-                Tambah Item
-              </Button>
+              {!isChangeItem && (
+                <Grid item>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    onClick={handleCreateItem}
+                    disabled={disableAdd}
+                    startIcon={<AddIcon />}
+                  >
+                    Tambah Item
+                  </Button>
+                </Grid>
+              )}
             </Grid>
           </Grid>
         ) : (
           <TableWrapperSimple>
             <TableHead>
               <TableRow sx={styles.headCell}>
+                <TableCell align="center">Line No.</TableCell>
                 <TableCell align="center">Kode</TableCell>
                 <TableCell align="center">Nama Item</TableCell>
                 <TableCell align="center">Satuan</TableCell>
-                <TableCell align="center">Harga (Rp)</TableCell>
                 <TableCell align="center">Qty</TableCell>
+                <TableCell align="center">Harga (Rp)</TableCell>
                 <TableCell align="center">Discount (%)</TableCell>
                 <TableCell align="center">Disc Amount (Rp)</TableCell>
                 <TableCell align="center">Subtotal (Rp)</TableCell>
@@ -292,8 +601,22 @@ export default memo(function BSOForm_Items({
             </TableHead>
             <TableBody>
               {items.map((item, index) => (
-                <TableRow key={('bso_items_' + index).toString()} sx={styles.bodyCell}>
-                  <TableCell align="center" component="th" scope="row">
+                <TableRow
+                  key={('bso_items_' + index).toString()}
+                  sx={styles.bodyCell}
+                  onFocus={(event) => handleFocusItem(event, index)}
+                >
+                  <TableCell align="right" component="th" scope="row">
+                    <InputTableText
+                      index={index}
+                      name={BSOFITEM.NLINE}
+                      type="text"
+                      value={item[BSOFITEM.NLINE]}
+                      setWidth={'1ch'}
+                      disabled={true}
+                    />
+                  </TableCell>
+                  <TableCell>
                     <InputTableTextComplex
                       index={index}
                       ref={(el) => (itemsIDRef.current[BSOFITEM.CSTOCODE + '_' + index] = el)}
@@ -305,7 +628,9 @@ export default memo(function BSOForm_Items({
                       maxLength={10}
                       value={item[BSOFITEM.CSTOCODE]}
                       setIsEditItem={setIsEditItem}
-                      enterEvent={handleOpenItemStock}
+                      setWidth={'10ch'}
+                      enterEvent={handleEnterEvent}
+                      disabled={disableCheck(index)}
                     />
                   </TableCell>
                   <TableCell>
@@ -316,6 +641,7 @@ export default memo(function BSOForm_Items({
                       type="text"
                       change={handleChangeString}
                       value={item[BSOFITEM.CSTONAME]}
+                      disabled={disableCheck(index)}
                     />
                   </TableCell>
                   <TableCell>
@@ -326,17 +652,8 @@ export default memo(function BSOForm_Items({
                       type="text"
                       change={handleChangeString}
                       value={item[BSOFITEM.CUOM]}
-                    />
-                  </TableCell>
-                  <TableCell align="right">
-                    <InputTableCurrency
-                      index={index}
-                      ref={(el) => (itemsIDRef.current[BSOFITEM.NHRGJUA + '_' + index] = el)}
-                      name={BSOFITEM.NHRGJUA}
-                      change={handleChangeCurrency}
-                      blur={handleValidationNumber}
-                      value={item[BSOFITEM.NHRGJUA]}
-                      setIsEditItem={setIsEditItem}
+                      setWidth={'4ch'}
+                      disabled={disableCheck(index)}
                     />
                   </TableCell>
                   <TableCell align="center">
@@ -350,26 +667,45 @@ export default memo(function BSOForm_Items({
                       blur={handleValidationNumber}
                       value={item[BSOFITEM.NQSO]}
                       setIsEditItem={setIsEditItem}
+                      disabled={disableCheck(index)}
                     />
                   </TableCell>
+                  <TableCell align="right">
+                    <InputTableCurrency
+                      index={index}
+                      ref={(el) => (itemsIDRef.current[BSOFITEM.NHRGJUA + '_' + index] = el)}
+                      name={BSOFITEM.NHRGJUA}
+                      change={handleChangeCurrency}
+                      blur={handleValidationNumber}
+                      value={item[BSOFITEM.NHRGJUA]}
+                      setIsEditItem={setIsEditItem}
+                      disabled={disableCheck(index)}
+                    />
+                  </TableCell>
+
                   <TableCell align="center">
                     <InputTableDecimal
                       index={index}
+                      ref={(el) => (itemsIDRef.current[BSOFITEM.NDISC + '_' + index] = el)}
                       name={BSOFITEM.NDISC}
                       increase={handleIncreaseNumber}
                       decrease={handleDecreaseNumber}
                       change={handleChangeNumber}
                       value={item[BSOFITEM.NDISC]}
                       setIsEditItem={setIsEditItem}
+                      disabled={disableCheck(index)}
                     />
                   </TableCell>
                   <TableCell align="right">
                     <InputTableCurrency
                       index={index}
+                      ref={(el) => (itemsIDRef.current[BSOFITEM.NRPDISC + '_' + index] = el)}
                       name={BSOFITEM.NRPDISC}
                       change={handleChangeDiscAmount}
                       value={item[BSOFITEM.NRPDISC]}
                       setIsEditItem={setIsEditItem}
+                      setWidth={'11ch'}
+                      disabled={disableCheck(index)}
                     />
                   </TableCell>
                   <TableCell align="right">
@@ -380,15 +716,21 @@ export default memo(function BSOForm_Items({
                         item[BSOFITEM.NQSO] || 0,
                         item[BSOFITEM.NRPDISC] || 0
                       )}
+                      disabled={disableCheck(index)}
                     />
                   </TableCell>
                   <TableCell align="center">
                     <IconButton
-                      onClick={() => handleRemoveItem(index)}
+                      name="buttonIcon"
+                      onClick={() => !disableDeleteCheck(index) && handleDeleteItem(index)}
                       size="small"
-                      disabled={isEditItem}
+                      disabled={disableDeleteCheck(index) || isEditItem}
                     >
-                      <DeleteIcon color={isEditItem ? 'disabled' : 'error'} />
+                      <DeleteIcon
+                        color={
+                          disableDeleteCheck(index) ? 'disabled' : isEditItem ? 'disabled' : 'error'
+                        }
+                      />
                     </IconButton>
                   </TableCell>
                 </TableRow>
@@ -396,19 +738,46 @@ export default memo(function BSOForm_Items({
             </TableBody>
             <TableFooter>
               <TableRow>
-                <TableCell colSpan={4}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    onClick={() => {
-                      setOpenHeader(false);
-                      handleAddItem();
-                    }}
-                    disabled={isEditItem}
-                  >
-                    Tambah Item
-                  </Button>
+                <TableCell colSpan={99}>
+                  <Grid container spacing={1} justifyContent="flex-start">
+                    <Grid item>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        onClick={handleCreateItem}
+                        disabled={disableAdd}
+                        startIcon={<AddIcon />}
+                      >
+                        Tambah Item
+                      </Button>
+                    </Grid>
+                    <Grow in={!hideSaveItem}>
+                      <Grid item>
+                        <Button
+                          variant="contained"
+                          color="secondary"
+                          size="small"
+                          startIcon={<SaveIcon />}
+                          onClick={handleSaveItem}
+                          disabled={disableSaveItem}
+                          sx={{ mr: 1 }}
+                        >
+                          Simpan Item
+                        </Button>
+                        <Button
+                          variant="contained"
+                          color="error"
+                          size="small"
+                          startIcon={<CancelIcon />}
+                          onClick={handleCancelItem}
+                          disabled={disableSaveItem}
+                        >
+                          Batal Item
+                        </Button>
+                      </Grid>
+                    </Grow>
+                  </Grid>
                 </TableCell>
               </TableRow>
             </TableFooter>

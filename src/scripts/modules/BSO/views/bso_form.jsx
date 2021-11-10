@@ -9,8 +9,8 @@ import useReducers from '../../../hooks/useReducers';
 import useReducersItem from '../../../hooks/useReducersItem';
 import useActions from '../../../hooks/useActions';
 import useActionsItem from '../../../hooks/useActionsItem';
-import { dateToString } from '../../../utils/formatter';
-import { typesError } from '../../../utils/types-error';
+// import { dateToString, convertNewLine } from '../../../utils/formatter';
+// import { typesError } from '../../../utils/types-error';
 import { totalerafterdiscandtax, grandtotaler } from '../../../utils/calculate';
 
 import bso_api from '../controller/bso_api';
@@ -20,11 +20,14 @@ import { confName, confQtyKey } from '../model/bso_config';
 
 import BSOFormHeader from './bso_form__header';
 import BSOFormItem from './bso_form__item';
+import ConfirmDialog from '../../../components/ConfirmDialog';
 
 export default function BSOForm({ mode }) {
   const [headers, dispatchHeaders] = useReducer(useReducers, BSODHEAD);
   const [items, dispatchItems] = useReducer(useReducersItem, []);
-  const [openHeader, setOpenHeader] = useState(true);
+  const [customerId, setCustomerId] = useState('');
+  const [openHeader, setOpenHeader] = useState(mode === 'edit' ? false : true);
+  const [isSavedHeader, setIsSavedHeader] = useState(mode === 'edit' ? true : false);
   const [isEditHeader, setIsEditHeader] = useState(false);
   const [isEditItem, setIsEditItem] = useState(false);
   const [isSubmit, setIsSubmit] = useState(false);
@@ -119,7 +122,8 @@ export default function BSOForm({ mode }) {
             type: useActionsItem.EDIT_STATE,
             payload: bitmso,
           });
-        } else if (fetchGetOrder.result) throw fetchGetOrder.onfail.cerror;
+          setCustomerId(ccusid);
+        } else if (fetchGetOrder.result === false) throw fetchGetOrder.onfail.cerror;
         else throw fetchGetOrder.message;
       } catch (error) {
         AlertDialog('error', `Gagal Mengambil Data ${confName}`, error, redirectToParentLocation);
@@ -132,78 +136,96 @@ export default function BSOForm({ mode }) {
 
   const handleSubmitOrder = async () => {
     setIsSubmit(true);
-    const captionSubmit = mode === 'add' ? 'Tambah' : 'Ubah';
-    try {
-      const dateFormatted = dateToString(headers[BSOFHEAD.DSODATE]);
-      const needDateFormatted = dateToString(headers[BSOFHEAD.DNEEDDATE]);
-      const lineItemsArray = items.map((item, index) => {
-        return { ...item, [BSOFITEM.NLINE]: index + 1 };
-      });
-      const orderData = {
-        soHeaderInfo: {
-          ...headers,
-          [BSOFHEAD.DSODATE]: dateFormatted,
-          [BSOFHEAD.DNEEDDATE]: needDateFormatted === 'Invalid date' ? '' : needDateFormatted,
-          [BSOFHEAD.NAMOUNT]: total,
+    setTimeout(() => {
+      ConfirmDialog(
+        'Keluar Form Sales Order',
+        'Data Sales Order yang belum disimpan akan terhapus. Anda yakin?',
+        'Keluar',
+        () => {
+          redirectToParentLocation();
+          setIsSubmit(false);
         },
-        lineItemsInfo: [...lineItemsArray],
-      };
-
-      // delete this later
-      const showJSON = JSON.stringify(orderData, null, 2);
-      console.log(showJSON);
-
-      const fetchPostOrder =
-        mode === 'add' ? await bso_api.add(orderData) : await bso_api.edit(id, orderData);
-      if (fetchPostOrder.result === true) {
-        const { ccusid, ccusnam, csonum } = fetchPostOrder.onsuccess;
-        AlertDialog(
-          'success',
-          `Data ${confName} Berhasil di ${captionSubmit}`,
-          <>
-            <p>Customer ID: {ccusid}</p>
-            <p>Customer Name: {ccusnam}</p>
-            <p>Sales Order ID: {csonum}</p>
-          </>,
-          redirectToParentLocation
-        );
-      } else if (fetchPostOrder.result === false) {
-        const regExNewLine = /(?:\r\n|\r|\n)/g;
-        const errorMain = fetchPostOrder.onfail.cerror.replace(regExNewLine, '<br />');
-        const errorMoreInfo = fetchPostOrder.moreinfo.Error;
-        const errorAll =
-          errorMain +
-          (errorMoreInfo !== undefined ? errorMoreInfo.replace(regExNewLine, '<br />') : '');
-        throw errorAll;
-      } else {
-        throw fetchPostOrder.message;
-      }
-    } catch (error) {
-      switch (error) {
-        case typesError.SECRET_KEY.msg:
-          AlertDialog(
-            'error',
-            'Session Telah Habis.',
-            <p>
-              Gagal {captionSubmit} Data {confName}
-            </p>,
-            handleOpenLoginPopup
-          );
-          break;
-        case typesError.FETCH.msg:
-          AlertDialog('error', 'Salah', typesError.FETCH.res);
-          break;
-        case typesError.ITEMS.msg:
-          AlertDialog('error', 'Salah', typesError.ITEMS.res);
-          break;
-        default:
-          AlertDialog('error', 'Salah', error);
-          break;
-      }
-    } finally {
-      setIsSubmit(false);
-    }
+        () => {
+          setIsSubmit(false);
+        }
+      );
+    }, 500);
   };
+
+  //#region handleSubmitOrder
+  // const handleSubmitOrder = async () => {
+  //   setIsSubmit(true);
+  //   const captionSubmit = mode === 'add' ? 'Tambah' : 'Ubah';
+  //   try {
+  //     const dateFormatted = dateToString(headers[BSOFHEAD.DSODATE]);
+  //     const needDateFormatted = dateToString(headers[BSOFHEAD.DNEEDDATE]);
+  //     const lineItemsArray = items.map((item, index) => {
+  //       return { ...item, [BSOFITEM.NLINE]: index + 1 };
+  //     });
+  //     const orderData = {
+  //       soHeaderInfo: {
+  //         ...headers,
+  //         [BSOFHEAD.DSODATE]: dateFormatted,
+  //         [BSOFHEAD.DNEEDDATE]: needDateFormatted === 'Invalid date' ? '' : needDateFormatted,
+  //         [BSOFHEAD.NAMOUNT]: total,
+  //       },
+  //       lineItemsInfo: [...lineItemsArray],
+  //     };
+
+  //     // delete this later
+  //     const showJSON = JSON.stringify(orderData, null, 2);
+  //     console.log(showJSON);
+
+  //     const fetchOrder =
+  //       mode === 'add' ? await bso_api.add(orderData) : await bso_api.edit(id, orderData);
+  //     if (fetchOrder.result === true) {
+  //       const { ccusid, ccusnam, csonum } = fetchOrder.onsuccess;
+  //       AlertDialog(
+  //         'success',
+  //         `Data ${confName} Berhasil di ${captionSubmit}`,
+  //         <>
+  //           <p>Customer ID: {ccusid}</p>
+  //           <p>Customer Name: {ccusnam}</p>
+  //           <p>Sales Order ID: {csonum}</p>
+  //         </>,
+  //         redirectToParentLocation
+  //       );
+  //     } else if (fetchOrder.result === false) {
+  //       const errorMain = convertNewLine(fetchOrder.onfail.cerror);
+  //       const errorMoreInfo = fetchOrder.moreinfo.Error;
+  //       const errorAll =
+  //         errorMain + (errorMoreInfo !== undefined ? convertNewLine(errorMoreInfo) : '');
+  //       throw errorAll;
+  //     } else {
+  //       throw fetchOrder.message;
+  //     }
+  //   } catch (error) {
+  //     switch (error) {
+  //       case typesError.SECRET_KEY.msg:
+  //         AlertDialog(
+  //           'error',
+  //           'Session Telah Habis.',
+  //           <p>
+  //             Gagal {captionSubmit} Data {confName}
+  //           </p>,
+  //           handleOpenLoginPopup
+  //         );
+  //         break;
+  //       case typesError.FETCH.msg:
+  //         AlertDialog('error', 'Salah', typesError.FETCH.res);
+  //         break;
+  //       case typesError.ITEMS.msg:
+  //         AlertDialog('error', 'Salah', typesError.ITEMS.res);
+  //         break;
+  //       default:
+  //         AlertDialog('error', 'Salah', error);
+  //         break;
+  //     }
+  //   } finally {
+  //     setIsSubmit(false);
+  //   }
+  // };
+  //#endregion Submit
 
   return (
     <>
@@ -214,11 +236,16 @@ export default function BSOForm({ mode }) {
         mode={mode}
         isLoginPopup={isLoginPopup}
         handleOpenLoginPopup={handleOpenLoginPopup}
+        isSavedHeader={isSavedHeader}
+        setIsSavedHeader={setIsSavedHeader}
         setIsEditHeader={setIsEditHeader}
         openHeader={openHeader}
         setOpenHeader={setOpenHeader}
+        customerId={customerId}
       />
       <BSOFormItem
+        salesOrderID={headers[BSOFHEAD.CSONUM]}
+        warehouseID={headers[BSOFHEAD.CWHSEID]}
         items={items}
         dispatchItems={dispatchItems}
         initQtyItemKey={confQtyKey}
@@ -229,6 +256,8 @@ export default function BSOForm({ mode }) {
         setIsEditItem={setIsEditItem}
         openHeader={openHeader}
         setOpenHeader={setOpenHeader}
+        isSavedHeader={isSavedHeader}
+        isSubmit={isSubmit}
       />
       <SpacerContainer />
       <GrandTotalWrapper
@@ -247,6 +276,7 @@ export default function BSOForm({ mode }) {
             payload: event.target.value,
           })
         }
+        disableDiscPPN={true}
         headers={headers}
         setIsEditHeader={setIsEditHeader}
       />
