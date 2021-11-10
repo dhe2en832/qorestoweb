@@ -96,6 +96,15 @@ function useProvideAuth() {
   //   cb();
   // };
 
+  const handleLogout = (cb) => {
+    setLoggedIn(false);
+    setSessionTimeout(false);
+    setUserID(null);
+    setSessionKey(null);
+    setSessionID(null);
+    cb();
+  }
+
   const signout = async (cb) => {
     try {
       const res = await fetch(ApiRoute.LOGIN_X, {
@@ -111,30 +120,23 @@ function useProvideAuth() {
         }),
       });
       const resJson = await res.json();
-      if (resJson.result === true) {
-        setLoggedIn(false);
-        setSessionTimeout(false);
-        setUserID(null);
-        setSessionKey(null);
-        setSessionID(null);
-        cb();
-      } else if (resJson.result === false) throw resJson.onfail.cerror;
+      if (resJson.result === true) AlertDialog('success', 'Logout', typesError.SESSION_CLOSED.res, handleLogout(cb));
+      else if (resJson.result === false) throw resJson.onfail.cerror;
       else throw resJson.message;
     } catch (error) {
-      let messageError;
       switch (error) {
         case typesError.FETCH.msg:
-          messageError = typesError.FETCH.res;
+          AlertDialog('error', 'Salah', typesError.FETCH.res, handleLogout(cb));
           break;
-        default: {
-          if (error.message === typesError.FETCH.msg) messageError = typesError.FETCH.res;
-          else messageError = error;
+        case typesError.SESSION_CLOSED.msg:
+          AlertDialog('success', 'Logout', typesError.SESSION_CLOSED.res, handleLogout(cb));
           break;
-        }
+        default:
+          AlertDialog('error', 'Salah', error, handleLogout(cb));
+          break;
       }
-      AlertDialog('error', 'Salah', messageError);
     }
-  };
+  }
 
   const handleOnIdle = () => {
     setUserID(null);
