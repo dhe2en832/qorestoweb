@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { memo } from 'react';
 import PropTypes from 'prop-types';
 import LazyLoad from 'react-lazyload';
 import Box from '@mui/material/Box';
@@ -39,6 +39,8 @@ function TableWrapperComplex({
   isLookup,
   lookupFunc,
   handleDelete,
+  dense,
+  setDense,
 }) {
   const { theme, mdUp, smUp, smDown } = useResponsive();
   const styles = {
@@ -133,7 +135,6 @@ function TableWrapperComplex({
       background: theme.palette.background.default,
     },
   };
-  const [dense, setDense] = useState(false);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -149,6 +150,10 @@ function TableWrapperComplex({
 
   const handleChangeDense = (event) => {
     setDense(event.target.checked);
+  };
+
+  const labelRows = ({ from, to, count }) => {
+    return `${from}-${to} dari ${count !== -1 ? count : `lebih dari ${to}`}`;
   };
 
   // const emptyRows = rowsPerPage - Math.min(rowsPerPage, lists.length - page * rowsPerPage);
@@ -261,7 +266,7 @@ function TableWrapperComplex({
             <FormControlLabel
               sx={styles.tableDenser}
               control={<Checkbox size="small" checked={dense} onChange={handleChangeDense} />}
-              label="Dense Table"
+              label="Rapatkan Baris"
             />
           </Grid>
           <Grid item>
@@ -279,6 +284,7 @@ function TableWrapperComplex({
               onRowsPerPageChange={handleChangeRowsPerPage}
               ActionsComponent={TablePaginationActions}
               sx={styles.tablePaginationActions}
+              labelDisplayedRows={labelRows}
             />
           </Grid>
         </Grid>
@@ -304,6 +310,8 @@ TableWrapperComplex.propTypes = {
   isLookup: PropTypes.bool.isRequired,
   lookupFunc: PropTypes.func,
   handleDelete: PropTypes.func,
+  dense: PropTypes.bool.isRequired,
+  setDense: PropTypes.func.isRequired,
 };
 
 export default memo(TableWrapperComplex);
