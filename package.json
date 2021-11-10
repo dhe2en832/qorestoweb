@@ -40,8 +40,8 @@
     "workbox-streams": "^5.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "rm -rf build && react-scripts build",
+    "start": "set NODE_ENV=development && react-scripts start",
+    "build": "rm -rf build && set NODE_ENV=production && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
