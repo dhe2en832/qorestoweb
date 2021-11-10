@@ -36,7 +36,7 @@ export const headCells = [
     id: BSTOCKF.NHRGJUA,
     numeric: true,
     disablePadding: false,
-    label: 'Harga (Rp)',
+    label: 'Harga',
   },
 ];
 
