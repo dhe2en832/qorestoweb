@@ -41,6 +41,8 @@ export default memo(function BSTOCKLookup({
     setLimit,
     page,
     setPage,
+    dense,
+    setDense
   } = useTableListsLookup({
     dataSource: bstock_api,
     headCells,
@@ -54,6 +56,8 @@ export default memo(function BSTOCKLookup({
 
   return (
     <ModalWrapper
+      fullScreen={false}
+      maxWidth={"xl"}
       show={lookup.show}
       hide={abortLookup}
       title={`DAFTAR ${confName.toUpperCase()}`}
@@ -104,6 +108,8 @@ export default memo(function BSTOCKLookup({
             setPage={setPage}
             isLookup={true}
             lookupFunc={getChoosed}
+            dense={dense}
+            setDense={setDense}
           />
         )}
       </>

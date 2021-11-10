@@ -37,6 +37,8 @@ export default memo(function BSALESPLookup({
     setLimit,
     page,
     setPage,
+    dense,
+    setDense
   } = useTableListsLookup({
     dataSource: bwhse_api,
     headCells,
@@ -50,6 +52,8 @@ export default memo(function BSALESPLookup({
 
   return (
     <ModalWrapper
+      fullScreen={false}
+      maxWidth={"xl"}
       show={lookup.show}
       hide={abortLookup}
       title={`DAFTAR ${confName.toUpperCase()}`}
@@ -93,6 +97,8 @@ export default memo(function BSALESPLookup({
             setPage={setPage}
             isLookup={true}
             lookupFunc={getChoosed}
+            dense={dense}
+            setDense={setDense}
           />
         )}
       </>
