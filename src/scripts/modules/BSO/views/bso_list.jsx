@@ -34,6 +34,8 @@ export default function BSOList() {
     setLimit,
     page,
     setPage,
+    dense,
+    setDense,
   } = useTableLists({
     dataSource: bso_api,
     headCells,
@@ -87,6 +89,8 @@ export default function BSOList() {
           setPage={setPage}
           isLookup={false}
           handleDelete={() => {}}
+          dense={dense}
+          setDense={setDense}
         />
       )}
     </Container>
