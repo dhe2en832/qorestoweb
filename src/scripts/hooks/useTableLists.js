@@ -30,6 +30,7 @@ export default function useTableLists({
     .filter((data) => data.index === indexKey)
     .map((label) => label.title)[0];
   const [loading, setLoading] = useState(false);
+  const [dense, setDense] = useState(false);
 
   const handleSubmitSearch = () => {
     setSubmitSearch({
@@ -177,5 +178,7 @@ export default function useTableLists({
     setLimit,
     page,
     setPage,
+    dense,
+    setDense,
   };
 }
