@@ -30,6 +30,10 @@ export const typesError = {
       </div>,
     ],
   },
+  SESSION_CLOSED: {
+    msg: 'Tidak dapat mengakhiri session\r\n',
+    res: 'Session telah ditutup'
+  },
   FETCH: { msg: 'Failed to fetch', res: 'Fetch ke Server Gagal atau Server sedang Offline' },
   ITEMS: { msg: 'Empty query item (a)', res: 'Daftar Items Stock masih kosong' },
   EMPTY_USER: {
