@@ -124,11 +124,11 @@ export default function useLookup({
       return false;
     }
   };
-  const handleChooseLookup = async (event, row) => {
+  const handleChooseLookup = async (event, key) => {
     event.preventDefault();
     try {
       const dataOptions = {
-        key: row.key,
+        key,
         listfields: dataLookupNeeds(showLookup.accessorName),
       };
       const getSourceByID = await showLookup.dataSource.getRec(dataOptions);
