@@ -6,7 +6,7 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Input from '@mui/material/Input';
 import InputAdornment from '@mui/material/InputAdornment';
-import Button from '@mui/material/Button';
+import LoadingButton from '@mui/lab/LoadingButton';
 import Typography from '@mui/material/Typography';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import LockOpen from '@mui/icons-material/LockOpen';
@@ -24,6 +24,7 @@ function Login({ isForm, afterLogin }) {
     },
   };
   const [state, setState] = useState({ cuserid: '', cpassw: '' });
+  const [loading, setLoading] = useState(false);
   const handleChange = (event) => {
     setState((prevState) => {
       return { ...prevState, [event.target.id]: event.target.value };
@@ -50,7 +51,8 @@ function Login({ isForm, afterLogin }) {
   let { from } = location.state || { from: { pathname: '/' } };
   let login = (event) => {
     event.preventDefault();
-    auth.signin(state, () => (isForm ? afterLogin() : history.replace(from)), isForm);
+    setLoading(true)
+    auth.signin(state, () => (isForm ? afterLogin() : history.replace(from)), isForm, setLoading);
   };
 
   return (
@@ -96,9 +98,9 @@ function Login({ isForm, afterLogin }) {
             </FormControl>
           </Grid>
           <Grid item xs={12}>
-            <Button variant="contained" color="primary" sx={styles.margin} onClick={login}>
+            <LoadingButton variant="contained" color="primary" sx={styles.margin} onClick={login} loading={loading}>
               Login
-            </Button>
+            </LoadingButton>
           </Grid>
           {isForm && (
             <Grid item xs={12}>
