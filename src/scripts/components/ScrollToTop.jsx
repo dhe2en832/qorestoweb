@@ -23,7 +23,7 @@ export default function ScrollToTop({ children, anchorRef }) {
   };
   const trigger = useScrollTrigger({
     disableHysteresis: true,
-    threshold: 80,
+    threshold: 20,
   });
   const handleClick = (event) => {
     event.preventDefault();
