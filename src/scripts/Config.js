@@ -12,6 +12,7 @@ const Config = {
   DATE_POST_FORMAT: 'YYYYMMDD',
   TIME_POST_FORMAT: 'HH:mm:ss',
   IDLE_TIMEOUT: 86400000,
+  USE_BRWDEF: true,
 };
 
 export default Config;
