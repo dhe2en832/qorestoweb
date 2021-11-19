@@ -1,5 +1,5 @@
 export const typesError = {
-  SECRET_KEY: {
+  SECRET_INVALID: {
     msg: 'Secret Key tidak valid\r\n',
     res: [
       'Secret Key tidak valid',
@@ -19,7 +19,8 @@ export const typesError = {
   },
   SESSION_LOCKED: {
     msg: 'Session di-LOCK oleh proses lain\r\n',
-    res: () => setTimeout(() => console.log('waiting 2 seconds'), 2000),
+    res: 'Session terkunci oleh proses lain,\r\nSilahkan Coba Lagi.',
+    func: (cb) => setTimeout(() => { cb && cb(); console.log('waiting 0.5 seconds'); }, 500),
   },
   SESSION_TIMEOUT: {
     msg: 'Session Id telah expired\r\n',
@@ -35,13 +36,21 @@ export const typesError = {
     res: 'Session telah ditutup'
   },
   FETCH: { msg: 'Failed to fetch', res: 'Fetch ke Server Gagal atau Server sedang Offline' },
-  ITEMS: { msg: 'Empty query item (a)', res: 'Daftar Items Stock masih kosong' },
-  EMPTY_USER: {
-    msg: 'Empty user\r\n',
-    res: 'User ID Masih Kosong.',
+  LOGIN: {
+    EMPTY_USER: {
+      msg: 'Empty user\r\n',
+      res: 'User ID Masih Kosong.',
+    },
   },
-  EMPTY_ITEM: {
-    msg: 'Empty query item (a)\r\n',
-    res: 'Items tidak boleh kosong',
-  },
+  ITEMS: {
+    EMPTY_ITEM: {
+      msg: 'Empty query item (a)\r\n',
+      res: 'Items tidak boleh kosong',
+    },
+    INVALID_ITEM: {
+      msg: '::',
+      resCode: (data) => data.split('::')[0].toLowerCase(),
+      resText: (data) => data.split('::')[1].trim(),
+    }
+  }
 };
