@@ -35,7 +35,7 @@ function useProvideAuth() {
   //   cb();
   // };
 
-  const signin = async (data, cb, isForm) => {
+  const signin = async (data, cb, isForm, setLoading) => {
     try {
       const res = await fetch(ApiRoute.LOGIN_X, {
         method: 'POST',
@@ -67,13 +67,14 @@ function useProvideAuth() {
       } else if (resJson.result === false) throw resJson.onfail.cerror;
       else throw resJson.message;
     } catch (error) {
+      console.log(error.message);
       let messageError;
       switch (error) {
         case typesError.FETCH.msg:
           messageError = typesError.FETCH.res;
           break;
-        case typesError.EMPTY_USER.msg:
-          messageError = typesError.EMPTY_USER.res;
+        case typesError.LOGIN.EMPTY_USER.msg:
+          messageError = typesError.LOGIN.EMPTY_USER.res;
           break;
         default: {
           if (error.message === typesError.FETCH.msg) messageError = typesError.FETCH.res;
@@ -84,6 +85,8 @@ function useProvideAuth() {
       isForm
         ? AlertDialogNested('LoginForm', 'error', 'Salah', messageError)
         : AlertDialog('error', 'Salah', messageError);
+    } finally {
+      setLoading && setLoading(false)
     }
   };
 
