@@ -3,7 +3,8 @@ import ProgressLoader from '../../../components/ProgressLoader';
 import ModalWrapper from '../../../components/ModalWrapper';
 import ToolbarSimple from '../../../components/ToolbarSimple';
 import TableWrapperComplex from '../../../components/TableWrapperComplex';
-import useTableListsLookup from '../../../hooks/useTableListsLookup';
+import TableWrapperComplexDynamic from '../../../components/TableWrapperComplexDynamic';
+import useTableListsLookupDynamic from '../../../hooks/useTableListsLookupDynamic';
 import AlertContainer from '../../../components/AlertContainer';
 import KeySearchDialog from '../../../components/KeySearchDialog';
 import TextFilterDialog from '../../../components/TextFilterDialog';
@@ -33,6 +34,7 @@ export default memo(function BSTOCKLookup({
     openTextFilterDlg,
     setOpenTextFilterDlg,
     handleTextFilter,
+    columns,
     lists,
     listCount,
     setListCount,
@@ -42,8 +44,9 @@ export default memo(function BSTOCKLookup({
     page,
     setPage,
     dense,
-    setDense
-  } = useTableListsLookup({
+    setDense,
+    useBRWDEF,
+  } = useTableListsLookupDynamic({
     dataSource: bstock_api,
     headCells,
     confPrimKey,
@@ -92,26 +95,45 @@ export default memo(function BSTOCKLookup({
         <AlertContainer idElem={idElemLookup} />
         {loading ? (
           <ProgressLoader />
-        ) : (
-          <TableWrapperComplex
-            keyName={confName}
-            keyID={confPrimKey}
-            headCells={headCells}
-            bodyCells={bodyCells}
-            lists={lists}
-            listCount={listCount}
-            setListCount={setListCount}
-            setOffset={setOffset}
-            limit={limit}
-            setLimit={setLimit}
-            page={page}
-            setPage={setPage}
-            isLookup={true}
-            lookupFunc={getChoosed}
-            dense={dense}
-            setDense={setDense}
-          />
-        )}
+        ) : useBRWDEF ?
+          (
+            <TableWrapperComplexDynamic
+              keyName={confName}
+              keyID={confPrimKey}
+              columns={columns}
+              lists={lists}
+              listCount={listCount}
+              setListCount={setListCount}
+              setOffset={setOffset}
+              limit={limit}
+              setLimit={setLimit}
+              page={page}
+              setPage={setPage}
+              isLookup={true}
+              lookupFunc={getChoosed}
+              dense={dense}
+              setDense={setDense}
+            />
+          ) : (
+            <TableWrapperComplex
+              keyName={confName}
+              keyID={confPrimKey}
+              headCells={headCells}
+              bodyCells={bodyCells}
+              lists={lists}
+              listCount={listCount}
+              setListCount={setListCount}
+              setOffset={setOffset}
+              limit={limit}
+              setLimit={setLimit}
+              page={page}
+              setPage={setPage}
+              isLookup={true}
+              lookupFunc={getChoosed}
+              dense={dense}
+              setDense={setDense}
+            />)
+        }
       </>
     </ModalWrapper>
   );
