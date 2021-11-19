@@ -3,6 +3,7 @@ import useActionsItem from './useActionsItem';
 import LookupStock from '../modules/BSTOCK/views/bstock_lookup';
 import bstock_api from '../modules/BSTOCK/controllers/bstock_api';
 import { headCells } from '../modules/BSTOCK/models/bstock_table';
+import ToastBar from '../components/ToastBar';
 
 export default function useLookupsItemStock({
   items,
@@ -92,17 +93,35 @@ export default function useLookupsItemStock({
         } else if (getStockById.result === false) handleOpenItemStock(index, name, nextFocus);
         else throw getStockById.message;
       } catch (error) {
-        console.log(error);
+        ToastBar('error', error, 3000, () => { }, 'bottom-end');
       }
     } else {
       return false;
     }
   };
 
-  const handleChooseItemStock = (event, stock) => {
+  const handleChooseItemStock = async (event, key) => {
     event.preventDefault();
-    handleCloseItemStock(true);
-    handleUpdateItemStock(stock, lookupItemStock.fromItemIndex);
+    try {
+      const listFieldsMap = headCells.map((head) => head.id);
+      const dataOptions = {
+        key,
+        listfields: listFieldsMap,
+      };
+      const getStockByID = await bstock_api.getRec(dataOptions);
+      if (getStockByID.result === true) {
+        handleCloseItemStock(true);
+        handleUpdateItemStock(getStockByID.data, lookupItemStock.fromItemIndex);
+        setIsFocusStock({
+          focus: true,
+          targetIndex: lookupItemStock.fromItemIndex,
+          targetName: 'cstoname',
+        })
+      } else if (getStockByID.result === false) throw getStockByID.onfail.cerror;
+      else throw getStockByID.message;
+    } catch (error) {
+      ToastBar('error', error, 3000, () => { }, 'bottom-end');
+    }
   };
 
   const lookupItemStockElem = () => {
