@@ -22,3 +22,14 @@ export const dateToString = (date) => {
 export const timeToString = (time) => {
   return moment(time).format(Config.TIME_POST_FORMAT);
 };
+
+export const alignmentConvert = (alignment) => {
+  switch (alignment) {
+    case "R":
+      return "right"
+    case "C":
+      return "center"
+    default:
+      return "left"
+  }
+}
