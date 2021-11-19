@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useRouteMatch } from 'react-router-dom';
+import Config from '../Config'
 import AlertDialog from '../components/AlertDialog';
 // import ConfirmDialog from '../components/ConfirmDialog';
 import { typesError } from '../utils/types-error';
@@ -32,7 +33,7 @@ export default function useTableLists({
     .map((label) => label.title)[0];
   const [loading, setLoading] = useState(false);
   const [dense, setDense] = useState(false);
-  const [useBRWDEF, setUseBRWDEF] = useState(false);
+  const [useBRWDEF, setUseBRWDEF] = useState(Config.USE_BRWDEF);
 
   const handleSubmitSearch = () => {
     setSubmitSearch({

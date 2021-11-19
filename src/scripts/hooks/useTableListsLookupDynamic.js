@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Config from '../Config'
 import AlertDialogNested from '../components/AlertDialogNested';
 import { typesError } from '../utils/types-error';
 import useSearch from './useSearch';
@@ -32,7 +33,7 @@ export default function useTableListsLookupDynamic({
     .map((label) => label.title)[0];
   const [loading, setLoading] = useState(false);
   const [dense, setDense] = useState(false);
-  const [useBRWDEF, setUseBRWDEF] = useState(true);
+  const [useBRWDEF, setUseBRWDEF] = useState(Config.USE_BRWDEF);
 
   const handleSubmitSearch = () => {
     setSubmitSearch({
