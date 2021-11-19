@@ -46,16 +46,12 @@ function TableWrapperComplex({
   const styles = {
     tableContainer: {
       width: '100%',
-      height: isLookup ? 'auto' : mdUp ? 'auto' : '76.5vh',
-      [theme.breakpoints.up('md')]: {
-        paddingLeft: isLookup ? theme.spacing(2) : theme.spacing(0),
-        paddingRight: isLookup ? theme.spacing(2) : theme.spacing(0),
-      },
-      overflowX: isLookup ? 'initial' : mdUp ? 'initial' : 'auto',
+      height: isLookup ? 'auto' : mdUp ? '72.5vh' : '76.5vh',
+      overflowX: isLookup ? 'initial' : 'auto',
       marginTop: isLookup ? theme.spacing(0) : theme.spacing(1),
     },
     table: {
-      minWidth: 450,
+      minWidth: 'max-content',
     },
     tableDenser: {
       display: smUp ? 'inline-flex' : 'none',
@@ -76,8 +72,16 @@ function TableWrapperComplex({
       },
     },
     tableBody: {
-      '&:hover': {
-        backgroundColor: theme.palette.primary.light + '!important',
+      '& > :hover': {
+        background: theme.palette.secondary.light + '!important',
+        '& > :nth-of-type(1)': {
+          background: theme.palette.secondary.light + '!important',
+        },
+      },
+    },
+    tableRow: {
+      ':nth-of-type(odd)': {
+        background: theme.palette.grey[100],
       },
     },
     tablePagination: {
@@ -101,12 +105,19 @@ function TableWrapperComplex({
         ...(smDown && { marginBottom: 0, marginRight: '5px' }),
       },
     },
-    stickyBody: {
+    stickyBodyOdd: {
       position: 'sticky',
       top: 0,
       left: 0,
       zIndex: 1,
-      background: mdUp ? '' : theme.palette.background.default,
+      background: theme.palette.grey[100],
+    },
+    stickyBodyEven: {
+      position: 'sticky',
+      top: 0,
+      left: 0,
+      zIndex: 1,
+      background: theme.palette.background.default,
     },
     stickyHeader: {
       position: 'sticky',
@@ -124,10 +135,6 @@ function TableWrapperComplex({
     },
     stickyFooter: {
       width: '100%',
-      [theme.breakpoints.up('md')]: {
-        paddingLeft: isLookup ? theme.spacing(2) : theme.spacing(0),
-        paddingRight: isLookup ? theme.spacing(2) : theme.spacing(0),
-      },
       position: 'sticky',
       bottom: 0,
       left: 0,
@@ -190,7 +197,7 @@ function TableWrapperComplex({
               )}
             </TableRow>
           </TableHead>
-          <TableBody>
+          <TableBody sx={styles.tableBody}>
             {lists.length < 1 ? (
               <TableRow>
                 <TableCell colSpan={99} align="center">
@@ -198,23 +205,29 @@ function TableWrapperComplex({
                 </TableCell>
               </TableRow>
             ) : (
-              lists.map((row, index) => (
+              lists.map((row, mainIndex) => (
                 <TableRow
-                  key={(keyName.replace(/\s/g, '') + '_btr_' + index).toString()}
+                  key={(keyName.replace(/\s/g, '') + '_btr_' + mainIndex).toString()}
                   onClick={
                     isLookup
                       ? row['lselect'] !== undefined
                         ? row['lselect'] === 'Y'
-                          ? (event) => lookupFunc(event, row)
+                          ? (event) => lookupFunc(event, row['key'])
                           : null
-                        : (event) => lookupFunc(event, row)
+                        : (event) => lookupFunc(event, row['key'])
                       : null
                   }
-                  hover
+                  sx={styles.tableRow}
                 >
                   {bodyCells(row).map((data, index) => (
                     <TableCell
-                      sx={index === 0 ? styles.stickyBody : null}
+                      sx={
+                        index === 0
+                          ? (mainIndex + 1) % 2 === 0
+                            ? styles.stickyBodyEven
+                            : styles.stickyBodyOdd
+                          : null
+                      }
                       align={data.align}
                       key={(keyName.replace(/\s/g, '') + '_btc_' + index).toString()}
                     >
