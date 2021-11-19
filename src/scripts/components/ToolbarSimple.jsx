@@ -61,7 +61,7 @@ function ToolbarSimple({
             </IconButton>
           </Grid>
         )}
-        <Grid item xs={smUp ? 'auto' : 8}>
+        <Grid item xs={smUp ? 'auto' : 12}>
           <SearchBar
             name="searchLookup"
             label={setSearchLabel}
