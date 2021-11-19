@@ -78,11 +78,11 @@ export default function useTableListsLookup({
         } else throw getDatas.message;
       } catch (error) {
         switch (error) {
-          case typesError.SECRET_KEY.msg:
+          case typesError.SECRET_INVALID.msg:
             AlertDialogNested(
               idElemLookup,
               'error',
-              ...typesError.SECRET_KEY.res,
+              ...typesError.SECRET_INVALID.res,
               handleOpenLoginPopup
             );
             break;
@@ -95,7 +95,7 @@ export default function useTableListsLookup({
             );
             break;
           case typesError.SESSION_LOCKED.msg:
-            typesError.SESSION_LOCKED.res();
+            typesError.SESSION_LOCKED.func();
             break;
           case typesError.SESSION_TIMEOUT.msg:
             AlertDialogNested(
@@ -107,9 +107,6 @@ export default function useTableListsLookup({
             break;
           case typesError.FETCH.msg:
             AlertDialogNested(idElemLookup, 'error', 'Salah', typesError.FETCH.res);
-            break;
-          case typesError.ITEMS.msg:
-            AlertDialogNested(idElemLookup, 'error', 'Salah', typesError.ITEMS.res);
             break;
           default:
             AlertDialogNested(idElemLookup, 'error', 'Salah', error);

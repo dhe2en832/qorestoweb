@@ -115,23 +115,20 @@ export default function useTableLists({
         } else throw getDatas.message;
       } catch (error) {
         switch (error) {
-          case typesError.SECRET_KEY.msg:
-            AlertDialog('error', ...typesError.SECRET_KEY.res, redirectToLogin);
+          case typesError.SECRET_INVALID.msg:
+            AlertDialog('error', ...typesError.SECRET_INVALID.res, redirectToLogin);
             break;
           case typesError.SESSION_INVALID.msg:
             AlertDialog('error', ...typesError.SESSION_INVALID.res, redirectToLogin);
             break;
           case typesError.SESSION_LOCKED.msg:
-            typesError.SESSION_LOCKED.res();
+            typesError.SESSION_LOCKED.func();
             break;
           case typesError.SESSION_TIMEOUT.msg:
             AlertDialog('error', ...typesError.SESSION_TIMEOUT.res, redirectToLogin);
             break;
           case typesError.FETCH.msg:
             AlertDialog('error', 'Salah', typesError.FETCH.res);
-            break;
-          case typesError.ITEMS.msg:
-            AlertDialog('error', 'Salah', typesError.ITEMS.res);
             break;
           default:
             AlertDialog('error', 'Salah', error);
