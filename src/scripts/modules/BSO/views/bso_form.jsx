@@ -71,6 +71,7 @@ export default function BSOForm({ mode }) {
   }, [isEditHeader, isEditItem, grandTotalCalculate]);
 
   useEffect(() => {
+    let isActive = true;
     const putOrderDataToEditForm = async () => {
       try {
         const dataOptions = {
@@ -129,9 +130,10 @@ export default function BSOForm({ mode }) {
         AlertDialog('error', `Gagal Mengambil Data ${confName}`, error, redirectToParentLocation);
       }
     };
-    if (mode === 'edit') {
+    if (mode === 'edit' && isActive === true) {
       putOrderDataToEditForm();
     }
+    return () => (isActive = false);
   }, [mode, id, dispatchHeaders, dispatchItems, redirectToParentLocation]);
 
   const handleSubmitOrder = async () => {
@@ -141,10 +143,7 @@ export default function BSOForm({ mode }) {
         'Keluar Form Sales Order',
         'Data Sales Order yang belum disimpan akan terhapus. Anda yakin?',
         'Keluar',
-        () => {
-          redirectToParentLocation();
-          setIsSubmit(false);
-        },
+        redirectToParentLocation,
         () => {
           setIsSubmit(false);
         }
@@ -201,7 +200,7 @@ export default function BSOForm({ mode }) {
   //     }
   //   } catch (error) {
   //     switch (error) {
-  //       case typesError.SECRET_KEY.msg:
+  //       case typesError.SECRET_INVALID.msg:
   //         AlertDialog(
   //           'error',
   //           'Session Telah Habis.',
@@ -213,9 +212,6 @@ export default function BSOForm({ mode }) {
   //         break;
   //       case typesError.FETCH.msg:
   //         AlertDialog('error', 'Salah', typesError.FETCH.res);
-  //         break;
-  //       case typesError.ITEMS.msg:
-  //         AlertDialog('error', 'Salah', typesError.ITEMS.res);
   //         break;
   //       default:
   //         AlertDialog('error', 'Salah', error);
