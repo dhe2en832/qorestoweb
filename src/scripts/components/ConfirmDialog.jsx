@@ -28,9 +28,9 @@ export default function ConfirmDialog(
     })
     .then((result) => {
       if (result.isConfirmed) {
-        confirmed();
+        return confirmed();
       } else {
-        cancelled();
+        return cancelled();
       }
     });
 }
