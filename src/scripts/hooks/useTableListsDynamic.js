@@ -7,7 +7,7 @@ import { typesError } from '../utils/types-error';
 import useSearch from './useSearch';
 import useRedirectToLogin from './useRedirectToLogin';
 
-export default function useTableLists({
+export default function useTableListsDynamic({
   dataSource,
   headCells,
   confPrimKey,
