@@ -2,10 +2,11 @@ import React from 'react';
 import Container from '@mui/material/Container';
 import ProgressLoader from '../../../components/ProgressLoader';
 import TableWrapperComplex from '../../../components/TableWrapperComplex';
+import TableWrapperComplexDynamic from '../../../components/TableWrapperComplexDynamic';
 import KeySearchDialog from '../../../components/KeySearchDialog';
 import TextFilterDialog from '../../../components/TextFilterDialog';
 import ToolbarComplex from '../../../components/ToolbarComplex';
-import useTableLists from '../../../hooks/useTableLists';
+import useTableListsDynamic from '../../../hooks/useTableListsDynamic';
 
 import bso_api from '../controller/bso_api';
 import { confPrimKey, confName } from '../model/bso_config';
@@ -26,6 +27,7 @@ export default function BSOList() {
     openTextFilterDlg,
     setOpenTextFilterDlg,
     handleTextFilter,
+    columns,
     lists,
     listCount,
     setListCount,
@@ -36,7 +38,8 @@ export default function BSOList() {
     setPage,
     dense,
     setDense,
-  } = useTableLists({
+    useBRWDEF,
+  } = useTableListsDynamic({
     dataSource: bso_api,
     headCells,
     confPrimKey,
@@ -72,6 +75,25 @@ export default function BSOList() {
       />
       {loading ? (
         <ProgressLoader />
+      ) : useBRWDEF ? (
+        <TableWrapperComplexDynamic
+          keyName={confName}
+          keyID={confPrimKey}
+          keyURL={url}
+          columns={columns}
+          lists={lists}
+          listCount={listCount}
+          setListCount={setListCount}
+          setOffset={setOffset}
+          limit={limit}
+          setLimit={setLimit}
+          page={page}
+          setPage={setPage}
+          isLookup={false}
+          handleDelete={() => {}}
+          dense={dense}
+          setDense={setDense}
+        />
       ) : (
         <TableWrapperComplex
           keyName={confName}
