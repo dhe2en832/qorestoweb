@@ -3,6 +3,7 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Collapse from '@mui/material/Collapse';
 import Button from '@mui/material/Button';
+import LoadingButton from '@mui/lab/LoadingButton';
 import Typography from '@mui/material/Typography';
 import FoldIcon from '@mui/icons-material/UnfoldLess';
 import UnfoldIcon from '@mui/icons-material/UnfoldMore';
@@ -58,6 +59,7 @@ export default memo(function BSOForm_Headers({
 }) {
   const { smUp } = useResponsive();
   const [openFoot, setOpenFoot] = useState(false);
+  const [loadingBtn, setLoadingBtn] = useState(false);
   const disableCheck = mode === 'edit' ? true : isSavedHeader ? true : false;
 
   const {
@@ -265,6 +267,7 @@ export default memo(function BSOForm_Headers({
   const saveOrderHeader = async () => {
     let moreInfo;
     if (mode === 'add' && openHeader === true && isSavedHeader === false) {
+      setLoadingBtn(true);
       try {
         const dataOptions = {
           data: { ...headers },
@@ -291,7 +294,7 @@ export default memo(function BSOForm_Headers({
         else throw fetchHeader.message;
       } catch (error) {
         switch (error) {
-          case typesError.SECRET_KEY.msg:
+          case typesError.SECRET_INVALID.msg:
             AlertDialog(
               'error',
               'Session Telah Habis.',
@@ -317,6 +320,8 @@ export default memo(function BSOForm_Headers({
             );
             break;
         }
+      } finally {
+        setLoadingBtn(false);
       }
     }
   };
@@ -334,13 +339,14 @@ export default memo(function BSOForm_Headers({
         } else if (fetchCustName.result === false) throw fetchCustName.onfail.cerror;
         else throw fetchCustName.message;
       } catch (error) {
-        ToastBar(
-          'error',
-          'Gagal Lookup Nama Customer (ccusid field)',
-          3000,
-          () => {},
-          'bottom-end'
-        );
+        console.log(error);
+        // ToastBar(
+        //   'error',
+        //   'Gagal Lookup Nama Customer (ccusid field)',
+        //   3000,
+        //   () => {},
+        //   'bottom-end'
+        // );
       }
     }
     if (mode === 'edit' && customerId !== '' && lookupDetails.ccusid === '' && isActive === true)
@@ -670,10 +676,11 @@ export default memo(function BSOForm_Headers({
           </Grid>
           <Grid item container xs={2} spacing={1}>
             <Grid item container justifyContent="flex-end">
-              <Button
+              <LoadingButton
                 variant="contained"
                 size="small"
                 color="secondary"
+                loading={loadingBtn}
                 onClick={() => {
                   setOpenHeader(!openHeader);
                   saveOrderHeader();
@@ -689,7 +696,7 @@ export default memo(function BSOForm_Headers({
                 ) : (
                   <SaveIcon fontSize="small" />
                 )}
-              </Button>
+              </LoadingButton>
             </Grid>
           </Grid>
         </Grid>
