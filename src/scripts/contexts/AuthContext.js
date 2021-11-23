@@ -67,7 +67,7 @@ function useProvideAuth() {
       } else if (resJson.result === false) throw resJson.onfail.cerror;
       else throw resJson.message;
     } catch (error) {
-      console.log(error.message);
+      setLoading && setLoading(false)
       let messageError;
       switch (error) {
         case typesError.FETCH.msg:
@@ -85,8 +85,6 @@ function useProvideAuth() {
       isForm
         ? AlertDialogNested('LoginForm', 'error', 'Salah', messageError)
         : AlertDialog('error', 'Salah', messageError);
-    } finally {
-      setLoading && setLoading(false)
     }
   };
 
