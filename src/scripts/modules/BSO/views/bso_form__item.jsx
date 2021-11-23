@@ -65,10 +65,10 @@ export default memo(function BSOForm_Items({
     },
     bodyCell: {
       '&:nth-of-type(odd)': {
-        backgroundColor: theme.palette.grey[200],
+        backgroundColor: theme.palette.grey[100],
       },
       '&& :focus-within': {
-        backgroundColor: theme.palette.primary.light,
+        backgroundColor: theme.palette.secondary.light,
       },
       '& .MuiTableCell-body': {
         paddingTop: theme.spacing(0.7),
@@ -160,12 +160,50 @@ export default memo(function BSOForm_Items({
     }
   };
 
-  const handleValidationNumber = (value, index, name, label) => {
+  const handleValidationQty = (value, index, name, label) => {
     if (isFocusStock.focus === false) {
       if (value === 0 || value === '0.00' || value === '') {
         ToastBar(
           'error',
           `${label || name} tidak boleh nol!`,
+          3000,
+          () =>
+            setIsFocusStock({
+              focus: true,
+              targetName: name,
+              targetIndex: index,
+            }),
+          'bottom-end'
+        );
+      }
+    }
+  };
+
+  const handleValidationCurrency = (value, index, name, label) => {
+    if (isFocusStock.focus === false) {
+      if (value === '') {
+        ToastBar(
+          'error',
+          `${label || name} tidak boleh kosong!`,
+          3000,
+          () =>
+            setIsFocusStock({
+              focus: true,
+              targetName: name,
+              targetIndex: index,
+            }),
+          'bottom-end'
+        );
+      }
+    }
+  };
+
+  const handleValidationDisc = (value, index, name, label) => {
+    if (isFocusStock.focus === false) {
+      if (parseFloat(value) > 100) {
+        ToastBar(
+          'error',
+          `${label || name} tidak boleh lebih dari 100!`,
           3000,
           () =>
             setIsFocusStock({
@@ -313,8 +351,10 @@ export default memo(function BSOForm_Items({
       else throw fetchPost.message;
     } catch (error) {
       switch (error) {
+        case typesError.FETCH.msg:
+          ToastBar('error', `${typesError.FETCH.res}`, 3000, () => {}, 'bottom-end');
+          break;
         case typesError.SESSION_INVALID.msg:
-        case typesError.SESSION_LOCKED.msg:
         case typesError.SESSION_TIMEOUT.msg:
           ToastBar(
             'error',
@@ -325,27 +365,58 @@ export default memo(function BSOForm_Items({
               setIsFocusStock({
                 focus: true,
                 targetIndex: indexItem,
-                targetName: BSOFITEM.CSTOCODE,
+                targetName: BSOFITEM.CSTONAME,
               });
             },
             'bottom-end'
           );
           break;
-        default:
+        case typesError.SESSION_LOCKED.msg:
           ToastBar(
             'error',
-            `${error}`,
+            `${typesError.SESSION_LOCKED.res}`,
             3000,
             () => {
-              setIsFocusStock({
-                focus: true,
-                targetIndex: indexItem,
-                targetName: BSOFITEM.CSTOCODE,
-              });
+              typesError.SESSION_LOCKED.func(() =>
+                setIsFocusStock({
+                  focus: true,
+                  targetIndex: indexItem,
+                  targetName: BSOFITEM.CSTONAME,
+                })
+              );
             },
             'bottom-end'
           );
           break;
+        default: {
+          if (error.includes(typesError.ITEMS.INVALID_ITEM.msg))
+            ToastBar(
+              'error',
+              `${typesError.ITEMS.INVALID_ITEM.resText(error)}`,
+              3000,
+              () =>
+                setIsFocusStock({
+                  focus: true,
+                  targetIndex: indexItem,
+                  targetName: typesError.ITEMS.INVALID_ITEM.resCode(error),
+                }),
+              'bottom-end'
+            );
+          else
+            ToastBar(
+              'error',
+              `${error}`,
+              3000,
+              () =>
+                setIsFocusStock({
+                  focus: true,
+                  targetIndex: indexItem,
+                  targetName: BSOFITEM.CSTONAME,
+                }),
+              'bottom-end'
+            );
+          break;
+        }
       }
     }
   };
@@ -427,6 +498,20 @@ export default memo(function BSOForm_Items({
                           fullWidth={true}
                           disabled={disableCheck(index)}
                         />
+                        <InputCardDecimal
+                          index={index}
+                          ref={(el) => (itemsIDRef.current[BSOFITEM.NQSO + '_' + index] = el)}
+                          label={'Qty'}
+                          name={BSOFITEM.NQSO}
+                          increase={handleIncreaseNumber}
+                          decrease={handleDecreaseNumber}
+                          change={handleChangeNumber}
+                          blur={handleValidationQty}
+                          value={item[BSOFITEM.NQSO]}
+                          setIsEditItem={setIsEditItem}
+                          setWidth={'19ch'}
+                          disabled={disableCheck(index)}
+                        />
                         <InputCardText
                           index={index}
                           ref={(el) => (itemsIDRef.current[BSOFITEM.CUOM + '_' + index] = el)}
@@ -438,27 +523,13 @@ export default memo(function BSOForm_Items({
                           setWidth={'10ch'}
                           disabled={disableCheck(index)}
                         />
-                        <InputCardDecimal
-                          index={index}
-                          ref={(el) => (itemsIDRef.current[BSOFITEM.NQSO + '_' + index] = el)}
-                          label={'Qty'}
-                          name={BSOFITEM.NQSO}
-                          increase={handleIncreaseNumber}
-                          decrease={handleDecreaseNumber}
-                          change={handleChangeNumber}
-                          blur={handleValidationNumber}
-                          value={item[BSOFITEM.NQSO]}
-                          setIsEditItem={setIsEditItem}
-                          setWidth={'19ch'}
-                          disabled={disableCheck(index)}
-                        />
                         <InputCardCurrency
                           index={index}
                           ref={(el) => (itemsIDRef.current[BSOFITEM.NHRGJUA + '_' + index] = el)}
                           label={'Harga (Rp.)'}
                           name={BSOFITEM.NHRGJUA}
                           change={handleChangeCurrency}
-                          blur={handleValidationNumber}
+                          blur={handleValidationCurrency}
                           value={item[BSOFITEM.NHRGJUA]}
                           setIsEditItem={setIsEditItem}
                           disabled={disableCheck(index)}
@@ -471,6 +542,7 @@ export default memo(function BSOForm_Items({
                           decrease={handleDecreaseNumber}
                           change={handleChangeNumber}
                           value={item[BSOFITEM.NDISC]}
+                          blur={handleValidationDisc}
                           setIsEditItem={setIsEditItem}
                           setWidth={'19ch'}
                           disabled={disableCheck(index)}
@@ -588,8 +660,8 @@ export default memo(function BSOForm_Items({
                 <TableCell align="center">Line No.</TableCell>
                 <TableCell align="center">Kode</TableCell>
                 <TableCell align="center">Nama Item</TableCell>
-                <TableCell align="center">Satuan</TableCell>
                 <TableCell align="center">Qty</TableCell>
+                <TableCell align="center">Satuan</TableCell>
                 <TableCell align="center">Harga (Rp)</TableCell>
                 <TableCell align="center">Discount (%)</TableCell>
                 <TableCell align="center">Disc Amount (Rp)</TableCell>
@@ -644,6 +716,20 @@ export default memo(function BSOForm_Items({
                       disabled={disableCheck(index)}
                     />
                   </TableCell>
+                  <TableCell align="center">
+                    <InputTableDecimal
+                      index={index}
+                      ref={(el) => (itemsIDRef.current[BSOFITEM.NQSO + '_' + index] = el)}
+                      name={BSOFITEM.NQSO}
+                      increase={handleIncreaseNumber}
+                      decrease={handleDecreaseNumber}
+                      change={handleChangeNumber}
+                      blur={handleValidationQty}
+                      value={item[BSOFITEM.NQSO]}
+                      setIsEditItem={setIsEditItem}
+                      disabled={disableCheck(index)}
+                    />
+                  </TableCell>
                   <TableCell>
                     <InputTableText
                       index={index}
@@ -656,27 +742,13 @@ export default memo(function BSOForm_Items({
                       disabled={disableCheck(index)}
                     />
                   </TableCell>
-                  <TableCell align="center">
-                    <InputTableDecimal
-                      index={index}
-                      ref={(el) => (itemsIDRef.current[BSOFITEM.NQSO + '_' + index] = el)}
-                      name={BSOFITEM.NQSO}
-                      increase={handleIncreaseNumber}
-                      decrease={handleDecreaseNumber}
-                      change={handleChangeNumber}
-                      blur={handleValidationNumber}
-                      value={item[BSOFITEM.NQSO]}
-                      setIsEditItem={setIsEditItem}
-                      disabled={disableCheck(index)}
-                    />
-                  </TableCell>
                   <TableCell align="right">
                     <InputTableCurrency
                       index={index}
                       ref={(el) => (itemsIDRef.current[BSOFITEM.NHRGJUA + '_' + index] = el)}
                       name={BSOFITEM.NHRGJUA}
                       change={handleChangeCurrency}
-                      blur={handleValidationNumber}
+                      blur={handleValidationCurrency}
                       value={item[BSOFITEM.NHRGJUA]}
                       setIsEditItem={setIsEditItem}
                       disabled={disableCheck(index)}
@@ -692,6 +764,7 @@ export default memo(function BSOForm_Items({
                       decrease={handleDecreaseNumber}
                       change={handleChangeNumber}
                       value={item[BSOFITEM.NDISC]}
+                      blur={handleValidationDisc}
                       setIsEditItem={setIsEditItem}
                       disabled={disableCheck(index)}
                     />
