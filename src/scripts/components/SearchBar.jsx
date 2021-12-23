@@ -8,7 +8,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 
-function SearchBar({ name, label, change, submit }) {
+function SearchBar({ name, label, value, change, submit }) {
   const styles = {
     textField: {
       height: 33,
@@ -45,6 +45,7 @@ function SearchBar({ name, label, change, submit }) {
           type={'text'}
           label={label}
           sx={styles.textField}
+          value={value}
           onChange={change}
           onKeyPress={handleKeyPress}
           autoComplete="off"

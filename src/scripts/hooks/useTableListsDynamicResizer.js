@@ -1,20 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouteMatch } from 'react-router-dom';
+import ActionIcon from '@mui/icons-material/MoreVert';
+import Config from '../Config';
 import AlertDialog from '../components/AlertDialog';
 // import ConfirmDialog from '../components/ConfirmDialog';
+import { EditElem, DeleteElem } from '../components/ButtonActions'
 import { typesError } from '../utils/types-error';
+import { getStorage } from '../utils/getter';
 import useSearch from './useSearch';
 import useRedirectToLogin from './useRedirectToLogin';
 
-export default function useTableLists({
+export default function useTableListsDynamicResizer({
   dataSource,
   headCells,
+  tableName,
   confPrimKey,
   confName,
   sortDataBy,
+  keySearchInit,
+  textFilterInit,
 }) {
   const url = useRouteMatch().path;
   const { redirectToLogin } = useRedirectToLogin();
+  const [columns, setColumns] = useState([]);
   const [lists, setLists] = useState([]);
   const [listCount, setListCount] = useState(null);
   const [offset, setOffset] = useState(0);
@@ -23,14 +31,16 @@ export default function useTableLists({
   const [openKeySearchDlg, setOpenKeySearchDlg] = useState(false);
   const [indexKey, setIndexKey] = useState(2);
   const [openTextFilterDlg, setOpenTextFilterDlg] = useState(false);
-  const [textFilter, setTextFilter] = useState('');
-  const { search, handleSearch } = useSearch();
-  const [submitSearch, setSubmitSearch] = useState({ submitted: false, value: '' });
+  const [textFilter, setTextFilter] = useState(textFilterInit || '');
+  const { search, handleSearch } = useSearch(keySearchInit || '');
+  const [submitSearch, setSubmitSearch] = useState({ submitted: false, value: keySearchInit || '' });
   const searchLabel = sortDataBy
     .filter((data) => data.index === indexKey)
     .map((label) => label.title)[0];
   const [loading, setLoading] = useState(false);
   const [dense, setDense] = useState(false);
+  const [useBRWDEF, setUseBRWDEF] = useState(Config.USE_BRWDEF);
+  const [columnWidth, setColumnWidth] = useState(getStorage(tableName).columnWidth || {})
 
   const handleSubmitSearch = () => {
     setSubmitSearch({
@@ -86,6 +96,43 @@ export default function useTableLists({
   // };
   //#endregion
 
+  const columnResize = useMemo(() => {
+    let array = [];
+    columns.map((col, index) =>
+      array.push({
+        Header: col.title,
+        accessor: (row) => row[index],
+        width: lists.length === 0 ? '100%' : columnWidth[col.title] || col.width * 13,
+        align: col.alignment,
+        minWidth: 70,
+      })
+    );
+    array.push({
+      Header: () => <ActionIcon></ActionIcon>,
+      id: 'actionCell',
+      accessor: (row) => row[0],
+      Cell: ({ cell }) => (
+        <>
+          <EditElem id={cell.value} url={url} />
+          <DeleteElem
+            click={(event) => { }}
+            disabled
+          />
+        </>
+      ),
+      align: 'C',
+      width: 200,
+    });
+    for (let idx = 0; idx < (columns.length < 5 ? 3 : columns.length < 6 ? 2 : 1); idx++) {
+      array.push({
+        Header: () => null,
+        Cell: () => null,
+        id: 'nullCell' + idx,
+      });
+    }
+    return array;
+  }, [lists.length, columns, columnWidth, url]);
+
   useEffect(() => {
     let isActive = true;
     const getLists = async () => {
@@ -95,6 +142,7 @@ export default function useTableLists({
         const dataOptions = {
           offset,
           limit: listCount === null ? 0 : limit,
+          usebrwdef: useBRWDEF,
           listfields: listFieldsMap,
           query: {
             keysearch: {
@@ -109,7 +157,14 @@ export default function useTableLists({
         const getDatas = await dataSource.getList(dataOptions);
         if (getDatas.result === true) {
           if (listCount === null) setListCount(getDatas.metadata.total);
-          else setLists(getDatas.data);
+          else if (getDatas.columns) {
+            setColumns(getDatas.columns)
+            setLists(getDatas.data)
+          }
+          else {
+            setUseBRWDEF(false);
+            setLists(getDatas.data);
+          }
         } else if (getDatas.result === false) {
           throw getDatas.onfail.cerror;
         } else throw getDatas.message;
@@ -144,6 +199,7 @@ export default function useTableLists({
     dataSource,
     headCells,
     listCount,
+    useBRWDEF,
     indexKey,
     confName,
     offset,
@@ -154,16 +210,24 @@ export default function useTableLists({
     redirectToLogin,
   ]);
 
+  useEffect(() => {
+    let isActive = true;
+    if (isActive === true && listCount !== null) setColumnWidth(getStorage(tableName).columnWidth)
+    return () => isActive = false
+  }, [page, limit, listCount, tableName])
+
   return {
     url,
     loading,
     searchLabel,
+    search,
     handleSearch,
     handleSubmitSearch,
     openKeySearchDlg,
     setOpenKeySearchDlg,
     indexKey,
     setIndexKey,
+    textFilter,
     openTextFilterDlg,
     setOpenTextFilterDlg,
     handleTextFilter,
@@ -177,5 +241,8 @@ export default function useTableLists({
     setPage,
     dense,
     setDense,
+    useBRWDEF,
+    columnResize,
+    setColumnWidth,
   };
 }

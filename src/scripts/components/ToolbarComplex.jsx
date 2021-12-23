@@ -14,6 +14,7 @@ export default function ToolbarComplex({
   setOpenKeySearchDlg,
   setOpenTextFilterDlg,
   searchLabel,
+  search,
   handleSearch,
   handleSubmitSearch,
   isOrder,
@@ -66,6 +67,7 @@ export default function ToolbarComplex({
           <SearchBar
             name="searchBar_list"
             label={searchLabel}
+            value={search}
             change={handleSearch}
             submit={handleSubmitSearch}
           />

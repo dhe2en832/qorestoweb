@@ -1,5 +1,6 @@
 const Config = {
   BASE_URL: process.env.NODE_ENV === 'development' ? 'http://192.168.100.85/api' : 'http://csa2020.ddns.net/api',
+  // BASE_URL: 'http://localhost:3002/api',
   SESSION_KEY: () => JSON.parse(window.localStorage.getItem('sessionKey')),
   SESSION_ID: () => JSON.parse(window.localStorage.getItem('sessionID')),
   SESSION_USER: () => JSON.parse(window.localStorage.getItem('userID')),

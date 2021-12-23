@@ -9,12 +9,13 @@ import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 
 export default function TextFilterDialog({
+  initTextFilter,
   confTextFilter,
   openTextFilterDlg,
   setOpenTextFilterDlg,
   handleTextFilter,
 }) {
-  const [textFilterValue, setTextFilterValue] = useState('');
+  const [textFilterValue, setTextFilterValue] = useState(initTextFilter || '');
   const handleClose = (event, reason) => {
     if (reason !== 'backdropClick') {
       setOpenTextFilterDlg(false);

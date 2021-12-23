@@ -2,14 +2,14 @@ import React from 'react';
 import Container from '@mui/material/Container';
 import ProgressLoader from '../../../components/ProgressLoader';
 import TableWrapperComplex from '../../../components/TableWrapperComplex';
-import TableWrapperComplexDynamic from '../../../components/TableWrapperComplexDynamic';
+import TableWrapperComplexDynamicResizer from '../../../components/TableWrapperComplexDynamicResizer';
 import KeySearchDialog from '../../../components/KeySearchDialog';
 import TextFilterDialog from '../../../components/TextFilterDialog';
 import ToolbarComplex from '../../../components/ToolbarComplex';
-import useTableListsDynamic from '../../../hooks/useTableListsDynamic';
+import useTableListsDynamicResizer from '../../../hooks/useTableListsDynamicResizer';
 
 import bso_api from '../controller/bso_api';
-import { confPrimKey, confName } from '../model/bso_config';
+import { tableName, confPrimKey, confName } from '../model/bso_config';
 import { headCells, bodyCells } from '../model/bso_table';
 import { BSOSR } from '../model/bso_sort';
 
@@ -18,16 +18,17 @@ export default function BSOList() {
     url,
     loading,
     searchLabel,
+    search,
     handleSearch,
     handleSubmitSearch,
     openKeySearchDlg,
     setOpenKeySearchDlg,
     indexKey,
     setIndexKey,
+    textFilter,
     openTextFilterDlg,
     setOpenTextFilterDlg,
     handleTextFilter,
-    columns,
     lists,
     listCount,
     setListCount,
@@ -39,12 +40,17 @@ export default function BSOList() {
     dense,
     setDense,
     useBRWDEF,
-  } = useTableListsDynamic({
+    columnResize,
+    setColumnWidth,
+  } = useTableListsDynamicResizer({
     dataSource: bso_api,
     headCells,
+    tableName,
     confPrimKey,
     confName,
     sortDataBy: BSOSR,
+    textFilterInit: '',
+    keySearchInit: '89',
   });
 
   return (
@@ -58,6 +64,7 @@ export default function BSOList() {
         setIndexKey={setIndexKey}
       />
       <TextFilterDialog
+        initTextFilter={textFilter}
         confTextFilter={'Nama Customer (x)'}
         openTextFilterDlg={openTextFilterDlg}
         setOpenTextFilterDlg={setOpenTextFilterDlg}
@@ -69,6 +76,7 @@ export default function BSOList() {
         setOpenKeySearchDlg={setOpenKeySearchDlg}
         setOpenTextFilterDlg={setOpenTextFilterDlg}
         searchLabel={searchLabel}
+        search={search}
         handleSearch={handleSearch}
         handleSubmitSearch={handleSubmitSearch}
         isOrder={true}
@@ -76,11 +84,8 @@ export default function BSOList() {
       {loading ? (
         <ProgressLoader />
       ) : useBRWDEF ? (
-        <TableWrapperComplexDynamic
+        <TableWrapperComplexDynamicResizer
           keyName={confName}
-          keyID={confPrimKey}
-          keyURL={url}
-          columns={columns}
           lists={lists}
           listCount={listCount}
           setListCount={setListCount}
@@ -90,9 +95,11 @@ export default function BSOList() {
           page={page}
           setPage={setPage}
           isLookup={false}
-          handleDelete={() => {}}
           dense={dense}
           setDense={setDense}
+          tableName={tableName}
+          setColumnWidth={setColumnWidth}
+          columnResize={columnResize}
         />
       ) : (
         <TableWrapperComplex

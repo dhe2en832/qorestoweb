@@ -13,6 +13,8 @@ export default function useTableListsDynamic({
   confPrimKey,
   confName,
   sortDataBy,
+  keySearchInit,
+  textFilterInit,
 }) {
   const url = useRouteMatch().path;
   const { redirectToLogin } = useRedirectToLogin();
@@ -20,14 +22,14 @@ export default function useTableListsDynamic({
   const [lists, setLists] = useState([]);
   const [listCount, setListCount] = useState(null);
   const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(25);
   const [page, setPage] = useState(0);
   const [openKeySearchDlg, setOpenKeySearchDlg] = useState(false);
   const [indexKey, setIndexKey] = useState(2);
   const [openTextFilterDlg, setOpenTextFilterDlg] = useState(false);
-  const [textFilter, setTextFilter] = useState('');
-  const { search, handleSearch } = useSearch();
-  const [submitSearch, setSubmitSearch] = useState({ submitted: false, value: '' });
+  const [textFilter, setTextFilter] = useState(textFilterInit || '');
+  const { search, handleSearch } = useSearch(keySearchInit || '');
+  const [submitSearch, setSubmitSearch] = useState({ submitted: false, value: keySearchInit || '' });
   const searchLabel = sortDataBy
     .filter((data) => data.index === indexKey)
     .map((label) => label.title)[0];
