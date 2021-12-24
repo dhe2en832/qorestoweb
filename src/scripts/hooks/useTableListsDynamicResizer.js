@@ -53,6 +53,17 @@ export default function useTableListsDynamicResizer({
     setPage(0);
   };
 
+  const handleKeySearch = (passVal) => {
+    setIndexKey(2);
+    setSubmitSearch({
+      submitted: true,
+      value: passVal,
+    });
+    setListCount(null);
+    setOffset(0);
+    setPage(0);
+  };
+
   const handleTextFilter = (value) => {
     setTextFilter(value);
     setListCount(null);
@@ -194,7 +205,7 @@ export default function useTableListsDynamicResizer({
         setLoading(false);
       }
     };
-    if (isActive === true) getLists();
+    if (isActive && optionsToShow) getLists();
     return () => isActive = false;
   }, [
     dataSource,
@@ -209,6 +220,8 @@ export default function useTableListsDynamicResizer({
     setSubmitSearch,
     textFilter,
     redirectToLogin,
+    optionsToShow,
+    keySearchInit
   ]);
 
   useEffect(() => {
@@ -226,6 +239,7 @@ export default function useTableListsDynamicResizer({
     handleSubmitSearch,
     openKeySearchDlg,
     setOpenKeySearchDlg,
+    handleKeySearch,
     indexKey,
     setIndexKey,
     textFilter,

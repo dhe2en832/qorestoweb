@@ -27,11 +27,16 @@ import usePopupLogin from '../../../hooks/usePopupLogin';
 import useActions from '../../../hooks/useActions';
 import useReducers from '../../../hooks/useReducers';
 import useLookup from '../../../hooks/useLookups';
+import useFormsHeader from '../../../hooks/useFormsHeader';
 import { Typography } from '@mui/material';
 
 export default function BSOList() {
-  const [opCust, setOpCust] = useState(false);
+  const [opCust, setOpCust] = useState(true);
   const [initHead, dispatchInitHead] = useReducer(useReducers, BSODHEAD);
+  const { handleChangeStringChild } = useFormsHeader({
+    dispatchHeaders: dispatchInitHead,
+    useActions,
+  });
 
   const { isLoginPopup, handleOpenLoginPopup } = usePopupLogin();
   const dataLookupNeeds = (name) => {
@@ -115,6 +120,7 @@ export default function BSOList() {
     handleSubmitSearch,
     openKeySearchDlg,
     setOpenKeySearchDlg,
+    handleKeySearch,
     indexKey,
     setIndexKey,
     textFilter,
@@ -147,22 +153,24 @@ export default function BSOList() {
   });
 
   const handleSubmitCust = () => {
+    const passVal = initHead[BSOFHEAD.CUSTOMER.AS][BSOFHEAD.CUSTOMER._.CCUSID];
+    handleSearch({
+      target: { value: passVal },
+    });
+    handleKeySearch(passVal);
     setOpCust(true);
   };
 
   const handleBlurCust = (value, name, label, nextFocus, dataSrc) => {
     if (showLookup.show === false && isFocus.focus === false) {
       if (value === '') {
-        ToastBar(
-          'error',
-          `${label} tidak boleh kosong!`,
-          3000,
-          () => {
-            setIsFocus({ focus: true, targetName: name });
-          },
-          'bottom-end'
-        );
-        handleOpenLookup(name, nextFocus, dataSrc);
+        // ToastBar(
+        //   'error',
+        //   `${label} tidak boleh kosong!`,
+        //   3000,
+        //   () => setIsFocus({ focus: true, targetName: name }),
+        //   'bottom-end'
+        // );
       } else {
         handleCheckLookup(value, name, nextFocus, dataSrc);
       }
@@ -172,6 +180,18 @@ export default function BSOList() {
   function BSOShow() {
     return (
       <Container maxWidth="xl">
+        <Button
+          ref={(el) => (inputRef.current['submitButton'] = el)}
+          onClick={() => {
+            setOpCust(false);
+          }}
+          variant="outlined"
+          size="small"
+          fullWidth
+          sx={{ mb: 2 }}
+        >
+          Pilih Customer
+        </Button>
         <KeySearchDialog
           confName={confName}
           openKeySearchDlg={openKeySearchDlg}
@@ -252,8 +272,10 @@ export default function BSOList() {
             <InputTextComplex
               ref={(el) => (inputRef.current[BSOFHEAD.CUSTOMER._.CCUSID] = el)}
               name={BSOFHEAD.CUSTOMER._.CCUSID}
+              value={initHead[BSOFHEAD.CUSTOMER.AS][BSOFHEAD.CUSTOMER._.CCUSID]}
               nextFocus={'submitButton'}
               enterEvent={handleOpenLookup}
+              change={(event) => handleChangeStringChild(event, BSOFHEAD.CUSTOMER.AS)}
               label={'Kode Customer'}
               blur={handleBlurCust}
               dataSrc={bcust_api}
@@ -281,5 +303,10 @@ export default function BSOList() {
     );
   }
 
-  return opCust ? BSOShow() : BSOAsk();
+  return (
+    <>
+      <Container></Container>
+      {opCust ? BSOShow() : BSOAsk()}
+    </>
+  );
 }

@@ -294,7 +294,7 @@ function TableWrapperComplexDynamic({
           </Grid>
           <Grid item>
             <TablePagination
-              rowsPerPageOptions={[10, 25, 50, 100]}
+              rowsPerPageOptions={[25, 50, 100]}
               component="div"
               count={listCount || 0}
               rowsPerPage={limit}

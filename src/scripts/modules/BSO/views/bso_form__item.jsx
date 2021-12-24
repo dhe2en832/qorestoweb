@@ -152,7 +152,7 @@ export default memo(function BSOForm_Items({
             }),
           'bottom-end'
         );
-        handleOpenItemStock(index, name, nextfocus);
+        // handleOpenItemStock(index, name, nextfocus);
       } else {
         if (name === BSOFITEM.CSTOCODE && value !== tempItem[BSOFITEM.CSTOCODE])
           handleCheckItemStock(value, index, name, nextfocus);

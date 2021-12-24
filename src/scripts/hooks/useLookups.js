@@ -103,9 +103,7 @@ export default function useLookup({
             'error',
             getSourceByID.onfail.cerror,
             3000,
-            () => {
-              handleOpenLookup(accessorName, nextInputName, dataSource);
-            },
+            () => handleOpenLookup(accessorName, nextInputName, dataSource),
             'bottom-end'
           );
         else throw getSourceByID.message;
@@ -114,9 +112,7 @@ export default function useLookup({
           'error',
           error === typesError.FETCH.msg ? typesError.FETCH.res : error,
           3000,
-          () => {
-            setIsFocus({ focus: true, targetName: accessorName });
-          },
+          () => setIsFocus({ focus: true, targetName: accessorName }),
           'bottom-end'
         );
       }

@@ -252,12 +252,9 @@ export default memo(function BSOForm_Headers({
           'error',
           `${label} tidak boleh kosong!`,
           3000,
-          () => {
-            setIsFocus({ focus: true, targetName: name });
-          },
+          () => setIsFocus({ focus: true, targetName: name }),
           'bottom-end'
         );
-        handleOpenLookup(name, nextFocus, dataSrc);
       } else {
         handleCheckLookup(value, name, nextFocus, dataSrc);
       }
@@ -349,7 +346,7 @@ export default memo(function BSOForm_Headers({
         // );
       }
     }
-    if (mode === 'edit' && customerId !== '' && lookupDetails.ccusid === '' && isActive === true)
+    if (mode === 'edit' && customerId !== '' && lookupDetails.ccusid === '' && isActive)
       getCustName();
     return () => (isActive = false);
   }, [mode, customerId, lookupDetails, changeLookupDetails]);

@@ -21,7 +21,7 @@ export default function useTableListsLookupDynamic({
   const [lists, setLists] = useState([]);
   const [listCount, setListCount] = useState(null);
   const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(25);
   const [page, setPage] = useState(0);
   const [openKeySearchDlg, setOpenKeySearchDlg] = useState(false);
   const [indexKey, setIndexKey] = useState(2);
@@ -129,7 +129,7 @@ export default function useTableListsLookupDynamic({
       }
     };
     // if (showPopupFormAdd === false && isLoginPopup === false) getList();
-    if (isLoginPopup === false && isActive === true && lookup.show === true) getList();
+    if (isLoginPopup === false && isActive && lookup.show) getList();
     return () => isActive = false;
   }, [
     dataSource,
