@@ -13,10 +13,10 @@ import useActionsItem from '../../../hooks/useActionsItem';
 // import { typesError } from '../../../utils/types-error';
 import { totalerafterdiscandtax, grandtotaler } from '../../../utils/calculate';
 
-import bso_api from '../controller/bso_api';
-import { BSOFHEAD, BSOFITEM } from '../model/bso_field';
-import { BSODHEAD, BSODITEM } from '../model/bso_data';
-import { confName, confQtyKey } from '../model/bso_config';
+import bso_api from '../controllers/bso_api';
+import { BSOFHEAD, BSOFITEM } from '../models/bso_field';
+import { BSODHEAD, BSODITEM } from '../models/bso_data';
+import { confName, confQtyKey } from '../models/bso_config';
 
 import BSOFormHeader from './bso_form__header';
 import BSOFormItem from './bso_form__item';

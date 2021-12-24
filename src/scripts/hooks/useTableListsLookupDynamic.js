@@ -14,6 +14,7 @@ export default function useTableListsLookupDynamic({
   sortDataBy,
   isLoginPopup,
   handleOpenLoginPopup,
+  lookup
 }) {
   const idElemLookup = `Lookup${confName.replace(/\/| /g, '')}`;
   const [columns, setColumns] = useState([]);
@@ -128,7 +129,7 @@ export default function useTableListsLookupDynamic({
       }
     };
     // if (showPopupFormAdd === false && isLoginPopup === false) getList();
-    if (isLoginPopup === false && isActive === true) getList();
+    if (isLoginPopup === false && isActive === true && lookup.show === true) getList();
     return () => isActive = false;
   }, [
     dataSource,
@@ -144,6 +145,7 @@ export default function useTableListsLookupDynamic({
     textFilter,
     isLoginPopup,
     handleOpenLoginPopup,
+    lookup,
   ]);
 
   return {

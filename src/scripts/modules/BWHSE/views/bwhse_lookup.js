@@ -51,6 +51,7 @@ export default memo(function BSALESPLookup({
     sortDataBy: BWHSESR,
     isLoginPopup,
     handleOpenLoginPopup,
+    lookup
   });
 
   return (

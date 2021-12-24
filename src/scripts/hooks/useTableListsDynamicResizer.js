@@ -19,6 +19,7 @@ export default function useTableListsDynamicResizer({
   sortDataBy,
   keySearchInit,
   textFilterInit,
+  optionsToShow
 }) {
   const url = useRouteMatch().path;
   const { redirectToLogin } = useRedirectToLogin();
@@ -212,9 +213,9 @@ export default function useTableListsDynamicResizer({
 
   useEffect(() => {
     let isActive = true;
-    if (isActive === true && listCount !== null) setColumnWidth(getStorage(tableName).columnWidth)
+    if (isActive && listCount !== null && optionsToShow) setColumnWidth(getStorage(tableName).columnWidth)
     return () => isActive = false
-  }, [page, limit, listCount, tableName])
+  }, [page, limit, listCount, tableName, optionsToShow])
 
   return {
     url,

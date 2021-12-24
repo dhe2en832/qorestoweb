@@ -55,6 +55,7 @@ export default memo(function BSTOCKLookup({
     sortDataBy: BSTOCKSR,
     isLoginPopup,
     handleOpenLoginPopup,
+    lookup
   });
 
   return (

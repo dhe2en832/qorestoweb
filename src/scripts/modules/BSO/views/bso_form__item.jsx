@@ -35,8 +35,8 @@ import useResponsive from '../../../hooks/useResponsive';
 import useFormsItem from '../../../hooks/useFormsItem';
 import useLookupsItemStock from '../../../hooks/useLookupsItemStock';
 
-import { BSOFITEM } from '../model/bso_field';
-import bitmso_api from '../../BSO/controller/bitmso_api';
+import { BSOFITEM } from '../models/bso_field';
+import bitmso_api from '../../BSO/controllers/bitmso_api';
 import { typesError } from '../../../utils/types-error';
 
 export default memo(function BSOForm_Items({

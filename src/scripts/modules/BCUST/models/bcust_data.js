@@ -1,4 +1,4 @@
-import { dateToString } from '../../../../utils/formatter';
+import { dateToString } from '../../../utils/formatter';
 const initCustomer = {
   dinpdate: dateToString(new Date()),
   ccusid: '',

@@ -25,7 +25,7 @@ import { typesError } from '../../../utils/types-error';
 import { convertNewLine } from '../../../utils/formatter';
 
 // BSO
-import bso_api from '../controller/bso_api';
+import bso_api from '../controllers/bso_api';
 
 // BCUST
 import BCUSTLookup from '../../BCUST/views/bcust_lookup';
@@ -42,7 +42,7 @@ import BSALESPLookup from '../../BSALESP/views/bsalesp_lookup';
 import bsalesp_api from '../../BSALESP/controllers/bsalesp_api';
 import { BSALESPF } from '../../BSALESP/models/bsalesp_field';
 
-import { BSOFHEAD } from '../model/bso_field';
+import { BSOFHEAD } from '../models/bso_field';
 
 export default memo(function BSOForm_Headers({
   headers,
