@@ -13,9 +13,10 @@ import SearchBar from './SearchBar';
 
 function ToolbarSimple({
   showAdd,
-  showSwitch,
-  catalog,
-  setCatalog,
+  showSwitchOpt,
+  isSwitchOpt,
+  setIsSwitchOpt,
+  switchOptLabel,
   setSearch,
   setSearchLabel,
   setSubmitSearch,
@@ -41,14 +42,19 @@ function ToolbarSimple({
         alignItems="center"
         justifyContent={smUp ? 'flex-end' : 'flex-start'}
       >
-        <Grid item>
-          {showSwitch && (
+        {showSwitchOpt && (
+          <Grid item>
             <FormControlLabel
-              control={<Switch checked={catalog} onChange={() => setCatalog(!catalog)} />}
-              label={'Catalog View'}
+              control={
+                <Switch
+                  checked={isSwitchOpt}
+                  onChange={() => setIsSwitchOpt && setIsSwitchOpt(!isSwitchOpt)}
+                />
+              }
+              label={switchOptLabel || ''}
             />
-          )}
-        </Grid>
+          </Grid>
+        )}
         <Grid item>
           <IconButton onClick={() => setOpenKeySearchDlg(true)}>
             <SortIcon color="primary" size="large" />
@@ -73,11 +79,5 @@ function ToolbarSimple({
     </Grid>
   );
 }
-
-ToolbarSimple.defaultProps = {
-  showSwitch: true,
-  showAdd: true,
-  catalog: () => {},
-};
 
 export default memo(ToolbarSimple);

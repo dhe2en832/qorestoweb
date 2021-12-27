@@ -8,6 +8,7 @@ import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import ArrowBack from '@mui/icons-material/ArrowBack';
 import Logo from '../../images/logo.svg';
+import { getParentLocation } from '../utils/getter';
 import SideDrawer from './SideDrawer';
 import HideOnScroll from './HideOnScroll';
 import ScrollRestoration from './ScrollRestoration';
@@ -57,8 +58,7 @@ export default function Navigation({ navLink }) {
     );
   };
   const formNav = () => {
-    const splitLocation = location.split('/');
-    const parentLocation = splitLocation[1];
+    const parentLocation = getParentLocation(location);
     return (
       <Button
         onClick={() => push(`/${parentLocation}`)}

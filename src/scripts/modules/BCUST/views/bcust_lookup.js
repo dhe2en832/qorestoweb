@@ -6,11 +6,11 @@ import TableWrapperComplex from '../../../components/TableWrapperComplex';
 import TableWrapperComplexResizer from '../../../components/TableWrapperComplexResizer';
 import TableWrapperComplexDynamic from '../../../components/TableWrapperComplexDynamic';
 import TableWrapperComplexDynamicResizer from '../../../components/TableWrapperComplexDynamicResizer';
-import useTableListsLookupDynamicResizer from '../../../hooks/useTableListsLookupDynamicResizer';
-import useResponsive from '../../../hooks/useResponsive';
 import AlertContainer from '../../../components/AlertContainer';
 import KeySearchDialog from '../../../components/KeySearchDialog';
 import TextFilterDialog from '../../../components/TextFilterDialog';
+import useTableListsLookupDynamicResizer from '../../../hooks/useTableListsLookupDynamicResizer';
+import useResponsive from '../../../hooks/useResponsive';
 
 import bcust_api from '../controllers/bcust_api';
 import { headCells, bodyCells } from '../models/bcust_table';
@@ -77,8 +77,6 @@ export default memo(function BCUSTLookup({
       caption={`Pilih salah satu ${confName} pada table untuk melanjutkan!`}
       toolbar={
         <ToolbarSimple
-          showSwitch={false}
-          showAdd={false}
           setSearch={handleSearch}
           setSubmitSearch={handleSubmitSearch}
           setSearchLabel={searchLabel}

@@ -17,6 +17,7 @@ export default function useFormsItem({
   };
 
   const handleRemoveItem = (index) => {
+    setIsAddItem(false);
     dispatchItems({
       type: useActionsItem.REMOVE_ITEM,
       index,

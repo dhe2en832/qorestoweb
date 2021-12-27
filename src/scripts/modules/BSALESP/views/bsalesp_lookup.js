@@ -68,8 +68,6 @@ export default memo(function BSALESPLookup({
       caption={`Pilih salah satu ${confName} pada table untuk melanjutkan!`}
       toolbar={
         <ToolbarSimple
-          showSwitch={false}
-          showAdd={false}
           setSearch={handleSearch}
           setSubmitSearch={handleSubmitSearch}
           setSearchLabel={searchLabel}

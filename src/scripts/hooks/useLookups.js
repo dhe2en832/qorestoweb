@@ -81,7 +81,7 @@ export default function useLookup({
       payload,
     });
   };
-  const handleCheckLookup = async (id, accessorName, nextInputName, dataSource) => {
+  const handleCheckLookup = async (id, accessorName, nextInputName, dataSource, cb) => {
     if (showLookup.show === false && isLoginPopup === false && isFocus.focus === false) {
       try {
         const dataOptions = {
@@ -98,6 +98,7 @@ export default function useLookup({
             handleStateFromLookupMany,
             row: getSourceByID.data,
           });
+          cb && cb();
         } else if (getSourceByID.result === false)
           ToastBar(
             'error',

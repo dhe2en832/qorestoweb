@@ -17,7 +17,6 @@ const NotFound = lazy(() => import('./modules/NOTFOUND'));
 
 export default function App() {
   const anchorRef = useRef(null);
-
   return (
     <ThemeContext>
       <ProvideAuth>

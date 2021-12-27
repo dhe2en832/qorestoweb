@@ -53,6 +53,7 @@ export default memo(function BSOForm_Items({
   setOpenHeader,
   isSavedHeader,
   isSubmit,
+  isSimple,
 }) {
   const { theme, smDown } = useResponsive();
   const styles = {
@@ -85,13 +86,23 @@ export default memo(function BSOForm_Items({
   const [hideSaveItem, setHideSaveItem] = useState(true);
   const [disableSaveItem, setDisableSaveItem] = useState(false);
   const [tempItem, setTempItem] = useState({});
-  const disableAdd = isSubmit ? true : isSavedHeader ? (hideSaveItem ? false : true) : true;
+  const disableAdd = isSimple
+    ? false
+    : isSubmit
+    ? true
+    : isSavedHeader
+    ? isSimple
+      ? false
+      : hideSaveItem
+      ? false
+      : true
+    : true;
   const disableCheck = (index) => {
-    if (isChangeItem && indexItem !== index) return true;
+    if (isSimple === false && isChangeItem && indexItem !== index) return true;
     else return false;
   };
   const disableDeleteCheck = (index) => {
-    if (isNewItem) return true;
+    if (isSimple === false && isNewItem) return true;
     else return disableCheck(index);
   };
   const resetStateItem = () => {
@@ -228,7 +239,7 @@ export default memo(function BSOForm_Items({
         setIndexItem(index);
         setHideSaveItem(false);
         setTempItem({ ...items[index] });
-      } else if (indexItem !== index && isChangeItem === true) {
+      } else if (isSimple === false && indexItem !== index && isChangeItem === true) {
         const targetNameCheck = () => {
           if (event.target.name === BSOFITEM.NLINE) return BSOFITEM.BSOFITEM.CSTOCODE;
           else return event.target.name;
@@ -265,14 +276,28 @@ export default memo(function BSOForm_Items({
       'Ya',
       async () => {
         try {
-          const dataOptions = {
-            key: {
-              csonum: salesOrderID,
-              nline: items[index][BSOFITEM.NLINE],
-            },
-          };
-          const fetchDelete = await bitmso_api.delrec(dataOptions);
-          if (fetchDelete.result === true) {
+          if (isSimple === false) {
+            const dataOptions = {
+              key: {
+                csonum: salesOrderID,
+                nline: items[index][BSOFITEM.NLINE],
+              },
+            };
+            const fetchDelete = await bitmso_api.delrec(dataOptions);
+            if (fetchDelete.result === true) {
+              ToastBar(
+                'success',
+                `Hapus Item Line No. ${items[index][BSOFITEM.NLINE]} Berhasil`,
+                3000,
+                () => {
+                  handleRemoveItem(index);
+                  resetStateItem();
+                },
+                'bottom-end'
+              );
+            } else if (fetchDelete.result === false) throw fetchDelete.onfail.cerror;
+            else throw fetchDelete.message;
+          } else {
             ToastBar(
               'success',
               `Hapus Item Line No. ${items[index][BSOFITEM.NLINE]} Berhasil`,
@@ -283,8 +308,7 @@ export default memo(function BSOForm_Items({
               },
               'bottom-end'
             );
-          } else if (fetchDelete.result === false) throw fetchDelete.onfail.cerror;
-          else throw fetchDelete.message;
+          }
         } catch (error) {
           ToastBar(
             'error',
@@ -592,7 +616,7 @@ export default memo(function BSOForm_Items({
                             />
                           </IconButton>
                         </Grid>
-                        {!hideSaveItem && indexItem === index && (
+                        {!hideSaveItem && indexItem === index && isSimple === false && (
                           <Grid
                             container
                             item
@@ -637,7 +661,7 @@ export default memo(function BSOForm_Items({
               ))}
             </Grid>
             <Grid item container xs={12}>
-              {!isChangeItem && (
+              {(isSimple || !isChangeItem) && (
                 <Grid item>
                   <Button
                     variant="contained"
@@ -825,31 +849,33 @@ export default memo(function BSOForm_Items({
                         Tambah Item
                       </Button>
                     </Grid>
-                    <Grow in={!hideSaveItem}>
-                      <Grid item>
-                        <Button
-                          variant="contained"
-                          color="secondary"
-                          size="small"
-                          startIcon={<SaveIcon />}
-                          onClick={handleSaveItem}
-                          disabled={disableSaveItem}
-                          sx={{ mr: 1 }}
-                        >
-                          Simpan Item
-                        </Button>
-                        <Button
-                          variant="contained"
-                          color="error"
-                          size="small"
-                          startIcon={<CancelIcon />}
-                          onClick={handleCancelItem}
-                          disabled={disableSaveItem}
-                        >
-                          Batal Item
-                        </Button>
-                      </Grid>
-                    </Grow>
+                    {isSimple === false && (
+                      <Grow in={!hideSaveItem}>
+                        <Grid item>
+                          <Button
+                            variant="contained"
+                            color="secondary"
+                            size="small"
+                            startIcon={<SaveIcon />}
+                            onClick={handleSaveItem}
+                            disabled={disableSaveItem}
+                            sx={{ mr: 1 }}
+                          >
+                            Simpan Item
+                          </Button>
+                          <Button
+                            variant="contained"
+                            color="error"
+                            size="small"
+                            startIcon={<CancelIcon />}
+                            onClick={handleCancelItem}
+                            disabled={disableSaveItem}
+                          >
+                            Batal Item
+                          </Button>
+                        </Grid>
+                      </Grow>
+                    )}
                   </Grid>
                 </TableCell>
               </TableRow>

@@ -56,6 +56,7 @@ export default memo(function BSOForm_Headers({
   openHeader,
   setOpenHeader,
   customerId,
+  isSimple,
 }) {
   const { smUp } = useResponsive();
   const [openFoot, setOpenFoot] = useState(false);
@@ -263,7 +264,7 @@ export default memo(function BSOForm_Headers({
 
   const saveOrderHeader = async () => {
     let moreInfo;
-    if (mode === 'add' && openHeader === true && isSavedHeader === false) {
+    if (mode === 'add' && isSavedHeader === false && isSimple === false) {
       setLoadingBtn(true);
       try {
         const dataOptions = {
@@ -278,6 +279,7 @@ export default memo(function BSOForm_Headers({
             `Header SO#${csonum} Berhasil Disimpan!`,
             3000,
             () => {
+              setOpenHeader(false);
               setIsSavedHeader(true);
               dispatchHeaders({
                 type: useActions.CHANGE_STRING,
@@ -322,6 +324,9 @@ export default memo(function BSOForm_Headers({
       }
     }
   };
+
+  const foldedButton = () =>
+    openHeader ? <FoldIcon fontSize="small" /> : <UnfoldIcon fontSize="small" />;
 
   useEffect(() => {
     let isActive = true;
@@ -684,12 +689,10 @@ export default memo(function BSOForm_Headers({
                 }}
                 aria-label="hide-show-headers-qo"
               >
-                {isSavedHeader ? (
-                  openHeader ? (
-                    <FoldIcon fontSize="small" />
-                  ) : (
-                    <UnfoldIcon fontSize="small" />
-                  )
+                {isSimple ? (
+                  foldedButton()
+                ) : isSavedHeader ? (
+                  foldedButton()
                 ) : (
                   <SaveIcon fontSize="small" />
                 )}

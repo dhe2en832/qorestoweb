@@ -5,7 +5,7 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-export const AddElem = ({ url, title, state }) => {
+export const AddElem = ({ url, title, state, fullWidth }) => {
   return (
     <Button
       variant="contained"
@@ -14,6 +14,7 @@ export const AddElem = ({ url, title, state }) => {
       to={{ pathname: `${url}/add`, state: state || {} }}
       sx={{ px: 0 }}
       size="small"
+      fullWidth={fullWidth}
     >
       <AddIcon />
     </Button>

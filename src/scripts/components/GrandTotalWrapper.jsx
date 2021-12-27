@@ -21,8 +21,9 @@ function GrandTotalWrapper({
   adjustment_description,
   adjustment,
   grandTotal,
-  submit,
+  funcSubmit,
   isSubmit,
+  textSubmit,
   isEditDiscPPN,
   handleChangeDiscPPN,
   disableDiscPPN,
@@ -186,10 +187,10 @@ function GrandTotalWrapper({
             variant="contained"
             sx={styles.button}
             size="small"
-            onClick={submit}
+            onClick={funcSubmit}
             disabled={isSubmit}
           >
-            <b>{isSubmit ? 'Tunggu...' : 'Keluar'}</b>
+            <b>{isSubmit ? 'Tunggu...' : textSubmit}</b>
           </Button>
         </Grid>
         <Hidden mdDown>
@@ -221,8 +222,9 @@ GrandTotalWrapper.propTypes = {
   adjustment_description: PropTypes.string,
   adjustment: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   grandTotal: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-  submit: PropTypes.func.isRequired,
+  funcSubmit: PropTypes.func.isRequired,
   isSubmit: PropTypes.bool.isRequired,
+  textSubmit: PropTypes.string.isRequired,
   isEditDiscPPN: PropTypes.bool,
   handleChangeDiscPPN: PropTypes.func,
   disableDiscPPN: PropTypes.bool,
