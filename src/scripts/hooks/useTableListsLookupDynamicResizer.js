@@ -1,28 +1,26 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useRouteMatch } from 'react-router-dom';
-import ActionIcon from '@mui/icons-material/MoreVert';
-import Config from '../Config';
-import AlertDialog from '../components/AlertDialog';
-// import ConfirmDialog from '../components/ConfirmDialog';
-import { EditElem, DeleteElem } from '../components/ButtonActions'
+import Config from '../Config'
+import AlertDialogNested from '../components/AlertDialogNested';
 import { typesError } from '../utils/types-error';
 import { getStorage } from '../utils/getter';
 import useSearch from './useSearch';
-import useRedirectToLogin from './useRedirectToLogin';
+// import usePopupFormAdd from './usePopupFormAdd';
 
-export default function useTableListsDynamicResizer({
+export default function useTableListsLookupDynamicResizer({
   dataSource,
   headCells,
   tableName,
   confPrimKey,
+  confSecKey,
   confName,
   sortDataBy,
+  isLoginPopup,
+  handleOpenLoginPopup,
   keySearchInit,
   textFilterInit,
-  optionsToShow
+  lookup
 }) {
-  const url = useRouteMatch().path;
-  const { redirectToLogin } = useRedirectToLogin();
+  const idElemLookup = `Lookup${confName.replace(/\/| /g, '')}`;
   const [columns, setColumns] = useState([]);
   const [lists, setLists] = useState([]);
   const [listCount, setListCount] = useState(null);
@@ -32,9 +30,9 @@ export default function useTableListsDynamicResizer({
   const [openKeySearchDlg, setOpenKeySearchDlg] = useState(false);
   const [indexKey, setIndexKey] = useState(2);
   const [openTextFilterDlg, setOpenTextFilterDlg] = useState(false);
-  const [textFilter, setTextFilter] = useState(textFilterInit || '');
-  const { search, handleSearch } = useSearch(keySearchInit || '');
-  const [submitSearch, setSubmitSearch] = useState({ submitted: false, value: keySearchInit || '' });
+  const [textFilter, setTextFilter] = useState('');
+  const { search, handleSearch } = useSearch();
+  const [submitSearch, setSubmitSearch] = useState({ submitted: false, value: '' });
   const searchLabel = sortDataBy
     .filter((data) => data.index === indexKey)
     .map((label) => label.title)[0];
@@ -71,43 +69,6 @@ export default function useTableListsDynamicResizer({
     setPage(0);
   };
 
-  //#region handleDelete
-  // const handleDelete = (event, id) => {
-  //   event.preventDefault();
-  //   ConfirmDialog(
-  //     'Apakah anda yakin menghapus?',
-  //     `Data ${initName} tidak akan bisa dikembalikan`,
-  //     'Ya, Hapus',
-  //     async () => {
-  //       try {
-  //         const deleteDatas = await dataSource.delete(id);
-  //         AlertDialog(
-  //           'success',
-  //           `Berhasil Menghapus Data ${initName}`,
-  //           <p>
-  //             Data {initName} dengan ID/Kode: "{id}" telah terhapus.
-  //           </p>,
-  //           () => {
-  //             const numericHead = headCells.filter((headCell) => headCell.numeric === true);
-  //             if (numericHead.length > 0) {
-  //               const undeletedDataWithNumeric = deleteDatas.onsuccess.data.map((getDataNum) => {
-  //                 numericHead.map(
-  //                   (numHead) => (getDataNum[numHead.id] = parseFloat(getDataNum[numHead.id]))
-  //                 );
-  //                 return getDataNum;
-  //               });
-  //               setLists(undeletedDataWithNumeric);
-  //             } else {
-  //               setLists(deleteDatas.onsuccess.data);
-  //             }
-  //           }
-  //         );
-  //       } catch (error) {}
-  //     }
-  //   );
-  // };
-  //#endregion
-
   const columnResize = useMemo(() => {
     let array = [];
     if (useBRWDEF) {
@@ -115,27 +76,12 @@ export default function useTableListsDynamicResizer({
         array.push({
           Header: col.title,
           accessor: (row) => row[index],
-          width: lists.length === 0 ? '100%' : columnWidth && columnWidth[col.title] !== undefined ? columnWidth[col.title] : col.width * 13,
+          width: lists.length === 0 ? '100%' :
+            columnWidth && columnWidth[col.title] !== undefined ? columnWidth[col.title] : col.width * 13,
           align: col.alignment,
           minWidth: 70,
         })
       );
-      array.push({
-        Header: () => <ActionIcon></ActionIcon>,
-        id: 'actionCell',
-        accessor: (row) => row[0],
-        Cell: ({ cell }) => (
-          <>
-            <EditElem id={cell.value} url={url} />
-            <DeleteElem
-              click={(event) => { }}
-              disabled
-            />
-          </>
-        ),
-        align: 'C',
-        width: 200,
-      });
       for (let idx = 0; idx < (columns.length < 5 ? 3 : columns.length < 6 ? 2 : 1); idx++) {
         array.push({
           Header: () => null,
@@ -148,29 +94,12 @@ export default function useTableListsDynamicResizer({
         array.push({
           Header: col.label,
           accessor: (row) => row[col.id],
-          width: lists.length === 0 ? '100%' : headCells && headCells[col.label] !== undefined ? headCells[col.label] : col.width * 13,
+          width: lists.length === 0 ? '100%' :
+            columnWidth && columnWidth[col.label] !== undefined ? columnWidth[col.label] : col.width * 13,
           align: col.alignment,
           minWidth: 70,
         })
       );
-      array.push({
-        Header: () => <ActionIcon></ActionIcon>,
-        id: 'actionCell',
-        accessor: (row) => row[confPrimKey],
-        Cell: ({ cell }) => {
-          return (
-            <>
-              <EditElem id={cell.value} url={url} />
-              <DeleteElem
-                click={(event) => { }}
-                disabled
-              />
-            </>
-          )
-        },
-        align: 'C',
-        width: 200,
-      });
       for (let idx = 0; idx < (headCells.length < 5 ? 3 : headCells.length < 6 ? 2 : 1); idx++) {
         array.push({
           Header: () => null,
@@ -180,11 +109,11 @@ export default function useTableListsDynamicResizer({
       }
     }
     return array;
-  }, [lists.length, columns, headCells, columnWidth, url, useBRWDEF]);
+  }, [lists.length, columns, headCells, columnWidth, useBRWDEF]);
 
   useEffect(() => {
     let isActive = true;
-    const getLists = async () => {
+    const getList = async () => {
       try {
         setLoading(true);
         const listFieldsMap = headCells.map((head) => head.id);
@@ -220,29 +149,45 @@ export default function useTableListsDynamicResizer({
       } catch (error) {
         switch (error) {
           case typesError.SECRET_INVALID.msg:
-            AlertDialog('error', ...typesError.SECRET_INVALID.res, redirectToLogin);
+            AlertDialogNested(
+              idElemLookup,
+              'error',
+              ...typesError.SECRET_INVALID.res,
+              handleOpenLoginPopup
+            );
             break;
           case typesError.SESSION_INVALID.msg:
-            AlertDialog('error', ...typesError.SESSION_INVALID.res, redirectToLogin);
+            AlertDialogNested(
+              idElemLookup,
+              'error',
+              ...typesError.SESSION_INVALID.res,
+              handleOpenLoginPopup
+            );
             break;
           case typesError.SESSION_LOCKED.msg:
             typesError.SESSION_LOCKED.func();
             break;
           case typesError.SESSION_TIMEOUT.msg:
-            AlertDialog('error', ...typesError.SESSION_TIMEOUT.res, redirectToLogin);
+            AlertDialogNested(
+              idElemLookup,
+              'error',
+              ...typesError.SESSION_TIMEOUT.res,
+              handleOpenLoginPopup
+            );
             break;
           case typesError.FETCH.msg:
-            AlertDialog('error', 'Salah', typesError.FETCH.res);
+            AlertDialogNested(idElemLookup, 'error', 'Salah', typesError.FETCH.res);
             break;
           default:
-            AlertDialog('error', 'Salah', error);
+            AlertDialogNested(idElemLookup, 'error', 'Salah', error);
             break;
         }
       } finally {
         setLoading(false);
       }
     };
-    if (isActive && optionsToShow) getLists();
+    // if (showPopupFormAdd === false && isLoginPopup === false) getList();
+    if (isLoginPopup === false && isActive && lookup.show) getList();
     return () => isActive = false;
   }, [
     dataSource,
@@ -251,24 +196,24 @@ export default function useTableListsDynamicResizer({
     useBRWDEF,
     indexKey,
     confName,
+    idElemLookup,
     offset,
     limit,
     submitSearch,
-    setSubmitSearch,
     textFilter,
-    redirectToLogin,
-    optionsToShow,
-    keySearchInit
+    isLoginPopup,
+    handleOpenLoginPopup,
+    lookup,
   ]);
 
   useEffect(() => {
     let isActive = true;
-    if (isActive && listCount !== null && optionsToShow) setColumnWidth(getStorage(tableName).columnWidth)
+    if (isActive && listCount !== null && lookup.show) setColumnWidth(getStorage(tableName).columnWidth)
     return () => isActive = false
-  }, [page, limit, listCount, tableName, optionsToShow])
+  }, [page, limit, listCount, tableName, lookup])
 
   return {
-    url,
+    idElemLookup,
     loading,
     searchLabel,
     search,

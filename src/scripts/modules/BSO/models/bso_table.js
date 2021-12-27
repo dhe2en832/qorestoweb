@@ -7,36 +7,48 @@ export const headCells = [
     numeric: false,
     disablePadding: false,
     label: 'No. SO',
+    alignment: 'L',
+    width: '10'
   },
   {
     id: BSOFHEAD.DSODATE,
     numeric: false,
     disablePadding: false,
     label: 'Tgl. SO',
+    alignment: 'C',
+    width: '10'
   },
   {
     id: BSOFHEAD.CUSTOMER._.CCUSID,
     numeric: false,
     disablePadding: false,
     label: 'Customer',
+    alignment: 'L',
+    width: '15'
   },
   {
     id: BSOFHEAD.CCUSTPO,
     numeric: false,
     disablePadding: false,
     label: 'PO Customer',
+    alignment: 'C',
+    width: '5'
   },
   {
     id: BSOFHEAD.CWHSEID,
     numeric: false,
     disablePadding: false,
     label: 'Kode Gudang',
+    alignment: 'L',
+    width: '15'
   },
   {
     id: BSOFHEAD.CSALESID,
     numeric: false,
     disablePadding: false,
     label: 'Sales Person',
+    alignment: 'C',
+    width: '10'
   },
 ];
 

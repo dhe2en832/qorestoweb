@@ -1,16 +1,18 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useState, useReducer } from 'react';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import InputTextComplex from '../../../components/InputTextComplex';
 import ProgressLoader from '../../../components/ProgressLoader';
 import TableWrapperComplex from '../../../components/TableWrapperComplex';
+import TableWrapperComplexResizer from '../../../components/TableWrapperComplexResizer';
+import TableWrapperComplexDynamic from '../../../components/TableWrapperComplexDynamic';
 import TableWrapperComplexDynamicResizer from '../../../components/TableWrapperComplexDynamicResizer';
 import KeySearchDialog from '../../../components/KeySearchDialog';
 import TextFilterDialog from '../../../components/TextFilterDialog';
 import ToolbarComplex from '../../../components/ToolbarComplex';
-import ToastBar from '../../../components/ToastBar';
 import useTableListsDynamicResizer from '../../../hooks/useTableListsDynamicResizer';
+import useResponsive from '../../../hooks/useResponsive';
 
 import bso_api from '../controllers/bso_api';
 import { BSODHEAD } from '../models/bso_data';
@@ -31,7 +33,8 @@ import useFormsHeader from '../../../hooks/useFormsHeader';
 import { Typography } from '@mui/material';
 
 export default function BSOList() {
-  const [opCust, setOpCust] = useState(true);
+  const { smUp } = useResponsive();
+  const [opCust, setOpCust] = useState(false);
   const [initHead, dispatchInitHead] = useReducer(useReducers, BSODHEAD);
   const { handleChangeStringChild } = useFormsHeader({
     dispatchHeaders: dispatchInitHead,
@@ -102,7 +105,7 @@ export default function BSOList() {
     showLookup,
     inputRef,
     isFocus,
-    setIsFocus,
+    // setIsFocus,
   } = useLookup({
     dispatch: dispatchInitHead,
     isLoginPopup,
@@ -127,6 +130,7 @@ export default function BSOList() {
     openTextFilterDlg,
     setOpenTextFilterDlg,
     handleTextFilter,
+    columns,
     lists,
     listCount,
     setListCount,
@@ -168,7 +172,7 @@ export default function BSOList() {
         //   'error',
         //   `${label} tidak boleh kosong!`,
         //   3000,
-        //   () => setIsFocus({ focus: true, targetName: name }),
+        // () => setIsFocus({ focus: true, targetName: name }),
         //   'bottom-end'
         // );
       } else {
@@ -180,7 +184,7 @@ export default function BSOList() {
   function BSOShow() {
     return (
       <Container maxWidth="xl">
-        <Button
+        {/* <Button
           ref={(el) => (inputRef.current['submitButton'] = el)}
           onClick={() => {
             setOpCust(false);
@@ -191,7 +195,7 @@ export default function BSOList() {
           sx={{ mb: 2 }}
         >
           Pilih Customer
-        </Button>
+        </Button> */}
         <KeySearchDialog
           confName={confName}
           openKeySearchDlg={openKeySearchDlg}
@@ -217,11 +221,48 @@ export default function BSOList() {
           handleSearch={handleSearch}
           handleSubmitSearch={handleSubmitSearch}
           isOrder={true}
+          state={initHead}
         />
         {loading ? (
           <ProgressLoader />
         ) : useBRWDEF ? (
-          <TableWrapperComplexDynamicResizer
+          smUp ? (
+            <TableWrapperComplexDynamicResizer
+              keyName={confName}
+              lists={lists}
+              listCount={listCount}
+              setListCount={setListCount}
+              setOffset={setOffset}
+              limit={limit}
+              setLimit={setLimit}
+              page={page}
+              setPage={setPage}
+              isLookup={false}
+              dense={dense}
+              setDense={setDense}
+              tableName={tableName}
+              setColumnWidth={setColumnWidth}
+              columnResize={columnResize}
+            />
+          ) : (
+            <TableWrapperComplexDynamic
+              keyName={confName}
+              columns={columns}
+              lists={lists}
+              listCount={listCount}
+              setListCount={setListCount}
+              setOffset={setOffset}
+              limit={limit}
+              setLimit={setLimit}
+              page={page}
+              setPage={setPage}
+              isLookup={false}
+              dense={dense}
+              setDense={setDense}
+            />
+          )
+        ) : smUp ? (
+          <TableWrapperComplexResizer
             keyName={confName}
             lists={lists}
             listCount={listCount}

@@ -18,6 +18,7 @@ export default function ToolbarComplex({
   handleSearch,
   handleSubmitSearch,
   isOrder,
+  state,
 }) {
   const { mdDown } = useResponsive();
   return (
@@ -42,7 +43,7 @@ export default function ToolbarComplex({
           </Typography>
         </Grid>{' '}
         <Grid item>
-          <AddElem url={url} title={confName} />
+          <AddElem url={url} title={confName} state={state} />
         </Grid>
       </Grid>
       <Grid

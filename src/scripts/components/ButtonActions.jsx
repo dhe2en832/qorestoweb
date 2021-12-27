@@ -5,13 +5,13 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-export const AddElem = ({ url, title }) => {
+export const AddElem = ({ url, title, state }) => {
   return (
     <Button
       variant="contained"
       color="primary"
       component={Link}
-      to={`${url}/add`}
+      to={{ pathname: `${url}/add`, state: state || {} }}
       sx={{ px: 0 }}
       size="small"
     >
@@ -37,13 +37,7 @@ export const EditElem = ({ url, id }) => {
 
 export const DeleteElem = ({ click }) => {
   return (
-    <Button
-      size="small"
-      variant="text"
-      color="error"
-      onClick={click}
-      aria-label={`delete-button`}
-    >
+    <Button size="small" variant="text" color="error" onClick={click} aria-label={`delete-button`}>
       <DeleteIcon fontSize="small" />
     </Button>
   );

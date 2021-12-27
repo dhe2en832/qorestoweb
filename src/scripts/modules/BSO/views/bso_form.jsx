@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useReducer, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import SpacerContainer from '../../../components/SpacerContainer';
 import AlertDialog from '../../../components/AlertDialog';
 import GrandTotalWrapper from '../../../components/GrandTotalWrapper';
@@ -23,10 +23,11 @@ import BSOFormItem from './bso_form__item';
 import ConfirmDialog from '../../../components/ConfirmDialog';
 
 export default function BSOForm({ mode }) {
-  const [headers, dispatchHeaders] = useReducer(useReducers, BSODHEAD);
+  const { state } = useLocation();
+  const [headers, dispatchHeaders] = useReducer(useReducers, state || BSODHEAD);
   const [items, dispatchItems] = useReducer(useReducersItem, []);
   const [customerId, setCustomerId] = useState('');
-  const [openHeader, setOpenHeader] = useState(mode === 'edit' ? false : true);
+  const [openHeader, setOpenHeader] = useState(mode === 'edit' ? false : state ? false : true);
   const [isSavedHeader, setIsSavedHeader] = useState(mode === 'edit' ? true : false);
   const [isEditHeader, setIsEditHeader] = useState(false);
   const [isEditItem, setIsEditItem] = useState(false);

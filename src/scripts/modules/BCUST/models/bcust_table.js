@@ -7,48 +7,64 @@ export const headCells = [
     numeric: false,
     disablePadding: false,
     label: 'ID Customer',
+    alignment: 'L',
+    width: '20'
   },
   {
     id: BCUSTF.CCUSNAM,
     numeric: false,
     disablePadding: false,
     label: 'Nama',
+    alignment: 'C',
+    width: '20'
   },
   {
     id: BCUSTF.CINITIAL,
     numeric: false,
     disablePadding: false,
     label: 'Alias',
+    alignment: 'C',
+    width: '20'
   },
   {
     id: BCUSTF.CSTREET,
     numeric: false,
     disablePadding: false,
     label: 'Alamat',
+    alignment: 'C',
+    width: '20'
   },
   {
     id: BCUSTF.CKOTA,
     numeric: false,
     disablePadding: false,
     label: 'Kota',
+    alignment: 'C',
+    width: '20'
   },
   {
     id: BCUSTF.CSTATE,
     numeric: false,
     disablePadding: false,
     label: 'Daerah',
+    alignment: 'C',
+    width: '20'
   },
   {
     id: BCUSTF.CNPWP,
     numeric: false,
     disablePadding: false,
     label: 'NPWP',
+    alignment: 'C',
+    width: '20'
   },
   {
     id: BCUSTF.CNOTELP,
     numeric: false,
     disablePadding: false,
     label: 'No. Telp',
+    alignment: 'C',
+    width: '20'
   },
 ];
 

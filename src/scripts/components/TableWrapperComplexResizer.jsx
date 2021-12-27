@@ -21,7 +21,7 @@ import DataNotFound from './DataNotFound';
 import TablePaginationActions from './TablePaginationActions';
 import { Button } from '@mui/material';
 
-function TableWrapperComplexDynamicResizer({
+function TableWrapperComplexResizer({
   keyName,
   lists,
   listCount,
@@ -249,35 +249,32 @@ function TableWrapperComplexDynamicResizer({
           <TableHead sx={styles.tableHead}>
             {headerGroups.map((headerGroup) => (
               <TableRow {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map(
-                  (column, index) =>
-                    index > 0 && (
-                      <TableCell
-                        {...column.getHeaderProps({
-                          sx:
-                            index === 1
-                              ? styles.tableHeadCellSticky({
-                                  align: alignmentConvert(column.align),
-                                })
-                              : styles.tableHeadCell({
-                                  align: alignmentConvert(column.align),
-                                }),
-                        })}
-                      >
-                        {column.render('Header')}
-                        {rows.length !== 0 &&
-                          !column.id.includes('nullCell') &&
-                          !column.id.includes('actionCell') && (
-                            <Box
-                              {...column.getResizerProps()}
-                              sx={styles.resizer({
-                                isResizing: column.isResizing,
-                              })}
-                            />
-                          )}
-                      </TableCell>
-                    )
-                )}
+                {headerGroup.headers.map((column, index) => (
+                  <TableCell
+                    {...column.getHeaderProps({
+                      sx:
+                        index === 0
+                          ? styles.tableHeadCellSticky({
+                              align: alignmentConvert(column.align),
+                            })
+                          : styles.tableHeadCell({
+                              align: alignmentConvert(column.align),
+                            }),
+                    })}
+                  >
+                    {column.render('Header')}
+                    {rows.length !== 0 &&
+                      !column.id.includes('nullCell') &&
+                      !column.id.includes('actionCell') && (
+                        <Box
+                          {...column.getResizerProps()}
+                          sx={styles.resizer({
+                            isResizing: column.isResizing,
+                          })}
+                        />
+                      )}
+                  </TableCell>
+                ))}
               </TableRow>
             ))}
           </TableHead>
@@ -289,27 +286,24 @@ function TableWrapperComplexDynamicResizer({
                   onClick={(event) => (isLookup ? lookupFunc(event, row.values.key) : {})}
                   {...row.getRowProps()}
                 >
-                  {row.cells.map(
-                    (cell, index) =>
-                      index > 0 && (
-                        <TableCell
-                          {...cell.getCellProps()}
-                          sx={
-                            index === 1
-                              ? styles.tableBodyCellSticky({
-                                  align: alignmentConvert(cell.column.align),
-                                  bgColor: (i + 1) % 2 === 0 ? '#fff' : '#eee',
-                                })
-                              : styles.tableBodyCell({
-                                  align: alignmentConvert(cell.column.align),
-                                  bgColor: (i + 1) % 2 === 0 ? '#fff' : '#eee',
-                                })
-                          }
-                        >
-                          {cell.render('Cell')}
-                        </TableCell>
-                      )
-                  )}
+                  {row.cells.map((cell, index) => (
+                    <TableCell
+                      {...cell.getCellProps()}
+                      sx={
+                        index === 0
+                          ? styles.tableBodyCellSticky({
+                              align: alignmentConvert(cell.column.align),
+                              bgColor: (i + 1) % 2 === 0 ? '#fff' : '#eee',
+                            })
+                          : styles.tableBodyCell({
+                              align: alignmentConvert(cell.column.align),
+                              bgColor: (i + 1) % 2 === 0 ? '#fff' : '#eee',
+                            })
+                      }
+                    >
+                      {cell.render('Cell')}
+                    </TableCell>
+                  ))}
                 </TableRow>
               );
             })}
@@ -373,7 +367,7 @@ function TableWrapperComplexDynamicResizer({
   );
 }
 
-TableWrapperComplexDynamicResizer.propTypes = {
+TableWrapperComplexResizer.propTypes = {
   lists: PropTypes.array.isRequired,
   listCount: PropTypes.number,
   setListCount: PropTypes.func.isRequired,
@@ -390,4 +384,4 @@ TableWrapperComplexDynamicResizer.propTypes = {
   columnResize: PropTypes.array.isRequired,
 };
 
-export default memo(TableWrapperComplexDynamicResizer);
+export default memo(TableWrapperComplexResizer);
