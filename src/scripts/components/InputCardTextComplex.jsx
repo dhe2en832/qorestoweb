@@ -25,7 +25,8 @@ export default memo(
   ) {
     const styles = {
       textField: {
-        height: 33,
+        height: 28,
+        fontSize: '0.875rem',
       },
       textLabel: {
         marginTop: '-2.5px',

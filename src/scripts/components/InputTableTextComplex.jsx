@@ -26,6 +26,7 @@ export default memo(
       },
       textField: {
         width: setWidth ? setWidth : '13ch',
+        fontSize: '0.875rem',
       },
     };
     const handleKeyPress = (event) => {

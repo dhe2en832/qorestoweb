@@ -18,7 +18,8 @@ const InputTableDecimal = memo(
           margin: 0,
         },
         decimalField: {
-          width: '13ch',
+          width: '15ch',
+          fontSize: '0.875rem',
         },
         decimalInput: {
           textAlign: 'center',

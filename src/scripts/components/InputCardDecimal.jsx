@@ -34,7 +34,7 @@ const InputCardDecimal = memo(
     ) => {
       const styles = {
         decimalInput: {
-          height: 33,
+          height: 28,
         },
         decimalLabel: {
           marginTop: '-2.5px',
@@ -46,6 +46,7 @@ const InputCardDecimal = memo(
                 maxWidth: '80%',
                 minWidth: '15ch',
               }),
+          fontSize: '0.875rem',
         },
       };
       const handleKeyPress = (event) => {

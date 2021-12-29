@@ -11,6 +11,7 @@ const InputTableCurrency = memo(
       },
       currencyField: {
         width: '13ch',
+        fontSize: '0.875rem',
       },
       currencyInput: {
         textAlign: 'right',

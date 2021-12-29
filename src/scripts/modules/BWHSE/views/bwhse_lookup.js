@@ -3,14 +3,17 @@ import ProgressLoader from '../../../components/ProgressLoader';
 import ModalWrapper from '../../../components/ModalWrapper';
 import ToolbarSimple from '../../../components/ToolbarSimple';
 import TableWrapperComplex from '../../../components/TableWrapperComplex';
+import TableWrapperComplexResizer from '../../../components/TableWrapperComplexResizer';
 import TableWrapperComplexDynamic from '../../../components/TableWrapperComplexDynamic';
-import useTableListsLookupDynamic from '../../../hooks/useTableListsLookupDynamic';
+import TableWrapperComplexDynamicResizer from '../../../components/TableWrapperComplexDynamicResizer';
 import AlertContainer from '../../../components/AlertContainer';
 import KeySearchDialog from '../../../components/KeySearchDialog';
+import useTableListsLookupDynamicResizer from '../../../hooks/useTableListsLookupDynamicResizer';
+import useResponsive from '../../../hooks/useResponsive';
 
 import bwhse_api from '../controllers/bwhse_api';
 import { headCells, bodyCells } from '../models/bwhse_table';
-import { confName, confPrimKey, confSecKey } from '../models/bwhse_config';
+import { tableName, confName, confPrimKey, confSecKey } from '../models/bwhse_config';
 import { BWHSESR } from '../models/bwhse_sort';
 
 export default memo(function BSALESPLookup({
@@ -20,6 +23,7 @@ export default memo(function BSALESPLookup({
   isLoginPopup,
   handleOpenLoginPopup,
 }) {
+  const { smUp } = useResponsive();
   const {
     idElemLookup,
     loading,
@@ -42,7 +46,9 @@ export default memo(function BSALESPLookup({
     dense,
     setDense,
     useBRWDEF,
-  } = useTableListsLookupDynamic({
+    columnResize,
+    setColumnWidth,
+  } = useTableListsLookupDynamicResizer({
     dataSource: bwhse_api,
     headCells,
     confPrimKey,
@@ -51,6 +57,8 @@ export default memo(function BSALESPLookup({
     sortDataBy: BWHSESR,
     isLoginPopup,
     handleOpenLoginPopup,
+    keySearchInit: '',
+    textFilterInit: '',
     lookup
   });
 
@@ -85,42 +93,85 @@ export default memo(function BSALESPLookup({
           <ProgressLoader />
         ) : useBRWDEF ?
           (
-            <TableWrapperComplexDynamic
-              keyName={confName}
-              keyID={confPrimKey}
-              columns={columns}
-              lists={lists}
-              listCount={listCount}
-              setListCount={setListCount}
-              setOffset={setOffset}
-              limit={limit}
-              setLimit={setLimit}
-              page={page}
-              setPage={setPage}
-              isLookup={true}
-              lookupFunc={getChoosed}
-              dense={dense}
-              setDense={setDense}
-            />
+            smUp ? (
+              <TableWrapperComplexDynamicResizer
+                keyName={confName}
+                lists={lists}
+                listCount={listCount}
+                setListCount={setListCount}
+                setOffset={setOffset}
+                limit={limit}
+                setLimit={setLimit}
+                page={page}
+                setPage={setPage}
+                isLookup={true}
+                lookupFunc={getChoosed}
+                dense={dense}
+                setDense={setDense}
+                tableName={tableName}
+                columnResize={columnResize}
+                setColumnWidth={setColumnWidth}
+              />
+            ) : (
+              <TableWrapperComplexDynamic
+                keyName={confName}
+                keyID={confPrimKey}
+                columns={columns}
+                lists={lists}
+                listCount={listCount}
+                setListCount={setListCount}
+                setOffset={setOffset}
+                limit={limit}
+                setLimit={setLimit}
+                page={page}
+                setPage={setPage}
+                isLookup={true}
+                lookupFunc={getChoosed}
+                dense={dense}
+                setDense={setDense}
+              />
+            )
           ) : (
-            <TableWrapperComplex
-              keyName={confName}
-              keyID={confPrimKey}
-              headCells={headCells}
-              bodyCells={bodyCells}
-              lists={lists}
-              listCount={listCount}
-              setListCount={setListCount}
-              setOffset={setOffset}
-              limit={limit}
-              setLimit={setLimit}
-              page={page}
-              setPage={setPage}
-              isLookup={true}
-              lookupFunc={getChoosed}
-              dense={dense}
-              setDense={setDense}
-            />)
+            smUp ? (
+              <TableWrapperComplexResizer
+                keyName={confName}
+                lists={lists}
+                listCount={listCount}
+                setListCount={setListCount}
+                setOffset={setOffset}
+                limit={limit}
+                setLimit={setLimit}
+                page={page}
+                setPage={setPage}
+                isLookup={true}
+                lookupFunc={getChoosed}
+                dense={dense}
+                setDense={setDense}
+                tableName={tableName}
+                columnResize={columnResize}
+                setColumnWidth={setColumnWidth}
+              />
+            ) : (
+              <TableWrapperComplex
+                keyName={confName}
+                keyID={confPrimKey}
+                headCells={headCells}
+                bodyCells={bodyCells}
+                lists={lists}
+                listCount={listCount}
+                setListCount={setListCount}
+                setOffset={setOffset}
+                limit={limit}
+                setLimit={setLimit}
+                page={page}
+                setPage={setPage}
+                isLookup={true}
+                lookupFunc={getChoosed}
+                dense={dense}
+                setDense={setDense}
+              />
+            )
+          )
         }
       </>
     </ModalWrapper>

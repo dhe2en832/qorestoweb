@@ -4,7 +4,7 @@ import InputBase from '@mui/material/InputBase';
 
 export default memo(
   forwardRef(function InputTableText(
-    { index, name, value, type, maxLength, change, blur, setIsEditItem, setWidth, disabled },
+    { index, name, value, type, maxLength, change, blur, setIsEditItem, setWidth, disabled, align },
     ref
   ) {
     const styles = {
@@ -13,6 +13,7 @@ export default memo(
       },
       textField: {
         width: setWidth ? setWidth : '13ch',
+        fontSize: '0.875rem',
       },
     };
 
@@ -24,7 +25,7 @@ export default memo(
           name={name}
           type={type}
           inputRef={ref}
-          inputProps={{ maxLength }}
+          inputProps={{ maxLength, ...(align && { sx: { textAlign: align } }) }}
           sx={styles.textField}
           onChange={(event) => change(event, index)}
           onBlur={() => {

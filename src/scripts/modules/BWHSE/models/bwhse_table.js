@@ -7,36 +7,48 @@ export const headCells = [
     numeric: false,
     disablePadding: false,
     label: 'Kode Gudang',
+    alignment: 'L',
+    width: '20'
   },
   {
     id: BWHSEF.CWHSENAME,
     numeric: false,
     disablePadding: false,
     label: 'Nama Gudang',
+    alignment: 'L',
+    width: '20'
   },
   {
     id: BWHSEF.CWHSETYPE,
     numeric: false,
     disablePadding: false,
     label: 'Jenis Gudang',
+    alignment: 'L',
+    width: '20'
   },
   {
     id: BWHSEF.CWPCODE,
     numeric: false,
     disablePadding: false,
     label: 'Price Code',
+    alignment: 'L',
+    width: '20'
   },
   {
     id: BWHSEF.CSTREET,
     numeric: false,
     disablePadding: false,
     label: 'Alamat',
+    alignment: 'L',
+    width: '20'
   },
   {
     id: BWHSEF.CNOTELP,
     numeric: false,
     disablePadding: false,
     label: 'No. Telp',
+    alignment: 'L',
+    width: '20'
   },
 ];
 

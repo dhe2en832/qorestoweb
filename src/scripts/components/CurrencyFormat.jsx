@@ -2,15 +2,16 @@ import React, { memo } from 'react';
 import NumberFormat from 'react-number-format';
 import PropTypes from 'prop-types';
 
-function CurrencyFormat({ value, prefix, from, disabled }) {
+function CurrencyFormat({ value, prefix, from, disabled, bold }) {
   const styles = {
     currencyText: {
-      fontSize: '1rem',
+      fontSize: '0.875rem',
       paddingTop: from === 'other' ? 0 : '8px',
       paddingBottom: from === 'other' ? 0 : '8px',
       width: from === 'other' && '13ch',
       textAlign: 'right',
       ...(disabled && { color: 'gray' }),
+      ...(bold && { fontWeight: 'bold' }),
     },
     currencyTextComplex: {
       fontSize: '0.875rem',
@@ -18,6 +19,7 @@ function CurrencyFormat({ value, prefix, from, disabled }) {
       paddingBottom: '8px',
       textAlign: 'right',
       ...(disabled && { color: 'gray' }),
+      ...(bold && { fontWeight: 'bold' }),
     },
   };
   return (

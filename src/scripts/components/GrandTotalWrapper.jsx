@@ -9,7 +9,7 @@ import Hidden from '@mui/material/Hidden';
 import Button from '@mui/material/Button';
 import FoldIcon from '@mui/icons-material/UnfoldLess';
 import UnfoldIcon from '@mui/icons-material/UnfoldMore';
-import useTheme from '@mui/material/styles/useTheme';
+import useResponsive from '../hooks/useResponsive';
 import CurrencyFormat from './CurrencyFormat';
 import { amounter, taxer } from '../utils/calculate';
 
@@ -30,11 +30,12 @@ function GrandTotalWrapper({
   headers,
   setIsEditHeader,
 }) {
-  const theme = useTheme();
+  const { theme, mdDown } = useResponsive();
   const styles = {
     button: {
       backgroundColor: theme.palette.custom.thBackground,
       color: '#000000de',
+      padding: '2px 4px',
     },
     footer: {
       position: 'fixed',
@@ -42,22 +43,27 @@ function GrandTotalWrapper({
       bottom: 0,
       right: 0,
       backgroundColor: theme.palette.secondary.main,
-      padding: '10px',
+      padding: '8px',
       zIndex: 10,
     },
     totaler: {
       backgroundColor: theme.palette.custom.thBackground,
-      padding: '5px',
-      marginBottom: '4px',
+      padding: '4px',
       borderRadius: '5px',
+      ...(mdDown && { marginBottom: '4px' }),
       width: '100%',
+      fontSize: '0.875rem',
     },
     input: { width: '5.5ch', background: '#fff', padding: '0 5px', height: '2ch' },
   };
+
   const [openTotal, setOpenTotal] = useState(false);
   const totalRender = () => {
     return (
       <Grid item container direction="column" sx={styles.totaler}>
+        {
+          //TODO make proper height
+        }
         <Collapse in={openTotal}>
           <Grid container>
             <Grid item container xs justifyContent="flex-start">
@@ -158,14 +164,14 @@ function GrandTotalWrapper({
               </Grid>
             </Grid>
           )}
-          <hr />
+          <hr sx={{ padding: 0 }} />
         </Collapse>
         <Grid container alignItems="center">
           <Grid item container xs justifyContent="flex-start">
             Grand Total :
           </Grid>
           <Grid item container xs justifyContent="flex-end">
-            <CurrencyFormat prefix="Rp" value={grandTotal || 0} />
+            <CurrencyFormat prefix="Rp" value={grandTotal || 0} bold />
           </Grid>
         </Grid>
       </Grid>

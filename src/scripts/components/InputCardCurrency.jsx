@@ -29,8 +29,9 @@ const InputCardCurrency = memo(
           margin: 0,
         },
         currencyField: {
-          height: 33,
+          height: 28,
           ...(setWidth && { width: setWidth }),
+          fontSize: '0.875rem',
         },
         currencyInput: {
           textAlign: 'right',

@@ -13,16 +13,18 @@ import TablePagination from '@mui/material/TablePagination';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Paper from '@mui/material/Paper';
+import Button from '@mui/material/Button';
 import ResetIcon from '@mui/icons-material/Autorenew';
 import useResponsive from '../hooks/useResponsive';
 import { alignmentConvert } from '../utils/formatter';
 import { getStorage } from '../utils/getter';
 import DataNotFound from './DataNotFound';
 import TablePaginationActions from './TablePaginationActions';
-import { Button } from '@mui/material';
+import ToastBar from './ToastBar';
 
 function TableWrapperComplexResizer({
   keyName,
+  keyURL,
   lists,
   listCount,
   setListCount,
@@ -283,7 +285,19 @@ function TableWrapperComplexResizer({
               prepareRow(row);
               return (
                 <TableRow
-                  onClick={(event) => (isLookup ? lookupFunc(event, row.values.key) : {})}
+                  onClick={(event) =>
+                    event.detail === 2
+                      ? isLookup
+                        ? lookupFunc(event, row.original.key.trim())
+                        : null
+                      : ToastBar(
+                          'info',
+                          `Klik 2x untuk ${isLookup ? 'memilih' : 'melihat'} data.`,
+                          1000,
+                          () => {},
+                          'bottom-end'
+                        )
+                  }
                   {...row.getRowProps()}
                 >
                   {row.cells.map((cell, index) => (
@@ -368,6 +382,8 @@ function TableWrapperComplexResizer({
 }
 
 TableWrapperComplexResizer.propTypes = {
+  keyName: PropTypes.string.isRequired,
+  keyURL: PropTypes.string,
   lists: PropTypes.array.isRequired,
   listCount: PropTypes.number,
   setListCount: PropTypes.func.isRequired,

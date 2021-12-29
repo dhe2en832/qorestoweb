@@ -1,7 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import Container from '@mui/material/Container';
-import Button from '@mui/material/Button';
 import ProgressLoader from '../../../components/ProgressLoader';
 import TableWrapperComplex from '../../../components/TableWrapperComplex';
 import TableWrapperComplexResizer from '../../../components/TableWrapperComplexResizer';
@@ -80,7 +78,7 @@ export default function BSOList() {
       />
       <ToolbarComplex
         confName={confName}
-        url={url}
+        keyURL={url}
         setOpenKeySearchDlg={setOpenKeySearchDlg}
         setOpenTextFilterDlg={setOpenTextFilterDlg}
         searchLabel={searchLabel}
@@ -96,6 +94,7 @@ export default function BSOList() {
         smUp ? (
           <TableWrapperComplexDynamicResizer
             keyName={confName}
+            keyURL={url}
             lists={lists}
             listCount={listCount}
             setListCount={setListCount}
@@ -114,6 +113,7 @@ export default function BSOList() {
         ) : (
           <TableWrapperComplexDynamic
             keyName={confName}
+            keyURL={url}
             columns={columns}
             lists={lists}
             listCount={listCount}
@@ -131,6 +131,7 @@ export default function BSOList() {
       ) : smUp ? (
         <TableWrapperComplexResizer
           keyName={confName}
+          keyURL={url}
           lists={lists}
           listCount={listCount}
           setListCount={setListCount}
@@ -162,7 +163,6 @@ export default function BSOList() {
           page={page}
           setPage={setPage}
           isLookup={false}
-          handleDelete={() => {}}
           dense={dense}
           setDense={setDense}
         />

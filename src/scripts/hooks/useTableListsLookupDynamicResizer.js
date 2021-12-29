@@ -86,7 +86,7 @@ export default function useTableListsLookupDynamicResizer({
         array.push({
           Header: () => null,
           Cell: () => null,
-          id: 'nullCell' + idx,
+          id: 'nullCell-' + idx,
         });
       }
     } else {
@@ -104,7 +104,7 @@ export default function useTableListsLookupDynamicResizer({
         array.push({
           Header: () => null,
           Cell: () => null,
-          id: 'nullCell' + idx,
+          id: 'nullCell-' + idx,
         });
       }
     }

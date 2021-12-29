@@ -18,9 +18,9 @@ import ActionIcon from '@mui/icons-material/MoreVert';
 import NoImage from '../../images/no-thumbnail.png';
 import useResponsive from '../hooks/useResponsive';
 import { stringToDate, toCurrency } from '../utils/formatter';
-import { EditElem, DeleteElem } from './ButtonActions';
 import DataNotFound from './DataNotFound';
 import TablePaginationActions from './TablePaginationActions';
+import ToastBar from './ToastBar';
 
 function TableWrapperComplex({
   keyName,
@@ -38,7 +38,6 @@ function TableWrapperComplex({
   setPage,
   isLookup,
   lookupFunc,
-  handleDelete,
   dense,
   setDense,
 }) {
@@ -200,7 +199,7 @@ function TableWrapperComplex({
           <TableBody sx={styles.tableBody}>
             {lists.length < 1 ? (
               <TableRow>
-                <TableCell colSpan={99} align="center">
+                <TableCell colSpan={headCells.length + 2} align="left">
                   <DataNotFound keyName={keyName} />
                 </TableCell>
               </TableRow>
@@ -208,14 +207,22 @@ function TableWrapperComplex({
               lists.map((row, mainIndex) => (
                 <TableRow
                   key={(keyName.replace(/\s/g, '') + '_btr_' + mainIndex).toString()}
-                  onClick={
-                    isLookup
-                      ? row['lselect'] !== undefined
-                        ? row['lselect'] === 'Y'
-                          ? (event) => lookupFunc(event, row['key'])
-                          : null
-                        : (event) => lookupFunc(event, row['key'])
-                      : null
+                  onClick={(event) =>
+                    event.detail === 2
+                      ? isLookup
+                        ? row['lselect'] !== undefined
+                          ? row['lselect'] === 'Y'
+                            ? lookupFunc(event, row.key)
+                            : null
+                          : lookupFunc(event, row.key)
+                        : null
+                      : ToastBar(
+                          'info',
+                          `Klik 2x untuk ${isLookup ? 'memilih' : 'melihat'} data.`,
+                          1000,
+                          () => {},
+                          'bottom-end'
+                        )
                   }
                   sx={styles.tableRow}
                 >
@@ -247,15 +254,6 @@ function TableWrapperComplex({
                         (data.prefix || '') + toCurrency(data.value || 0) + (data.suffix || '')}
                     </TableCell>
                   ))}
-                  {!isLookup && (
-                    <TableCell align="center">
-                      <EditElem id={row['key']} url={keyURL} />
-                      <DeleteElem
-                        click={(event) => handleDelete(event, row['key'], keyName)}
-                        disabled
-                      />
-                    </TableCell>
-                  )}
                 </TableRow>
               ))
             )}
@@ -322,7 +320,6 @@ TableWrapperComplex.propTypes = {
   setPage: PropTypes.func.isRequired,
   isLookup: PropTypes.bool.isRequired,
   lookupFunc: PropTypes.func,
-  handleDelete: PropTypes.func,
   dense: PropTypes.bool.isRequired,
   setDense: PropTypes.func.isRequired,
 };

@@ -120,27 +120,11 @@ export default function useTableListsDynamicResizer({
           minWidth: 70,
         })
       );
-      array.push({
-        Header: () => <ActionIcon></ActionIcon>,
-        id: 'actionCell',
-        accessor: (row) => row[0],
-        Cell: ({ cell }) => (
-          <>
-            <EditElem id={cell.value} url={url} />
-            <DeleteElem
-              click={(event) => { }}
-              disabled
-            />
-          </>
-        ),
-        align: 'C',
-        width: 200,
-      });
       for (let idx = 0; idx < (columns.length < 5 ? 3 : columns.length < 6 ? 2 : 1); idx++) {
         array.push({
           Header: () => null,
           Cell: () => null,
-          id: 'nullCell' + idx,
+          id: 'nullCell-' + idx,
         });
       }
     } else {
@@ -175,12 +159,12 @@ export default function useTableListsDynamicResizer({
         array.push({
           Header: () => null,
           Cell: () => null,
-          id: 'nullCell' + idx,
+          id: 'nullCell-' + idx,
         });
       }
     }
     return array;
-  }, [lists.length, columns, headCells, columnWidth, url, useBRWDEF]);
+  }, [lists.length, columns, headCells, columnWidth, url, useBRWDEF, confPrimKey]);
 
   useEffect(() => {
     let isActive = true;

@@ -14,7 +14,7 @@ import { AddElem } from './ButtonActions';
 
 export default function ToolbarComplex({
   confName,
-  url,
+  keyURL,
   setOpenKeySearchDlg,
   setOpenTextFilterDlg,
   searchLabel,
@@ -64,7 +64,7 @@ export default function ToolbarComplex({
           </Grid>
         )}
         <Grid item xs={isFast ? 6 : 'auto'} md={isFast ? 4 : 'auto'}>
-          <AddElem url={url} title={confName} state={state} fullWidth={isFast} />
+          <AddElem url={keyURL} title={confName} state={state} fullWidth={isFast} />
         </Grid>
       </Grid>
       {isFast === false && (
@@ -82,7 +82,7 @@ export default function ToolbarComplex({
                 variant="contained"
                 color="primary"
                 component={Link}
-                to={{ pathname: `${url}/fast`, state: {} }}
+                to={{ pathname: `${keyURL}/fast`, state: {} }}
                 size={smDown ? 'small' : 'large'}
               >
                 <FastIcon />

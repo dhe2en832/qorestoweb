@@ -362,10 +362,20 @@ export default memo(function BSOForm_Headers({
       <Container maxWidth="lg">
         <Grid container justifyContent="space-between">
           <Grid item container xs={10} justifyContent="flex-start">
-            <Grid item container spacing={1} justifyContent={'stretch'}>
+            <Grid item container spacing={0} justifyContent={'stretch'}>
               <Grid item>
-                <Typography variant="h6" component="h2">
-                  Sales Order
+                <Typography
+                  component="h2"
+                  sx={{
+                    fontSize: '1rem',
+                    fontStyle: 'italic',
+                    fontWeight: 'bold',
+                    background: 'black',
+                    color: 'white',
+                    paddingX: 1,
+                  }}
+                >
+                  {mode === 'add' ? 'Tambah' : 'Ubah'} Sales Order
                 </Typography>
               </Grid>
               {!openHeader && (
@@ -414,7 +424,7 @@ export default memo(function BSOForm_Headers({
               )}
             </Grid>
             <Collapse in={openHeader}>
-              <Grid item container alignItems="flex-start" spacing={1}>
+              <Grid item container alignItems="flex-start" spacing={1} mt={0.1}>
                 <Grid item container spacing={1} xs={12} sm={6} md={3} lg={3}>
                   <InputDate
                     ref={(el) => (inputRef.current[BSOFHEAD.DSODATE] = el)}

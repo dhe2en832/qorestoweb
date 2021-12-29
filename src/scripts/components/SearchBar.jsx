@@ -25,6 +25,7 @@ function SearchBar({ name, label, value, change, submit }) {
     switch (event.key) {
       case 'Enter':
         submit();
+        event.target.blur();
         event.preventDefault();
         break;
       default:

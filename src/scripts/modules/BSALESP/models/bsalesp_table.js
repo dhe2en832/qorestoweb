@@ -7,18 +7,24 @@ export const headCells = [
     numeric: false,
     disablePadding: false,
     label: 'ID SalesP',
+    alignment: 'L',
+    width: '20'
   },
   {
     id: BSALESPF.CSALESNAME,
     numeric: false,
     disablePadding: false,
     label: 'Nama Sales Person',
+    alignment: 'L',
+    width: '20'
   },
   {
     id: BSALESPF.CKOTA,
     numeric: false,
     disablePadding: false,
     label: 'Kota',
+    alignment: 'L',
+    width: '20'
   },
 ];
 

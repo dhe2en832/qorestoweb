@@ -62,6 +62,9 @@ export default memo(function BSOForm_Items({
         backgroundColor: theme.palette.custom.thBackground,
         color: theme.palette.custom.thText,
         fontWeight: 'bold',
+        fontSize: '0.875rem',
+        paddingX: theme.spacing(1.2),
+        paddingY: theme.spacing(0.1),
       },
     },
     bodyCell: {
@@ -72,8 +75,8 @@ export default memo(function BSOForm_Items({
         backgroundColor: theme.palette.secondary.light,
       },
       '& .MuiTableCell-body': {
-        paddingTop: theme.spacing(0.7),
-        paddingBottom: theme.spacing(0.3),
+        paddingX: theme.spacing(1.2),
+        paddingY: theme.spacing(0.1),
       },
       ':focus-within': {
         backgroundColor: 'rgb(0 190 255 / 16%)',
@@ -467,6 +470,9 @@ export default memo(function BSOForm_Items({
     if (items.length !== 0 && indexItem !== -1) {
       if (isAddItem) {
         itemsIDRef.current[BSOFITEM.CSTOCODE + '_' + indexItem].focus();
+        itemsIDRef.current[BSOFITEM.CSTOCODE + '_' + indexItem].scrollIntoView({
+          behavior: 'smooth',
+        });
       }
     }
   }, [items.length, itemsIDRef, isAddItem, indexItem]);
@@ -586,7 +592,11 @@ export default memo(function BSOForm_Items({
                     <CardActions sx={{ px: 2, py: 0, background: '#eaeaea' }}>
                       <Grid container justifyContent="space-between">
                         <Grid item container xs={10} justifyContent="start" alignContent="center">
-                          <Typography pt={'8px'} color={disableCheck(index) ? 'gray' : ''}>
+                          <Typography
+                            pt={'8px'}
+                            color={disableCheck(index) ? 'gray' : ''}
+                            fontSize={'0.875rem'}
+                          >
                             Subtotal :&nbsp;Rp
                           </Typography>
                           <CurrencyFormat
@@ -635,7 +645,7 @@ export default memo(function BSOForm_Items({
                                 startIcon={<SaveIcon />}
                                 onClick={handleSaveItem}
                                 disabled={disableSaveItem}
-                                sx={{ mr: 2 }}
+                                sx={{ mr: 2, fontSize: '0.7rem' }}
                               >
                                 Simpan
                               </Button>
@@ -648,6 +658,7 @@ export default memo(function BSOForm_Items({
                                 startIcon={<CancelIcon />}
                                 onClick={handleCancelItem}
                                 disabled={disableSaveItem}
+                                sx={{ fontSize: '0.7rem' }}
                               >
                                 Batal
                               </Button>
@@ -670,6 +681,7 @@ export default memo(function BSOForm_Items({
                     onClick={handleCreateItem}
                     disabled={disableAdd}
                     startIcon={<AddIcon />}
+                    sx={{ fontSize: '0.7rem' }}
                   >
                     Tambah Item
                   </Button>
@@ -681,7 +693,9 @@ export default memo(function BSOForm_Items({
           <TableWrapperSimple>
             <TableHead>
               <TableRow sx={styles.headCell}>
-                <TableCell align="center">Line No.</TableCell>
+                <TableCell align="center" sx={{ width: '5ch' }}>
+                  Line No.
+                </TableCell>
                 <TableCell align="center">Kode</TableCell>
                 <TableCell align="center">Nama Item</TableCell>
                 <TableCell align="center">Qty</TableCell>
@@ -702,14 +716,15 @@ export default memo(function BSOForm_Items({
                   sx={styles.bodyCell}
                   onFocus={(event) => handleFocusItem(event, index)}
                 >
-                  <TableCell align="right" component="th" scope="row">
+                  <TableCell component="th" scope="row">
                     <InputTableText
                       index={index}
                       name={BSOFITEM.NLINE}
-                      type="text"
+                      type="number"
                       value={item[BSOFITEM.NLINE]}
-                      setWidth={'1ch'}
+                      setWidth={'5ch'}
                       disabled={true}
+                      align={'right'}
                     />
                   </TableCell>
                   <TableCell>
@@ -827,6 +842,7 @@ export default memo(function BSOForm_Items({
                         color={
                           disableDeleteCheck(index) ? 'disabled' : isEditItem ? 'disabled' : 'error'
                         }
+                        fontSize="small"
                       />
                     </IconButton>
                   </TableCell>
@@ -835,7 +851,7 @@ export default memo(function BSOForm_Items({
             </TableBody>
             <TableFooter>
               <TableRow>
-                <TableCell colSpan={99}>
+                <TableCell colSpan={99} sx={{ padding: 1.2 }}>
                   <Grid container spacing={1} justifyContent="flex-start">
                     <Grid item>
                       <Button
@@ -845,6 +861,7 @@ export default memo(function BSOForm_Items({
                         onClick={handleCreateItem}
                         disabled={disableAdd}
                         startIcon={<AddIcon />}
+                        sx={{ fontSize: '0.7rem' }}
                       >
                         Tambah Item
                       </Button>
@@ -859,7 +876,7 @@ export default memo(function BSOForm_Items({
                             startIcon={<SaveIcon />}
                             onClick={handleSaveItem}
                             disabled={disableSaveItem}
-                            sx={{ mr: 1 }}
+                            sx={{ mr: 1, fontSize: '0.7rem' }}
                           >
                             Simpan Item
                           </Button>
@@ -870,6 +887,7 @@ export default memo(function BSOForm_Items({
                             startIcon={<CancelIcon />}
                             onClick={handleCancelItem}
                             disabled={disableSaveItem}
+                            sx={{ fontSize: '0.7rem' }}
                           >
                             Batal Item
                           </Button>

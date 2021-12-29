@@ -1,5 +1,6 @@
 import React, { memo, useEffect, useCallback } from 'react';
 import { useTable, useFlexLayout, useResizeColumns } from 'react-table';
+import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -13,16 +14,18 @@ import TablePagination from '@mui/material/TablePagination';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Paper from '@mui/material/Paper';
+import Button from '@mui/material/Button';
 import ResetIcon from '@mui/icons-material/Autorenew';
 import useResponsive from '../hooks/useResponsive';
 import { alignmentConvert } from '../utils/formatter';
 import { getStorage } from '../utils/getter';
 import DataNotFound from './DataNotFound';
 import TablePaginationActions from './TablePaginationActions';
-import { Button } from '@mui/material';
+import ToastBar from './ToastBar';
 
 function TableWrapperComplexDynamicResizer({
   keyName,
+  keyURL,
   lists,
   listCount,
   setListCount,
@@ -40,6 +43,7 @@ function TableWrapperComplexDynamicResizer({
   columnResize,
 }) {
   const { theme, mdUp, smUp, smDown } = useResponsive();
+  const { push } = useHistory();
   const styles = {
     tableContainer: {
       width: '100%',
@@ -286,7 +290,19 @@ function TableWrapperComplexDynamicResizer({
               prepareRow(row);
               return (
                 <TableRow
-                  onClick={(event) => (isLookup ? lookupFunc(event, row.values.key) : {})}
+                  onClick={(event) =>
+                    event.detail === 2
+                      ? isLookup
+                        ? lookupFunc(event, row.values.key)
+                        : push(`${keyURL}/edit/${row.values.key}`)
+                      : ToastBar(
+                          'info',
+                          `Klik 2x untuk ${isLookup ? 'memilih' : 'melihat'} data.`,
+                          1000,
+                          () => {},
+                          'bottom-end'
+                        )
+                  }
                   {...row.getRowProps()}
                 >
                   {row.cells.map(
@@ -374,6 +390,8 @@ function TableWrapperComplexDynamicResizer({
 }
 
 TableWrapperComplexDynamicResizer.propTypes = {
+  keyName: PropTypes.string.isRequired,
+  keyURL: PropTypes.string,
   lists: PropTypes.array.isRequired,
   listCount: PropTypes.number,
   setListCount: PropTypes.func.isRequired,

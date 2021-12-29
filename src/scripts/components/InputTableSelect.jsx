@@ -15,6 +15,7 @@ export default memo(
       selectField: {
         width: '13ch',
         border: 'none',
+        fontSize: '0.875rem',
       },
     };
     return (

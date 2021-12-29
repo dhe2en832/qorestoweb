@@ -103,7 +103,6 @@ export default function BSOListFast() {
     handleChooseLookup,
     showLookup,
     inputRef,
-    isFocus,
     setIsFocus,
   } = useLookup({
     dispatch: dispatchInitHead,
@@ -146,24 +145,22 @@ export default function BSOListFast() {
 
   const handleSubmitCust = () => {
     const passVal = initHead[BSOFHEAD.CUSTOMER.AS][BSOFHEAD.CUSTOMER._.CCUSID];
-    handleCheckLookup(passVal, BSOFHEAD.CUSTOMER._.CCUSID, 'submitButton', bcust_api, () => {
-      handleSearch({
-        target: { value: passVal },
-      });
-      handleKeySearch(passVal);
-      setOpCust(true);
-    });
-  };
-
-  const handleBlurCust = async (value, name, label, nextFocus, dataSrc) => {
-    if (value === '') {
+    if (passVal === '') {
       ToastBar(
         'error',
         `Kode Customer tidak boleh kosong!`,
         3000,
-        () => setIsFocus({ focus: true, targetName: name }),
+        () => setIsFocus({ focus: true, targetName: BSOFHEAD.CUSTOMER._.CCUSID }),
         'bottom-end'
       );
+    } else {
+      handleCheckLookup(passVal, BSOFHEAD.CUSTOMER._.CCUSID, 'submitButton', bcust_api, () => {
+        handleSearch({
+          target: { value: passVal },
+        });
+        handleKeySearch(passVal);
+        setOpCust(true);
+      });
     }
   };
 
@@ -172,7 +169,7 @@ export default function BSOListFast() {
       <Container maxWidth="xl">
         <ToolbarComplex
           confName="Fast Sales Order"
-          url={url}
+          keyURL={url}
           isOrder={true}
           isFast={true}
           state={initHead}
@@ -184,6 +181,7 @@ export default function BSOListFast() {
           smUp ? (
             <TableWrapperComplexDynamicResizer
               keyName={confName}
+              keyURL={url}
               lists={lists}
               listCount={listCount}
               setListCount={setListCount}
@@ -202,6 +200,7 @@ export default function BSOListFast() {
           ) : (
             <TableWrapperComplexDynamic
               keyName={confName}
+              keyURL={url}
               columns={columns}
               lists={lists}
               listCount={listCount}
@@ -219,6 +218,7 @@ export default function BSOListFast() {
         ) : smUp ? (
           <TableWrapperComplexResizer
             keyName={confName}
+            keyURL={url}
             lists={lists}
             listCount={listCount}
             setListCount={setListCount}
@@ -273,7 +273,6 @@ export default function BSOListFast() {
               enterEvent={handleOpenLookup}
               change={(event) => handleChangeStringChild(event, BSOFHEAD.CUSTOMER.AS)}
               label={'Kode Customer'}
-              blur={handleBlurCust}
               dataSrc={bcust_api}
             />
           </Grid>
