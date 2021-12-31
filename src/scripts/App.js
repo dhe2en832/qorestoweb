@@ -1,5 +1,5 @@
 import React, { useRef, lazy, Suspense } from 'react';
-import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Toolbar from '@mui/material/Toolbar';
 import Fab from '@mui/material/Fab';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -24,20 +24,24 @@ export default function App() {
           <Navigation navLink={ModuleContext} />
           <Toolbar ref={anchorRef} aria-label="destination-scroll-top" />
           <Suspense fallback={<ProgressLoader />}>
-            <Switch>
-              <PrivateRoute exact path="/" component={Home} />
-              <Route path="/login" component={Login} />
+            <Routes>
+              <Route path="/login" element={<Login />} />
               {ModuleContext.map((module) =>
                 module.menu.map(
                   (menus) =>
                     menus.active === 'Y' && (
-                      <PrivateRoute path={menus.path} component={menus.component} />
+                      <Route path={menus.path} element={
+                        <PrivateRoute>
+                          <menus.component />
+                        </PrivateRoute>
+                      } />
                     )
                 )
               )}
-              <Route path="/404" component={NotFound} />
-              <Redirect from="*" to="/404" />
-            </Switch>
+              <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
+              <Route path="/404" element={<NotFound />} />
+              <Route path="*" element={<Navigate to="/404" />} />
+            </Routes>
           </Suspense>
           <ScrollToTop anchorRef={anchorRef}>
             <Fab color="secondary" size="small" aria-label="scroll-to-top">

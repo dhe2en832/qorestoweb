@@ -15,13 +15,7 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import { useAuth } from '../contexts/AuthContext';
 import isEmptyModules from '../utils/validations';
 
-export default function SideDrawer({
-  navLink,
-  location,
-  open,
-  handleClick,
-  handleClickAway,
-}) {
+export default function SideDrawer({ navLink, location, open, handleClick, handleClickAway }) {
   const theme = useTheme();
   const styles = {
     list: {
@@ -48,10 +42,7 @@ export default function SideDrawer({
   const auth = useAuth();
   const authCondition = auth.loggedIn !== false && auth.sessionTimeout !== true;
   const toggleDrawer = (anchor, open) => (event) => {
-    if (
-      event.type === 'keydown' &&
-      (event.key === 'Tab' || event.key === 'Shift')
-    ) {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
     setState({ [anchor]: open });
@@ -85,8 +76,8 @@ export default function SideDrawer({
                         secondary={name}
                         sx={
                           menu
-                            .filter((item) => item.path === location)
-                            .map((item) => item.path)
+                            .filter((item) => item.pathLocation === location)
+                            .map((item) => item.pathLocation)
                             .toString() === location
                             ? styles.boldText
                             : styles.linkText
@@ -102,37 +93,28 @@ export default function SideDrawer({
                   <Collapse in={open[name]} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
                       {menu.map(
-                        ({ title, path, active }, index) =>
+                        ({ title, pathLocation, active }, index) =>
                           active === 'Y' && (
                             <ListItem
                               button
                               component={Link}
-                              to={path}
-                              key={(
-                                'sdrwtitle' +
-                                title +
-                                path +
-                                index
-                              ).toString()}
+                              to={pathLocation}
+                              key={('sdrwtitle' + title + pathLocation + index).toString()}
                               sx={styles.nested}
                               onClick={toggleDrawer(anchor, false)}
                               onKeyDown={toggleDrawer(anchor, false)}
                             >
                               <ListItemText
                                 secondary={title}
-                                sx={
-                                  location === path
-                                    ? styles.boldText
-                                    : styles.linkText
-                                }
+                                sx={location === pathLocation ? styles.boldText : styles.linkText}
                               />
                             </ListItem>
-                          ),
+                          )
                       )}
                     </List>
                   </Collapse>
                 </Box>
-              ),
+              )
           )}
         <ListItem
           button
@@ -160,18 +142,10 @@ export default function SideDrawer({
 
   return (
     <>
-      <IconButton
-        edge="end"
-        aria-label="menu"
-        onClick={toggleDrawer('right', true)}
-      >
+      <IconButton edge="end" aria-label="menu" onClick={toggleDrawer('right', true)}>
         <MenuIcon fontSize="large" sx={{ color: '#513474' }} />
       </IconButton>
-      <Drawer
-        anchor="right"
-        open={state.right}
-        onClose={toggleDrawer('right', false)}
-      >
+      <Drawer anchor="right" open={state.right} onClose={toggleDrawer('right', false)}>
         {sideDrawerList('right')}
       </Drawer>
     </>

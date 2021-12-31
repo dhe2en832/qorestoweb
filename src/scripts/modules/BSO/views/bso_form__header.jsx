@@ -381,17 +381,17 @@ export default memo(function BSOForm_Headers({
               {!openHeader && (
                 <Grid item container spacing={smUp ? 1 : 0} flexDirection={smUp ? 'row' : 'column'}>
                   <Grid item>
-                    <Typography variant="body2" component="h3">
+                    <Typography variant="caption" component="h3" lineHeight={1.2} mt={0.2}>
                       Tgl. SO: <b>{stringToDate(headers[BSOFHEAD.DSODATE]) || '-'}</b>
                     </Typography>
                     {isSavedHeader && (
-                      <Typography variant="body2" component="h3">
+                      <Typography variant="caption" component="h3" lineHeight={1.2}>
                         No. SO: <b>{headers[BSOFHEAD.CSONUM]}</b>
                       </Typography>
                     )}
                   </Grid>
                   <Grid item>
-                    <Typography variant="body2" component="h3">
+                    <Typography variant="caption" component="h3" lineHeight={1.2}>
                       Customer:{' '}
                       <b>
                         {headers[BSOFHEAD.CUSTOMER.AS][BSOFHEAD.CUSTOMER._.CCUSID] || '-'}
@@ -401,7 +401,7 @@ export default memo(function BSOForm_Headers({
                     </Typography>
                   </Grid>
                   <Grid item>
-                    <Typography variant="body2" component="h3">
+                    <Typography variant="caption" component="h3" lineHeight={1.2}>
                       Kirim Ke:{' '}
                       <b>
                         {headers[BSOFHEAD.CSHPTONAME]}
@@ -413,10 +413,10 @@ export default memo(function BSOForm_Headers({
                     </Typography>
                   </Grid>
                   <Grid item>
-                    <Typography variant="body2" component="h3">
+                    <Typography variant="caption" component="h3" lineHeight={1.2}>
                       Gudang Asal: <b>{headers[BSOFHEAD.CWHSEID] || '-'}</b>
                     </Typography>
-                    <Typography variant="body2" component="h3">
+                    <Typography variant="caption" component="h3" lineHeight={1.2}>
                       Sales Person: <b>{headers[BSOFHEAD.CSALESID] || '-'}</b>
                     </Typography>
                   </Grid>

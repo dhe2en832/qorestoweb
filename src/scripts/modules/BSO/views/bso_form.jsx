@@ -27,7 +27,7 @@ export default function BSOForm({ mode }) {
   const isFastStateExist =
     mode === 'edit'
       ? false
-      : state.hasOwnProperty(BSOFHEAD.CUSTOMER.AS) &&
+      : state && state.hasOwnProperty(BSOFHEAD.CUSTOMER.AS) &&
         state[BSOFHEAD.CUSTOMER.AS].hasOwnProperty(BSOFHEAD.CUSTOMER._.CCUSID)
       ? true
       : false;

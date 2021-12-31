@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import FormControl from '@mui/material/FormControl';
@@ -46,13 +46,13 @@ function Login({ isForm, afterLogin }) {
   };
 
   let auth = useAuth();
-  let history = useHistory();
+  let navigate = useNavigate();
   let location = useLocation();
   let { from } = location.state || { from: { pathname: '/' } };
   let login = (event) => {
     event.preventDefault();
     setLoading(true)
-    auth.signin(state, () => (isForm ? afterLogin() : history.replace(from)), isForm, setLoading);
+    auth.signin(state, () => (isForm ? afterLogin() : navigate(from)), isForm, setLoading);
   };
 
   return (

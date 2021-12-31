@@ -1,18 +1,20 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 export const AddElem = ({ url, title, state, fullWidth }) => {
+  const navigate = useNavigate();
   return (
     <Button
       variant="contained"
       color="primary"
-      component={Link}
-      to={{ pathname: `${url}/add`, state: state || {} }}
       sx={{ px: 0 }}
+      onClick={() => {
+        navigate(`${url}/add`, { state: state || {} });
+      }}
       size="small"
       fullWidth={fullWidth}
     >
@@ -22,13 +24,15 @@ export const AddElem = ({ url, title, state, fullWidth }) => {
 };
 
 export const EditElem = ({ url, id }) => {
+  const navigate = useNavigate();
   return (
     <Button
       size="small"
       variant="text"
       color="primary"
-      component={Link}
-      to={`${url}/edit/${id}`}
+      onClick={() => {
+        navigate(`${url}/edit/${id}`);
+      }}
       aria-label={`edit-button`}
     >
       <EditIcon fontSize="small" />

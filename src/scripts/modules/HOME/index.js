@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback } from 'react';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
@@ -13,11 +13,11 @@ import isEmptyModules from '../../utils/validations';
 
 export default function Home() {
   const auth = useAuth();
-  const { replace } = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const redirectToLogin = useCallback(() => {
-    replace('/login', { from: location });
-  }, [replace, location]);
+    navigate('/login', { from: location });
+  }, [navigate, location]);
   const styles = {
     root: {
       padding: '24px',
@@ -54,16 +54,16 @@ export default function Home() {
                 </Typography>
                 <Grid item container spacing={1} mt={0.1}>
                   {menu.map(
-                    ({ title, path, active }, index) =>
+                    ({ title, pathLocation, active }, index) =>
                       active === 'Y' && (
                         <Grid
                           item
                           xs={12}
                           md={4}
                           component={Link}
-                          to={path}
+                          to={pathLocation}
                           sx={styles.linkText}
-                          key={('hm_menu_title_items_' + title + path + index).toString()}
+                          key={('hm_menu_title_items_' + title + pathLocation + index).toString()}
                         >
                           <Paper elevation={2} sx={{ p: 2 }}>
                             <Grid container justifyContent="space-between">

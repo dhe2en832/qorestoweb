@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Link, useLocation, useHistory } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
@@ -26,7 +26,7 @@ export default function Navigation({ navLink }) {
   };
   const [open, setOpen] = useState({});
   const location = useLocation().pathname;
-  const { push } = useHistory();
+  const navigate = useNavigate();
 
   const handleClick = (param) => {
     setOpen((prevState) => {
@@ -61,7 +61,7 @@ export default function Navigation({ navLink }) {
     const parentLocation = getParentLocation(location);
     return (
       <Button
-        onClick={() => push(`/${parentLocation}`)}
+        onClick={() => navigate(`/${parentLocation}`)}
         variant="outlined"
         color="secondary"
         aria-label="button-go-back"

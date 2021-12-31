@@ -7,7 +7,8 @@ const ModuleContext = [
       {
         id: 'BSTOCK',
         title: 'Items / Stock',
-        path: '/bstock',
+        pathLocation: '/bstock',
+        path: '/bstock/*',
         active: 'N',
         component: lazy(() => import('../modules/BSTOCK')),
       },
@@ -19,7 +20,8 @@ const ModuleContext = [
       {
         id: 'BSO',
         title: 'Sales Order',
-        path: '/bso',
+        pathLocation: '/bso',
+        path: '/bso/*',
         active: 'Y',
         component: lazy(() => import('../modules/BSO')),
       },

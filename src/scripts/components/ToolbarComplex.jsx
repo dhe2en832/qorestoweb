@@ -78,14 +78,8 @@ export default function ToolbarComplex({
         >
           <Grid container item xs={smDown ? 5 : 'auto'}>
             <Grid item>
-              <IconButton
-                variant="contained"
-                color="primary"
-                component={Link}
-                to={{ pathname: `${keyURL}/fast`, state: {} }}
-                size={smDown ? 'small' : 'large'}
-              >
-                <FastIcon />
+              <IconButton component={Link} to={{ pathname: `${keyURL}/fast`, state: {} }}>
+                <FastIcon color="primary" size={smDown ? 'small' : 'large'} />
               </IconButton>
             </Grid>
             <Grid item>

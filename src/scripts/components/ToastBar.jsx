@@ -6,7 +6,7 @@ export default function ToastBar(
   title = 'This Message Is From No Where',
   timer = 0,
   afterOpen = () => {},
-  position = 'top-end',
+  position = 'top-end'
 ) {
   const Toast = withReactContent(
     Swal.mixin({
@@ -23,10 +23,10 @@ export default function ToastBar(
         toast.addEventListener('mouseleave', Swal.resumeTimer);
         afterOpen();
       },
-    }),
+    })
   );
 
-  Toast.fire({
+  return Toast.fire({
     icon,
     title,
   });

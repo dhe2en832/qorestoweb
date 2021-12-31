@@ -1,5 +1,6 @@
 import React, { memo, useEffect, useCallback } from 'react';
 import { useTable, useFlexLayout, useResizeColumns } from 'react-table';
+import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -42,6 +43,7 @@ function TableWrapperComplexResizer({
   columnResize,
 }) {
   const { theme, mdUp, smUp, smDown } = useResponsive();
+  const navigate = useNavigate();
   const styles = {
     tableContainer: {
       width: '100%',
@@ -289,7 +291,7 @@ function TableWrapperComplexResizer({
                     event.detail === 2
                       ? isLookup
                         ? lookupFunc(event, row.original.key.trim())
-                        : null
+                        : navigate(`${keyURL}/edit/${row.original.key.trim()}`)
                       : ToastBar(
                           'info',
                           `Klik 2x untuk ${isLookup ? 'memilih' : 'melihat'} data.`,

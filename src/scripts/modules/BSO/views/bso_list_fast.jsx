@@ -146,6 +146,7 @@ export default function BSOListFast() {
   const handleSubmitCust = () => {
     const passVal = initHead[BSOFHEAD.CUSTOMER.AS][BSOFHEAD.CUSTOMER._.CCUSID];
     if (passVal === '') {
+      // setIsFocus({ focus: true, targetName: BSOFHEAD.CUSTOMER._.CCUSID });
       ToastBar(
         'error',
         `Kode Customer tidak boleh kosong!`,
@@ -250,7 +251,6 @@ export default function BSOListFast() {
             page={page}
             setPage={setPage}
             isLookup={false}
-            handleDelete={() => {}}
             dense={dense}
             setDense={setDense}
           />

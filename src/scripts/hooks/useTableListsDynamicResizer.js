@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useRouteMatch } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import ActionIcon from '@mui/icons-material/MoreVert';
 import Config from '../Config';
 import AlertDialog from '../components/AlertDialog';
@@ -21,7 +21,7 @@ export default function useTableListsDynamicResizer({
   textFilterInit,
   optionsToShow
 }) {
-  const url = useRouteMatch().path;
+  const url = useLocation().pathname;
   const { redirectToLogin } = useRedirectToLogin();
   const [columns, setColumns] = useState([]);
   const [lists, setLists] = useState([]);

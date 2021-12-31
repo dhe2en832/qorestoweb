@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -37,6 +38,7 @@ function TableWrapperComplexDynamic({
   setDense,
 }) {
   const { theme, mdUp, smUp, smDown } = useResponsive();
+  const navigate = useNavigate();
   const styles = {
     tableContainer: {
       width: '100%',
@@ -227,7 +229,7 @@ function TableWrapperComplexDynamic({
                             ? lookupFunc(event, row[0])
                             : null
                           : lookupFunc(event, row[0])
-                        : null
+                        : navigate(`${keyURL}/edit/${row[0]}`)
                       : ToastBar(
                           'info',
                           `Klik 2x untuk ${isLookup ? 'memilih' : 'melihat'} data.`,

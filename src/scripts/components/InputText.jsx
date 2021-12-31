@@ -11,6 +11,7 @@ const InputText = memo(
       const styles = {
         textField: {
           height: 33,
+          fontSize: '0.875rem'
         },
         textLabel: {
           marginTop: '-2.5px',
