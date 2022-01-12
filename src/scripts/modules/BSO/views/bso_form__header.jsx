@@ -359,7 +359,7 @@ export default memo(function BSOForm_Headers({
   return (
     <>
       {showLookupElements()}
-      <Container maxWidth="lg">
+      <Container maxWidth="xl" sx={{ mt: smUp ? 7 : 5 }}>
         <Grid container justifyContent="space-between">
           <Grid item container xs={10} justifyContent="flex-start">
             <Grid item container spacing={0} justifyContent={'stretch'}>

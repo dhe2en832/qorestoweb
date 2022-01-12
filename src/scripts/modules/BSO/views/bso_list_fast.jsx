@@ -167,7 +167,7 @@ export default function BSOListFast() {
 
   function BSOShow() {
     return (
-      <Container maxWidth="xl">
+      <Container maxWidth="xl" sx={{ mt: smUp ? 7 : 5 }}>
         <ToolbarComplex
           confName="Fast Sales Order"
           keyURL={url}
@@ -261,7 +261,7 @@ export default function BSOListFast() {
 
   function BSOAsk() {
     return (
-      <Container>
+      <Container maxWidth="xl" sx={{ mt: smUp ? 7 : 5 }}>
         <Typography mb={2}>Isikan Kode Customer, jika ingin melewati beberapa tahap.</Typography>
         <Grid container justifyContent={'flex-start'} spacing={1}>
           <Grid item xs={12}>

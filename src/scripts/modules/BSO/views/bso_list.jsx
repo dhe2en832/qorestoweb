@@ -60,7 +60,7 @@ export default function BSOList() {
   });
 
   return (
-    <Container maxWidth="xl">
+    <Container maxWidth="xl" sx={{ mt: smUp ? 7 : 5 }}>
       <KeySearchDialog
         confName={confName}
         openKeySearchDlg={openKeySearchDlg}
