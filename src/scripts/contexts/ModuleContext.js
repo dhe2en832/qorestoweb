@@ -25,6 +25,14 @@ const ModuleContext = [
         active: 'Y',
         component: lazy(() => import('../modules/BSO')),
       },
+      {
+        id: 'BQO',
+        title: 'Quick Order',
+        pathLocation: '/bqo',
+        path: '/bqo/*',
+        active: 'Y',
+        component: lazy(() => import('../modules/BQO')),
+      },
     ],
   },
 ];
