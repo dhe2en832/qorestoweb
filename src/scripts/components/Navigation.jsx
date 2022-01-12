@@ -17,6 +17,7 @@ export default function Navigation({ navLink }) {
   const styles = {
     appBar: {
       backgroundColor: '#fafafa',
+      paddingY: '4px',
     },
     navBar: {
       display: 'flex',
