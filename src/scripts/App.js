@@ -1,10 +1,8 @@
 import React, { useRef, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Toolbar from '@mui/material/Toolbar';
 import Fab from '@mui/material/Fab';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import ProgressLoader from './components/ProgressLoader';
-import Navigation from './components/Navigation';
 import ScrollToTop from './components/ScrollToTop';
 import { ProvideAuth } from './contexts/AuthContext';
 import ThemeContext from './contexts/ThemeContext';
@@ -21,8 +19,7 @@ export default function App() {
     <ThemeContext>
       <ProvideAuth>
         <BrowserRouter basename={process.env.PUBLIC_URL}>
-          <Navigation navLink={ModuleContext} />
-          <Toolbar ref={anchorRef} aria-label="destination-scroll-top" />
+          <div ref={anchorRef} aria-label="destination-scroll-top" style={{ padding: 0, minHeight: 16 }} />
           <Suspense fallback={<ProgressLoader />}>
             <Routes>
               <Route path="/login" element={<Login />} />
