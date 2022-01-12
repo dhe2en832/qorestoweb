@@ -1,6 +1,8 @@
 import React, { Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import ProgressLoader from '../../components/ProgressLoader';
+import Navigation from '../../components/Navigation';
+import ModuleContext from '../../contexts/ModuleContext'
 import BSOList from './views/bso_list';
 import BSOListFast from './views/bso_list_fast';
 import BSOForm from './views/bso_form';
@@ -8,6 +10,7 @@ import BSOForm from './views/bso_form';
 export default function BSO() {
   return (
     <>
+      <Navigation navLink={ModuleContext} />
       <Suspense fallback={<ProgressLoader />}>
         <Routes>
           <Route path={"/*"} element={<BSOList />} />
