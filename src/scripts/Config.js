@@ -1,6 +1,5 @@
 const Config = {
-  BASE_URL: process.env.REACT_APP_BASE_URL.trim(),
-  // BASE_URL: 'http://localhost:3002/api',
+  BASE_URL: process.env.REACT_APP_API_ENDPOINT.trim(),
   SESSION_KEY: () => JSON.parse(window.localStorage.getItem('sessionKey')),
   SESSION_ID: () => JSON.parse(window.localStorage.getItem('sessionID')),
   SESSION_USER: () => JSON.parse(window.localStorage.getItem('userID')),
