@@ -2,7 +2,6 @@
   "name": "webapp-csa",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://localhost/webappCSA/",
   "dependencies": {
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
@@ -41,9 +40,12 @@
     "workbox-streams": "^5.1.4"
   },
   "scripts": {
-    "dev": "set REACT_APP_BASE_URL=http://192.168.100.85/api && react-scripts start",
-    "build-dev": "rm -rf build && set REACT_APP_BASE_URL=https://192.168.100.85/api && react-scripts build",
-    "build": "rm -rf build && set REACT_APP_BASE_URL=https://csacomputer.ddns.net/api && react-scripts build",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "start:dev": "env-cmd -e development yarn start",
+    "start:qa": "env-cmd -e qa yarn start",
+    "build:staging": "rm -rf build && env-cmd -e staging yarn build",
+    "build:prod": "rm -rf build && env-cmd -e production yarn build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "new-package": "rm -rf node_modules yarn.lock && yarn --ignore-engines"
@@ -65,5 +67,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "env-cmd": "^10.1.0"
   }
 }
