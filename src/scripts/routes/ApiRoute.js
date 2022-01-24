@@ -8,6 +8,7 @@ const ApiRoute = {
   BSTOCK_X: `${Config.BASE_URL}/csa/pulau/bstock_x`,
   BSO_X: `${Config.BASE_URL}/csa/pulau/bso_x`,
   BITMSO_X: `${Config.BASE_URL}/csa/pulau/bitmso_x`,
+  BQO_X: `${Config.BASE_URL}/csa/pulau/bqo_x`,
 };
 
 export default ApiRoute;
