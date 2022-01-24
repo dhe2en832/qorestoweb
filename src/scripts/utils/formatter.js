@@ -6,6 +6,11 @@ export const toCurrency = (value) => {
   return formatter + '.00';
 };
 
+export const toCurrencyIDR = (value) => {
+  const formatter = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return formatter
+};
+
 export const convertNewLine = (text) => {
   const regExp = [/(?:\r\n|\r|\n)/g, '<br/>']
   return text.replace(...regExp);
