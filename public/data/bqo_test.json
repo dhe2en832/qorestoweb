@@ -5,9 +5,9 @@
             "name": "Nasi Goreng",
             "desc": "Nasi dengan bumbu khas dan rempah-rempah, digoreng menggunakan kayu bakar.",
             "price": "23000",
-            "sellPrice": "17000",
+            "sellPrice": "23000",
             "category": "foods",
-            "picture": "https: //upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png"
+            "picture": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png"
         },
         {
             "id": "test0002",
@@ -16,7 +16,7 @@
             "price": "25000",
             "sellPrice": "19000",
             "category": "foods",
-            "picture": "https: //upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png"
+            "picture": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png"
         },
         {
             "id": "test0003",
@@ -25,16 +25,16 @@
             "price": "26000",
             "sellPrice": "20000",
             "category": "foods",
-            "picture": "https: //upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png"
+            "picture": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png"
         },
         {
             "id": "test0004",
             "name": "Jus Jeruk Tropis",
             "desc": "Olahan jeruk dengan es kelapa dan gula aren",
             "price": "20000",
-            "sellPrice": "14000",
+            "sellPrice": "20000",
             "category": "drinks",
-            "picture": "https: //upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png"
+            "picture": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png"
         },
         {
             "id": "test0005",
@@ -43,7 +43,7 @@
             "price": "14000",
             "sellPrice": "8000",
             "category": "drinks",
-            "picture": "https: //upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png"
+            "picture": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png"
         },
         {
             "id": "test0006",
@@ -52,7 +52,7 @@
             "price": "140000",
             "sellPrice": "140000",
             "category": "cake",
-            "picture": "https: //upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png"
+            "picture": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png"
         }
     ],
     "categories": [
