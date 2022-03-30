@@ -52,9 +52,9 @@ export default function Home() {
           ({ name, menu }, index) =>
             !isEmptyModules(ModuleContext, name) && (
               <Grid item container key={('hm_menu_items_' + name + index).toString()}>
-                <Typography component="h1" variant="h6" color="secondary">
+                {/* <Typography component="h1" variant="h6" color="secondary">
                   {name}
-                </Typography>
+                </Typography> */}
                 <Grid item container spacing={1} mt={0.1}>
                   {menu.map(
                     ({ title, pathLocation, active }, index) =>
@@ -84,9 +84,9 @@ export default function Home() {
             )
         )}
         <Grid item container>
-          <Typography component="h1" variant="h6" color="secondary">
+          {/* <Typography component="h1" variant="h6" color="secondary">
             System
-          </Typography>
+          </Typography> */}
           <Grid item container spacing={1} mt={0.1}>
             <Grid
               item

@@ -175,7 +175,7 @@ export default function BQOCheckout() {
     }
     useEffect(() => {
         window.localStorage.setItem('QoCart', JSON.stringify(cart))
-        Object.entries(cart).length === 0 && navigate("/bqo")
+        Object.entries(cart).length === 0 && navigate("/menu")
     }, [cart, navigate]);
 
     // Note Form
@@ -225,7 +225,7 @@ export default function BQOCheckout() {
                     <Toolbar>
                         <Grid container justifyContent="space-between">
                             <Grid item xs={2}>
-                                <IconButton sx={styles.appBarIcon} onClick={() => { navigate("/bqo") }}>
+                                <IconButton sx={styles.appBarIcon} onClick={() => { navigate("/menu") }}>
                                     <BackIcon />
                                 </IconButton>
                             </Grid>
@@ -257,7 +257,7 @@ export default function BQOCheckout() {
                             <Typography variant="body1" fontWeight={500} component="h2">Item Pesanan</Typography>
                         </Grid>
                         <Grid item>
-                            <Button sx={{ p: 0 }} onClick={() => navigate("/bqo")}>Tambah Item</Button>
+                            <Button sx={{ p: 0 }} onClick={() => navigate("/menu")}>Tambah Item</Button>
                         </Grid>
                     </Grid>
                     {

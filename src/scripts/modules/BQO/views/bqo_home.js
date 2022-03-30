@@ -481,7 +481,7 @@ export default function BQOHome() {
             {/* Cart Calculate */}
             {
                 Object.entries(cart).length !== 0 && (
-                    <div style={{ boxSizing: 'border-box', position: 'relative', margin: '0 auto', maxWidth: '550px', cursor: 'pointer' }} onClick={() => navigate('/bqo/checkout')}>
+                    <div style={{ boxSizing: 'border-box', position: 'relative', margin: '0 auto', maxWidth: '550px', cursor: 'pointer' }} onClick={() => navigate('/checkout')}>
                         <div style={{ maxWidth: '550px', width: '100%', position: 'fixed', bottom: '0', padding: '1rem' }}>
                             <Grid container spacing={1} justifyContent='space-between' sx={{ m: 0, p: 2, backgroundColor: '#3f50b5', width: '100%', borderRadius: '5px', color: '#fff' }}>
                                 <Grid item container xs={11} spacing={1} >

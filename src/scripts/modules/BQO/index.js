@@ -9,7 +9,7 @@ export default function BQO() {
         <>
             <Suspense fallback={<ProgressLoader />}>
                 <Routes>
-                    <Route path={"/*"} element={<BQOHome />} />
+                    <Route path={"/menu"} element={<BQOHome />} />
                     <Route path={"/checkout"} element={<BQOCheckout />} />
                     <Route path="*" element={<Navigate to="/404" />} />
                 </Routes>
