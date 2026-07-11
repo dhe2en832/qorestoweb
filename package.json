@@ -49,6 +49,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "new-package": "rm -rf node_modules yarn.lock && yarn --ignore-engines",
+    "changelog": "node generate-changelog.cjs",
     "ship": "node git-push.cjs"
   },
   "eslintConfig": {

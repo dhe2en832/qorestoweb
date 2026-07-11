@@ -50,10 +50,6 @@ Pastikan sudah terinstall:
 ## Instalasi
 
 ```bash
-# Clone repository
-git clone https://github.com/dhe2en832/qorestoweb.git
-cd qorestoweb
-
 # Install semua dependensi
 yarn
 ```
@@ -135,10 +131,19 @@ yarn ship
 ```
 
 Script akan:
-1. Cek apakah ada perubahan (`git status`)
-2. Stage semua file (`git add -A`)
-3. Buat commit message otomatis berisi tanggal dan daftar file yang berubah
-4. Push ke branch `main` di remote `origin`
+1. Generate changelog harian otomatis (`docs/changelog/daily/codeChange-YYYYMMDD.md`)
+2. Cek apakah ada perubahan (`git status`)
+3. Stage semua file (`git add -A`)
+4. Buat commit message otomatis berisi tanggal dan ringkasan perubahan dari changelog
+5. Push ke branch `main` di remote `origin`
+
+Untuk generate changelog saja tanpa push:
+```bash
+yarn changelog
+
+# Generate untuk tanggal tertentu
+node generate-changelog.cjs --date=2026-07-11
+```
 
 Untuk push manual biasa:
 ```bash
@@ -158,7 +163,8 @@ git push
 | `yarn start:qa` | Jalankan dev server dengan env `qa` |
 | `yarn build:staging` | Build untuk staging |
 | `yarn build:prod` | Build untuk production |
-| `yarn ship` | Auto commit + push ke GitHub |
+| `yarn changelog` | Generate changelog harian ke `docs/changelog/daily/` |
+| `yarn ship` | Generate changelog + auto commit + push ke GitHub |
 | `yarn test` | Jalankan test |
 | `yarn new-package` | Reset node_modules dan install ulang |
 
