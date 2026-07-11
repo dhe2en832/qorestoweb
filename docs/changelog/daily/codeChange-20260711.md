@@ -128,7 +128,68 @@
 
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260711.md [20260711_095043]
+#### 1. docs/changelog/daily/codeChange-20260711.md [20260711_095135]
+**Fungsi:** Implementasi: codeChange-20260711  
+**Perubahan:** Akses localStorage; Tambah error handling  
+**Lines:** 131-290, 351, 387, 489-562, 623, 639, 643
+
+```javascript
+// Line 128:
+- #### 1. readme.md [20260711_094750]
++ #### 1. docs/changelog/daily/codeChange-20260711.md [20260711_095043]
++ **Fungsi:** Implementasi: codeChange-20260711  
++ **Perubahan:** Akses localStorage; Tambah error handling; Tambah HTTP request  
++ **Lines:** 1-473
++ 
++ ```javascript
++ // Line 1:
++ + # Code Changes Summary
++ + 
++ + ## 11 Juli 2026
++ + 
++ + ### ✨ Features
++ + 
++ + #### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260711_094254]
++ + **Fungsi:** Halaman checkout & submit order  
++ + **Perubahan:** Import: formatter; Import: ToastBar; Import: bqo_api; Tambah state management; Tambah fungsi: handleCloseDialog; Tambah fungsi: handleOpenDialog; Tambah fungsi: handleChangeInfo; Akses localStorage; Tambah fungsi: removeItem; Tambah fungsi: increaseQtyItem; Tambah fungsi: decreaseQtyItem; Tambah fungsi: calculatePriceItem; Tambah fungsi: calculateTaxItem; Tambah fungsi: changeQtyItem; Tambah fungsi: selectedQtyItem; Tambah side effect; Tambah navigasi halaman; Tambah fungsi: isNoteExist; Tambah fungsi: handleChangeNoteValue; Tambah fungsi: handleOpenNoteForm; Tambah fungsi: handleCloseNoteForm; Tambah fungsi: handleSaveNoteForm; Tambah fungsi: showValidation; Tambah fungsi: handleOnCheckout; Hapus debug log; Ubah render/return JSX  
++ + **Lines:** 22-24, 26, 28-80, 82-92, 94-101, 103-108, 110-115, 117-174, 176-184, 186-220, 222-232, 234-236, 238-240, 242-245, 247-251, 253-325, 327-527
++ + 
++ + ```javascript
++ + // Line 19:
++ + - import { toCurrencyIDR } from '../../../utils/formatter'
++ + + import { toCurrencyIDR } from '../../../utils/formatter';
++ + + import ToastBar from '../../../components/ToastBar';
+  // ... (truncated)
++ #### 3. git-push.cjs [20260711_094750]
+// Line 620:
+- #### 2. package.json [20260711_094750]
++ #### 4. package.json [20260711_094750]
+// Line 634:
+- #### 3. it-push.cjs [20260711_095041]
+- **Fungsi:** Implementasi: it-push  
+- **Perubahan:** Pembaruan kode  
+- 
+- 
+- #### 4. package.json [20260711_095041]
+- **Fungsi:** Implementasi: package  
+- **Perubahan:** Pembaruan kode  
+- **Lines:** 52
+- 
+- ```javascript
+- // Line 49:
+- +     "changelog": "node generate-changelog.cjs",
+- ```
+- 
+- 
+- - **📖 Documentation:** 5 items
++ - **📖 Documentation:** 6 items
+- - **Total Files Modified:** 13
++ - **Total Files Modified:** 14
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260711.md [20260711_095043]
 **Fungsi:** Implementasi: codeChange-20260711  
 **Perubahan:** Akses localStorage; Tambah error handling; Tambah HTTP request  
 **Lines:** 1-473
@@ -189,7 +250,7 @@
 
 ---
 
-#### 2. generate-changelog.cjs [20260711_095043]
+#### 3. generate-changelog.cjs [20260711_095043]
 **Fungsi:** Fungsi: m  
 **Perubahan:** Tambah error handling; Tambah fungsi: m; Tambah fungsi: lines; Akses localStorage; Tambah HTTP request; Tambah state management; Tambah fungsi: mod; Tambah side effect; Gunakan context; Tambah navigasi halaman; Ubah render/return JSX  
 **Lines:** 1-371
@@ -250,7 +311,7 @@
 
 ---
 
-#### 3. readme.md [20260711_095043]
+#### 4. readme.md [20260711_095043]
 **Fungsi:** Implementasi: readme  
 **Perubahan:** Pembaruan kode  
 **Lines:** 134-146, 166-167
@@ -287,7 +348,7 @@
 
 ---
 
-#### 4. readme.md [20260711_094750]
+#### 5. readme.md [20260711_094750]
 **Fungsi:** Implementasi: readme  
 **Perubahan:** Pembaruan kode  
 **Lines:** 42-166, 176-181
@@ -348,7 +409,7 @@
 
 ---
 
-#### 5. docs/Petunjuk Development QORESTOWEB - v1.0.0.docx [20260711_094254]
+#### 6. docs/Petunjuk Development QORESTOWEB - v1.0.0.docx [20260711_094254]
 **Fungsi:** Implementasi: Petunjuk Development QORESTOWEB - v1.0.0  
 **Perubahan:** Pembaruan kode  
 **Lines:** 1-25
@@ -384,7 +445,7 @@
 
 ---
 
-#### 6. readme.md [20260711_094254]
+#### 7. readme.md [20260711_094254]
 **Fungsi:** Implementasi: readme  
 **Perubahan:** Pembaruan kode  
 **Lines:** 4-6, 27
@@ -636,9 +697,9 @@
 
 ## 📊 **Summary**
 - **✨ Features:** 2 items
-- **📖 Documentation:** 6 items
+- **📖 Documentation:** 7 items
 - **🔐 Auth/Session:** 1 item
 - **🔌 API:** 1 item
 - **⚙️ Config:** 4 items
-- **Total Files Modified:** 14
+- **Total Files Modified:** 15
 - **Main Focus:** 📖 Documentation
