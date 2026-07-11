@@ -1,6 +1,9 @@
 # QORESTOWEB
 ***
 
+## Status
+Discontinue (Project ini hanya digunakan untuk research, untuk project serupa yang masih aktif pindah ke .\PROJECTS\webcsa-v2\src\scripts\modules\BQO)
+
 ## Deskripsi
 Quick Order Resto Web adalah aplikasi untuk melakukan pemesanan cepat atau Quick Order yang dapat diakses melalui Web, dan jika sudah submit, sistem akan mengirimkan data input ke API Software CSA.
 
@@ -21,7 +24,7 @@ Quick Order Resto Web adalah aplikasi untuk melakukan pemesanan cepat atau Quick
     * hooks, folder kode untuk fungsi hooks.
     * modules, folder kode tiap module.
     * routes, folder kode routing aplikasi.
-    * utils, folder kode utilitas yang digunanakan aplikasi.
+    * utils, folder kode utilitas yang digunakan aplikasi.
     * App.js, folder kode wrapper untuk menyatukan seluruh komponen.
     * Config.js, folder kode untuk konfigurasi aplikasi seperti Base URL, default value, dan lainnya.
   * styles, folder kode untuk mengelola tampilan web.

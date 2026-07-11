@@ -67,7 +67,7 @@ function useProvideAuth() {
       } else if (resJson.result === false) throw resJson.onfail.cerror;
       else throw resJson.message;
     } catch (error) {
-      setLoading && setLoading(false)
+      setLoading && setLoading(false);
       let messageError;
       switch (error) {
         case typesError.FETCH.msg:
@@ -104,7 +104,7 @@ function useProvideAuth() {
     setSessionKey(null);
     setSessionID(null);
     cb();
-  }
+  };
 
   const signout = async (cb) => {
     try {
@@ -121,7 +121,8 @@ function useProvideAuth() {
         }),
       });
       const resJson = await res.json();
-      if (resJson.result === true) AlertDialog('success', 'Logout', typesError.SESSION_CLOSED.res, handleLogout(cb));
+      if (resJson.result === true)
+        AlertDialog('success', 'Logout', typesError.SESSION_CLOSED.res, handleLogout(cb));
       else if (resJson.result === false) throw resJson.onfail.cerror;
       else throw resJson.message;
     } catch (error) {
@@ -137,7 +138,7 @@ function useProvideAuth() {
           break;
       }
     }
-  }
+  };
 
   const handleOnIdle = () => {
     setUserID(null);
