@@ -48,7 +48,8 @@
     "build:prod": "rm -rf build && env-cmd -e production yarn build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "new-package": "rm -rf node_modules yarn.lock && yarn --ignore-engines"
+    "new-package": "rm -rf node_modules yarn.lock && yarn --ignore-engines",
+    "ship": "node git-push.cjs"
   },
   "eslintConfig": {
     "extends": [
