@@ -128,7 +128,166 @@
 
 ### 📖 Documentation
 
-#### 1. readme.md [20260711_094750]
+#### 1. docs/changelog/daily/codeChange-20260711.md [20260711_095043]
+**Fungsi:** Implementasi: codeChange-20260711  
+**Perubahan:** Akses localStorage; Tambah error handling; Tambah HTTP request  
+**Lines:** 1-473
+
+```javascript
+// Line 1:
++ # Code Changes Summary
++ 
++ ## 11 Juli 2026
++ 
++ ### ✨ Features
++ 
++ #### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260711_094254]
++ **Fungsi:** Halaman checkout & submit order  
++ **Perubahan:** Import: formatter; Import: ToastBar; Import: bqo_api; Tambah state management; Tambah fungsi: handleCloseDialog; Tambah fungsi: handleOpenDialog; Tambah fungsi: handleChangeInfo; Akses localStorage; Tambah fungsi: removeItem; Tambah fungsi: increaseQtyItem; Tambah fungsi: decreaseQtyItem; Tambah fungsi: calculatePriceItem; Tambah fungsi: calculateTaxItem; Tambah fungsi: changeQtyItem; Tambah fungsi: selectedQtyItem; Tambah side effect; Tambah navigasi halaman; Tambah fungsi: isNoteExist; Tambah fungsi: handleChangeNoteValue; Tambah fungsi: handleOpenNoteForm; Tambah fungsi: handleCloseNoteForm; Tambah fungsi: handleSaveNoteForm; Tambah fungsi: showValidation; Tambah fungsi: handleOnCheckout; Hapus debug log; Ubah render/return JSX  
++ **Lines:** 22-24, 26, 28-80, 82-92, 94-101, 103-108, 110-115, 117-174, 176-184, 186-220, 222-232, 234-236, 238-240, 242-245, 247-251, 253-325, 327-527
++ 
++ ```javascript
++ // Line 19:
++ - import { toCurrencyIDR } from '../../../utils/formatter'
++ + import { toCurrencyIDR } from '../../../utils/formatter';
++ + import ToastBar from '../../../components/ToastBar';
++ + import bqo_api from '../controllers/bqo_api';
++ + const TAX_PERCENT = 11;
++ -     const { smUp } = useResponsive();
++ -     const navigate = useNavigate();
++ -     const styles = {
++ -         container: {
++ -             background: '#eee',
++ -             paddingTop: smUp ? '25px' : '15px',
+  // ... (truncated)
++ **Fungsi:** Implementasi: it-push  
++ **Perubahan:** Pembaruan kode  
++ 
++ ---
++ 
++ #### 4. package.json [20260711_095041]
++ **Fungsi:** Implementasi: package  
++ **Perubahan:** Pembaruan kode  
++ **Lines:** 52
++ 
++ ```javascript
++ // Line 49:
++ +     "changelog": "node generate-changelog.cjs",
++ ```
++ 
++ ---
++ 
++ ## 📊 **Summary**
++ - **✨ Features:** 2 items
++ - **📖 Documentation:** 5 items
++ - **🔐 Auth/Session:** 1 item
++ - **🔌 API:** 1 item
++ - **⚙️ Config:** 4 items
++ - **Total Files Modified:** 13
++ - **Main Focus:** 📖 Documentation
+```
+
+---
+
+#### 2. generate-changelog.cjs [20260711_095043]
+**Fungsi:** Fungsi: m  
+**Perubahan:** Tambah error handling; Tambah fungsi: m; Tambah fungsi: lines; Akses localStorage; Tambah HTTP request; Tambah state management; Tambah fungsi: mod; Tambah side effect; Gunakan context; Tambah navigasi halaman; Ubah render/return JSX  
+**Lines:** 1-371
+
+```javascript
+// Line 1:
++ #!/usr/bin/env node
++ 
++ /* eslint-env node */
++ 
++ /*
++   generate-changelog.cjs — QORESTOWEB
++   ─────────────────────────────────────
++   Generate changelog harian dari git commits hari ini + unstaged changes.
++   Output disimpan ke: docs/changelog/daily/codeChange-YYYYMMDD.md
++ 
++   Usage:
++     node generate-changelog.cjs
++     node generate-changelog.cjs --date=2026-07-11
++ */
++ 
++ const fs      = require('fs');
++ const path    = require('path');
++ const { execSync } = require('child_process');
++ 
++ class ChangelogGenerator {
++   constructor() {
++     this.docsDir = path.join(process.cwd(), 'docs/changelog/daily');
++ 
++     const dateArg = process.argv.find(a => a.startsWith('--date='));
+  // ... (truncated)
++     }
++     const [y, m, d] = this.targetDate.split('-');
++     const file = path.join(this.docsDir, `codeChange-${y}${m}${d}.md`);
++     fs.writeFileSync(file, content, 'utf8');
++     console.log(`✅ Changelog saved: ${file}`);
++     return file;
++   }
++ 
++   run() {
++     try {
++       const content = this.generate();
++       if (content) this.save(content);
++       else console.log('ℹ️  Tidak ada perubahan untuk didokumentasikan.');
++     } catch (err) {
++       console.error('❌ Error:', err.message);
++       process.exit(1);
++     }
++   }
++ }
++ 
++ if (require.main === module) {
++   new ChangelogGenerator().run();
++ }
++ 
++ module.exports = ChangelogGenerator;
+```
+
+---
+
+#### 3. readme.md [20260711_095043]
+**Fungsi:** Implementasi: readme  
+**Perubahan:** Pembaruan kode  
+**Lines:** 134-146, 166-167
+
+```javascript
+// Line 50:
+- # Clone repository
+- git clone https://github.com/dhe2en832/qorestoweb.git
+- cd qorestoweb
+- 
+// Line 131:
+- 1. Cek apakah ada perubahan (`git status`)
+- 2. Stage semua file (`git add -A`)
+- 3. Buat commit message otomatis berisi tanggal dan daftar file yang berubah
+- 4. Push ke branch `main` di remote `origin`
++ 1. Generate changelog harian otomatis (`docs/changelog/daily/codeChange-YYYYMMDD.md`)
++ 2. Cek apakah ada perubahan (`git status`)
++ 3. Stage semua file (`git add -A`)
++ 4. Buat commit message otomatis berisi tanggal dan ringkasan perubahan dari changelog
++ 5. Push ke branch `main` di remote `origin`
++ 
++ Untuk generate changelog saja tanpa push:
++ ```bash
++ yarn changelog
++ 
++ # Generate untuk tanggal tertentu
++ node generate-changelog.cjs --date=2026-07-11
++ ```
+// Line 163:
+- | `yarn ship` | Auto commit + push ke GitHub |
++ | `yarn changelog` | Generate changelog harian ke `docs/changelog/daily/` |
++ | `yarn ship` | Generate changelog + auto commit + push ke GitHub |
+```
+
+---
+
+#### 4. readme.md [20260711_094750]
 **Fungsi:** Implementasi: readme  
 **Perubahan:** Pembaruan kode  
 **Lines:** 42-166, 176-181
@@ -189,7 +348,7 @@
 
 ---
 
-#### 2. docs/Petunjuk Development QORESTOWEB - v1.0.0.docx [20260711_094254]
+#### 5. docs/Petunjuk Development QORESTOWEB - v1.0.0.docx [20260711_094254]
 **Fungsi:** Implementasi: Petunjuk Development QORESTOWEB - v1.0.0  
 **Perubahan:** Pembaruan kode  
 **Lines:** 1-25
@@ -225,7 +384,7 @@
 
 ---
 
-#### 3. readme.md [20260711_094254]
+#### 6. readme.md [20260711_094254]
 **Fungsi:** Implementasi: readme  
 **Perubahan:** Pembaruan kode  
 **Lines:** 4-6, 27
@@ -239,49 +398,6 @@
 -     * utils, folder kode utilitas yang digunanakan aplikasi.
 +     * utils, folder kode utilitas yang digunakan aplikasi.
 ```
-
----
-
-#### 4. readme.md [20260711_095041]
-**Fungsi:** Implementasi: readme  
-**Perubahan:** Pembaruan kode  
-**Lines:** 134-146, 166-167
-
-```javascript
-// Line 50:
-- # Clone repository
-- git clone https://github.com/dhe2en832/qorestoweb.git
-- cd qorestoweb
-- 
-// Line 131:
-- 1. Cek apakah ada perubahan (`git status`)
-- 2. Stage semua file (`git add -A`)
-- 3. Buat commit message otomatis berisi tanggal dan daftar file yang berubah
-- 4. Push ke branch `main` di remote `origin`
-+ 1. Generate changelog harian otomatis (`docs/changelog/daily/codeChange-YYYYMMDD.md`)
-+ 2. Cek apakah ada perubahan (`git status`)
-+ 3. Stage semua file (`git add -A`)
-+ 4. Buat commit message otomatis berisi tanggal dan ringkasan perubahan dari changelog
-+ 5. Push ke branch `main` di remote `origin`
-+ 
-+ Untuk generate changelog saja tanpa push:
-+ ```bash
-+ yarn changelog
-+ 
-+ # Generate untuk tanggal tertentu
-+ node generate-changelog.cjs --date=2026-07-11
-+ ```
-// Line 163:
-- | `yarn ship` | Auto commit + push ke GitHub |
-+ | `yarn changelog` | Generate changelog harian ke `docs/changelog/daily/` |
-+ | `yarn ship` | Generate changelog + auto commit + push ke GitHub |
-```
-
----
-
-#### 5. generate-changelog.cjs [20260711_095041]
-**Fungsi:** Implementasi: generate-changelog  
-**Perubahan:** Pembaruan kode  
 
 ---
 
@@ -370,7 +486,80 @@
 
 ### ⚙️ Config
 
-#### 1. git-push.cjs [20260711_094750]
+#### 1. git-push.cjs [20260711_095043]
+**Fungsi:** Implementasi: git-push  
+**Perubahan:** Tambah error handling  
+**Lines:** 20-23, 26-65, 67, 70, 76-84, 91, 95, 102, 110
+
+```javascript
+// Line 17:
++ /**
++  * Baca changelog hari ini dan ekstrak ringkasan untuk commit message.
++  * Format changelog: ### Kategori → #### N. file → **Perubahan:** ...
++  */
++   const y  = today.getFullYear();
++   const m  = String(today.getMonth() + 1).padStart(2, '0');
++   const d  = String(today.getDate()).padStart(2, '0');
++   const changelogPath = path.join(process.cwd(), `docs/changelog/daily/codeChange-${y}${m}${d}.md`);
++ 
++   let bodyLines = [];
++ 
++   if (fs.existsSync(changelogPath)) {
++     const content = fs.readFileSync(changelogPath, 'utf8');
++ 
++     // Ambil semua entry per kategori
++     const categoryBlocks = [...content.matchAll(/^### (.+?)\n([\s\S]*?)(?=^### |\n## 📊|$)/gm)];
++ 
++     categoryBlocks.forEach(([, catName, block]) => {
++       const entries = [...block.matchAll(/^#### \d+\. (.+?) \[[\d_]+\]\n\*\*Fungsi:\*\* (.+?)\s*\n\*\*Perubahan:\*\* (.+?)\s*\n/gm)];
++       if (!entries.length) return;
++       bodyLines.push(catName.trim());
++       entries.forEach(([, file, , perubahan]) => {
++         bodyLines.push(`  • ${path.basename(file)} — ${perubahan}`);
++       });
+  // ... (truncated)
++     day: 'numeric', month: 'long', year: 'numeric',
++   const body    = bodyLines.join('\n').trim();
+-   // Daftar file yang di-stage sebagai body
+-   const staged = runSilent('git diff --cached --name-only').trim();
+-   const bodyLines = staged
+-     ? staged.split('\n').map((f) => `  • ${f}`)
+-     : [];
+- 
+-   const body = bodyLines.join('\n').trim();
+-   // Cek apakah ada perubahan
++   // 1. Generate changelog dulu
++   console.log('🔄 Generating changelog...');
++   try {
++     run('node generate-changelog.cjs');
++   } catch (_) {
++     console.warn('⚠️  Changelog generation failed, continuing...');
++   }
++ 
++   // 2. Cek apakah ada perubahan
++   // 3. Stage semua
++   // 4. Build commit message dari changelog
+-   // Tulis message ke temp file agar aman dari karakter spesial
++   // 5. Commit via temp file (aman dari karakter spesial)
+// Line 107:
++   // 6. Push
+```
+
+---
+
+#### 2. package.json [20260711_095043]
+**Fungsi:** Implementasi: package  
+**Perubahan:** Pembaruan kode  
+**Lines:** 52
+
+```javascript
+// Line 49:
++     "changelog": "node generate-changelog.cjs",
+```
+
+---
+
+#### 3. git-push.cjs [20260711_094750]
 **Fungsi:** Fungsi: run  
 **Perubahan:** Tambah fungsi: run; Tambah fungsi: runSilent; Tambah error handling; Tambah fungsi: buildCommitMessage; Tambah fungsi: main  
 **Lines:** 1-70
@@ -431,7 +620,7 @@
 
 ---
 
-#### 2. package.json [20260711_094750]
+#### 4. package.json [20260711_094750]
 **Fungsi:** Implementasi: package  
 **Perubahan:** Pembaruan kode  
 **Lines:** 51-52
@@ -445,29 +634,11 @@
 
 ---
 
-#### 3. it-push.cjs [20260711_095041]
-**Fungsi:** Implementasi: it-push  
-**Perubahan:** Pembaruan kode  
-
----
-
-#### 4. package.json [20260711_095041]
-**Fungsi:** Implementasi: package  
-**Perubahan:** Pembaruan kode  
-**Lines:** 52
-
-```javascript
-// Line 49:
-+     "changelog": "node generate-changelog.cjs",
-```
-
----
-
 ## 📊 **Summary**
 - **✨ Features:** 2 items
-- **📖 Documentation:** 5 items
+- **📖 Documentation:** 6 items
 - **🔐 Auth/Session:** 1 item
 - **🔌 API:** 1 item
 - **⚙️ Config:** 4 items
-- **Total Files Modified:** 13
+- **Total Files Modified:** 14
 - **Main Focus:** 📖 Documentation
