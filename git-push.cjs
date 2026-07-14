@@ -108,6 +108,14 @@ function main() {
   fs.unlinkSync(tmpFile);
 
   // 6. Push
+  console.log('\n🔄 Pulling remote changes (rebase)...');
+  try {
+    run('git pull --rebase origin main');
+  } catch (e) {
+    console.error('❌ Pull --rebase gagal. Selesaikan konflik secara manual lalu push.');
+    process.exit(1);
+  }
+
   console.log('\n🚀 Pushing...');
   run('git push');
 
