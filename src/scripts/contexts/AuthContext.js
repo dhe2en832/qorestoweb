@@ -103,7 +103,7 @@ function useProvideAuth() {
     setUserID(null);
     setSessionKey(null);
     setSessionID(null);
-    cb();
+    if (typeof cb === 'function') cb();
   };
 
   const signout = async (cb) => {
@@ -122,19 +122,19 @@ function useProvideAuth() {
       });
       const resJson = await res.json();
       if (resJson.result === true)
-        AlertDialog('success', 'Logout', typesError.SESSION_CLOSED.res, handleLogout(cb));
+        AlertDialog('success', 'Logout', typesError.SESSION_CLOSED.res, () => handleLogout(cb));
       else if (resJson.result === false) throw resJson.onfail.cerror;
       else throw resJson.message;
     } catch (error) {
       switch (error) {
         case typesError.FETCH.msg:
-          AlertDialog('error', 'Salah', typesError.FETCH.res, handleLogout(cb));
+          AlertDialog('error', 'Salah', typesError.FETCH.res, () => handleLogout(cb));
           break;
         case typesError.SESSION_CLOSED.msg:
-          AlertDialog('success', 'Logout', typesError.SESSION_CLOSED.res, handleLogout(cb));
+          AlertDialog('success', 'Logout', typesError.SESSION_CLOSED.res, () => handleLogout(cb));
           break;
         default:
-          AlertDialog('error', 'Salah', error, handleLogout(cb));
+          AlertDialog('error', 'Salah', error, () => handleLogout(cb));
           break;
       }
     }

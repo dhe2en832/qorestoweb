@@ -101,8 +101,12 @@ export default function BQOHome() {
     let isActive = true;
     async function setDataToList() {
       const resJson = await getDatas();
-      setLists(resJson.datas);
-      setCategories(resJson.categories);
+      if (!isActive) return;
+      if (resJson && resJson.datas) {
+        setLists(resJson.datas);
+        setCategories(resJson.categories ?? []);
+      }
+      // jika API belum siap / 404, biarkan state tetap [] (initial value)
     }
     isActive && setDataToList();
     return () => (isActive = false);
@@ -113,6 +117,7 @@ export default function BQOHome() {
   const handleTabChange = async (event, newValue) => {
     setTabValue(newValue);
     const resJson = await getDatas();
+    if (!resJson || !resJson.datas) return;
     let datasFilter;
     switch (newValue) {
       case 'all':
@@ -132,6 +137,7 @@ export default function BQOHome() {
   // List - Search
   const handleChangeSearch = async (event) => {
     const resJson = await getDatas();
+    if (!resJson || !resJson.datas) return;
     const datasFilter = resJson.datas.filter((data) => data.name.includes(event.target.value));
     setLists(datasFilter);
     setTabValue('none');
