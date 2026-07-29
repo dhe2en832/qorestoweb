@@ -328,7 +328,105 @@
 
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260729.md [20260729_132557]
+#### 1. docs/changelog/daily/codeChange-20260729.md [20260729_133715]
+**Fungsi:** Implementasi: codeChange-20260729  
+**Perubahan:** Akses localStorage; Tambah state management  
+**Lines:** 331-392, 453, 514, 575, 636, 693-696, 699-717, 719-725, 1058-1073, 1259-1264, 1267, 1269-1272
+
+```javascript
+// Line 328:
+- #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_131609]
++ #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_132557]
++ **Fungsi:** Implementasi: codeChange-20260729  
++ **Perubahan:** Tambah state management; Tambah error handling; Akses localStorage; Tambah side effect; Tambah HTTP request  
++ **Lines:** 7-129, 146-207, 268-325, 329-388, 392-449, 453-454, 456, 458-510, 512, 514, 575, 632-635, 637-689, 695-698, 702-725, 730, 791, 803, 805-856, 858-878, 884, 887, 890-924, 929-990, 1008-1017, 1023-1039, 1043-1063, 1084, 1086-1087, 1089-1141, 1145, 1147-1202, 1208-1212
++ 
++ ```javascript
++ // Line 4:
++ - #### 1. src/scripts/modules/BQO/index.js [20260729_131606]
++ + #### 1. src/scripts/modules/BQO/hooks/usePrintReceipt.js [20260729_131609]
++ + **Fungsi:** Custom hook: usePrintReceipt  
++ + **Perubahan:** Import: react; Tambah state management; Tambah error handling  
++ + **Lines:** 1-55
++ + 
++ + ```javascript
++ + // Line 1:
++ + + /**
++ + +  * usePrintReceipt.js
++ + +  *
++ + +  * Hook untuk print struk restoran (thermal 80mm).
++ + +  * Menggunakan window.print() dengan inline style — tidak butuh library tambahan
++ + +  * agar tidak bergantung jaringan saat server mati.
++ + +  */
++ + + 
+  // ... (truncated)
++ + const BUILD_DIR  = path.join(ROOT, isCadangan ? 'build-cadangan' : 'build');
++ // Line 115:
++ - console.log(`║  📁  Output: ./build/`.padEnd(51) + '║');
++ + console.log(`║  📁  Output: ./${isCadangan ? 'build-cadangan' : 'build'}/`.padEnd(51) + '║');
++ ```
++ 
++ ---
++ 
+// Line 1256:
++ #### 6. env-cmdrc [20260729_133713]
++ **Fungsi:** Implementasi: env-cmdrc  
++ **Perubahan:** Ubah konfigurasi environment / API endpoint  
++ 
++ ---
++ 
+- - **📖 Documentation:** 6 items
++ - **📖 Documentation:** 7 items
+- - **⚙️ Config:** 4 items
+- - **⚙️ Others:** 5 items
+- - **Total Files Modified:** 26
+- - **Main Focus:** Features
++ - **⚙️ Config:** 5 items
++ - **⚙️ Others:** 6 items
++ - **Total Files Modified:** 29
++ - **Main Focus:** 📖 Documentation
+```
+
+---
+
+#### 2. docs/panduan-build-dan-development.md [20260729_133715]
+**Fungsi:** Implementasi: panduan-build-dan-development  
+**Perubahan:** Pembaruan kode  
+**Lines:** 189, 204, 210-213, 240, 242
+
+```javascript
+// Line 186:
+- build/
++ build-cadangan/
+// Line 201:
+- > ⚠️ Build ini menjalankan dua proses secara **berurutan**. Setelah `build:primary` selesai, langsung dilanjutkan `build:cadangan`. Folder `build/` akhir berisi versi **cadangan** (yang terakhir dijalankan).
++ > ⚠️ Build ini menjalankan dua proses secara **berurutan**. Hasil masing-masing tersimpan di folder terpisah — tidak saling menimpa.
+- **Jika perlu menyimpan kedua versi secara terpisah**, jalankan manual dan pindahkan folder build sebelum build berikutnya:
+- 
+- ```bash
+- # Build utama
+- yarn build:primary
+- # Rename/pindahkan hasil
+- move build build-primary
+- 
+- # Build cadangan
+- yarn build:cadangan
+- # Rename/pindahkan hasil
+- move build build-cadangan
++ Hasil:
++ ```
++ build/            ← versi PRIMARY (URL: /qorestoweb/)
++ build-cadangan/   ← versi CADANGAN (URL: /qorestoweb-cad/)
+// Line 237:
+- Gunakan hasil `yarn build:cadangan`, salin ke:
++ Gunakan hasil `yarn build:cadangan`, salin isi `build-cadangan/` ke:
+- /var/www/html/qorestoweb/
++ /var/www/html/qorestoweb-cad/
+```
+
+---
+
+#### 3. docs/changelog/daily/codeChange-20260729.md [20260729_132557]
 **Fungsi:** Implementasi: codeChange-20260729  
 **Perubahan:** Tambah state management; Tambah error handling; Akses localStorage; Tambah side effect; Tambah HTTP request  
 **Lines:** 7-129, 146-207, 268-325, 329-388, 392-449, 453-454, 456, 458-510, 512, 514, 575, 632-635, 637-689, 695-698, 702-725, 730, 791, 803, 805-856, 858-878, 884, 887, 890-924, 929-990, 1008-1017, 1023-1039, 1043-1063, 1084, 1086-1087, 1089-1141, 1145, 1147-1202, 1208-1212
@@ -389,7 +487,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260729.md [20260729_131609]
+#### 4. docs/changelog/daily/codeChange-20260729.md [20260729_131609]
 **Fungsi:** Implementasi: codeChange-20260729  
 **Perubahan:** Akses localStorage; Tambah state management; Tambah error handling; Tambah HTTP request; Tambah side effect  
 **Lines:** 5-108, 111-172, 229-240, 270-348, 364-440, 442-448
@@ -450,7 +548,7 @@
 
 ---
 
-#### 3. docs/major-update-payment-dualserver-print.md [20260729_131609]
+#### 5. docs/major-update-payment-dualserver-print.md [20260729_131609]
 **Fungsi:** Implementasi: major-update-payment-dualserver-print  
 **Perubahan:** Akses localStorage  
 **Lines:** 1-298
@@ -511,7 +609,7 @@
 
 ---
 
-#### 4. docs/panduan-build-dan-development.md [20260729_131609]
+#### 6. docs/panduan-build-dan-development.md [20260729_131609]
 **Fungsi:** Implementasi: panduan-build-dan-development  
 **Perubahan:** Pembaruan kode  
 **Lines:** 1-391
@@ -572,7 +670,7 @@
 
 ---
 
-#### 5. docs/changelog/daily/codeChange-20260729.md [20260729_112046]
+#### 7. docs/changelog/daily/codeChange-20260729.md [20260729_112046]
 **Fungsi:** Implementasi: codeChange-20260729  
 **Perubahan:** Pembaruan kode  
 **Lines:** 5-63, 93, 95-96, 98-104, 109, 111-113
@@ -633,7 +731,7 @@
 
 ---
 
-#### 6. docs/changelog/daily/codeChange-20260729.md [20260729_104543]
+#### 8. docs/changelog/daily/codeChange-20260729.md [20260729_104543]
 **Fungsi:** Implementasi: codeChange-20260729  
 **Perubahan:** Pembaruan kode  
 **Lines:** 1-46
@@ -686,43 +784,6 @@
 + - **⚙️ Others:** 1 item
 + - **Total Files Modified:** 2
 + - **Main Focus:** 🔌 API
-```
-
----
-
-#### 7. docs/panduan-build-dan-development.md [20260729_133713]
-**Fungsi:** Implementasi: panduan-build-dan-development  
-**Perubahan:** Pembaruan kode  
-**Lines:** 189, 204, 210-213, 240, 242
-
-```javascript
-// Line 186:
-- build/
-+ build-cadangan/
-// Line 201:
-- > ⚠️ Build ini menjalankan dua proses secara **berurutan**. Setelah `build:primary` selesai, langsung dilanjutkan `build:cadangan`. Folder `build/` akhir berisi versi **cadangan** (yang terakhir dijalankan).
-+ > ⚠️ Build ini menjalankan dua proses secara **berurutan**. Hasil masing-masing tersimpan di folder terpisah — tidak saling menimpa.
-- **Jika perlu menyimpan kedua versi secara terpisah**, jalankan manual dan pindahkan folder build sebelum build berikutnya:
-- 
-- ```bash
-- # Build utama
-- yarn build:primary
-- # Rename/pindahkan hasil
-- move build build-primary
-- 
-- # Build cadangan
-- yarn build:cadangan
-- # Rename/pindahkan hasil
-- move build build-cadangan
-+ Hasil:
-+ ```
-+ build/            ← versi PRIMARY (URL: /qorestoweb/)
-+ build-cadangan/   ← versi CADANGAN (URL: /qorestoweb-cad/)
-// Line 237:
-- Gunakan hasil `yarn build:cadangan`, salin ke:
-+ Gunakan hasil `yarn build:cadangan`, salin isi `build-cadangan/` ke:
-- /var/www/html/qorestoweb/
-+ /var/www/html/qorestoweb-cad/
 ```
 
 ---
@@ -918,7 +979,36 @@
 
 ### ⚙️ Config
 
-#### 1. .env-cmdrc [20260729_131609]
+#### 1. .env-cmdrc [20260729_133715]
+**Fungsi:** Implementasi: .env-cmdrc  
+**Perubahan:** Ubah konfigurasi environment / API endpoint  
+**Lines:** 36
+
+```javascript
+// Line 33:
+-         "PUBLIC_URL": "/qorestoweb/"
++         "PUBLIC_URL": "/qorestoweb-cad/"
+```
+
+---
+
+#### 2. build-deploy.cjs [20260729_133715]
+**Fungsi:** Implementasi: build-deploy  
+**Perubahan:** Hapus debug log  
+**Lines:** 36, 118
+
+```javascript
+// Line 33:
+- const BUILD_DIR  = path.join(ROOT, 'build');
++ const BUILD_DIR  = path.join(ROOT, isCadangan ? 'build-cadangan' : 'build');
+// Line 115:
+- console.log(`║  📁  Output: ./build/`.padEnd(51) + '║');
++ console.log(`║  📁  Output: ./${isCadangan ? 'build-cadangan' : 'build'}/`.padEnd(51) + '║');
+```
+
+---
+
+#### 3. .env-cmdrc [20260729_131609]
 **Fungsi:** Implementasi: .env-cmdrc  
 **Perubahan:** Ubah konfigurasi environment / API endpoint  
 **Lines:** 5-12, 17-23, 29-35, 40-47, 51
@@ -963,7 +1053,7 @@
 
 ---
 
-#### 2. build-deploy.cjs [20260729_131609]
+#### 4. build-deploy.cjs [20260729_131609]
 **Fungsi:** Implementasi: build-deploy  
 **Perubahan:** Tambah error handling  
 **Lines:** 1-120
@@ -1024,7 +1114,7 @@
 
 ---
 
-#### 3. package.json [20260729_131609]
+#### 5. package.json [20260729_131609]
 **Fungsi:** Implementasi: package  
 **Perubahan:** Pembaruan kode  
 **Lines:** 47-51
@@ -1042,7 +1132,7 @@
 
 ---
 
-#### 4. .env-cmdrc [20260729_104543]
+#### 6. .env-cmdrc [20260729_104543]
 **Fungsi:** Implementasi: .env-cmdrc  
 **Perubahan:** Ubah konfigurasi environment / API endpoint  
 **Lines:** 19
@@ -1055,19 +1145,9 @@
 
 ---
 
-#### 5. build-deploy.cjs [20260729_133713]
-**Fungsi:** Implementasi: build-deploy  
-**Perubahan:** Hapus debug log  
-**Lines:** 36, 118
-
-```javascript
-// Line 33:
-- const BUILD_DIR  = path.join(ROOT, 'build');
-+ const BUILD_DIR  = path.join(ROOT, isCadangan ? 'build-cadangan' : 'build');
-// Line 115:
-- console.log(`║  📁  Output: ./build/`.padEnd(51) + '║');
-+ console.log(`║  📁  Output: ./${isCadangan ? 'build-cadangan' : 'build'}/`.padEnd(51) + '║');
-```
+#### 7. uild-deploy.cjs [20260729_133925]
+**Fungsi:** Implementasi: uild-deploy  
+**Perubahan:** Pembaruan kode  
 
 ---
 
@@ -1256,17 +1336,11 @@
 
 ---
 
-#### 6. env-cmdrc [20260729_133713]
-**Fungsi:** Implementasi: env-cmdrc  
-**Perubahan:** Ubah konfigurasi environment / API endpoint  
-
----
-
 ## 📊 **Summary**
 - **✨ Features:** 6 items
-- **📖 Documentation:** 7 items
+- **📖 Documentation:** 8 items
 - **🔌 API:** 5 items
-- **⚙️ Config:** 5 items
-- **⚙️ Others:** 6 items
-- **Total Files Modified:** 29
+- **⚙️ Config:** 7 items
+- **⚙️ Others:** 5 items
+- **Total Files Modified:** 31
 - **Main Focus:** 📖 Documentation

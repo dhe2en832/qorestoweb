@@ -89,6 +89,19 @@ try {
   process.exit(1);
 }
 
+// ── Step 2b: Pindahkan output CRA ke folder tujuan (khusus cadangan) ─────────
+// CRA selalu output ke ./build/, jadi perlu di-rename ke BUILD_DIR jika cadangan.
+if (isCadangan) {
+  const CRA_DEFAULT_DIR = path.join(ROOT, 'build');
+  console.log('');
+  console.log(`📦  Memindahkan ./build/ → ./build-cadangan/...`);
+  if (fs.existsSync(BUILD_DIR)) {
+    fs.rmSync(BUILD_DIR, { recursive: true, force: true });
+  }
+  fs.renameSync(CRA_DEFAULT_DIR, BUILD_DIR);
+  console.log('    ✅  Selesai dipindahkan.');
+}
+
 // ── Step 3: Copy app.cfg yang sesuai ─────────────────────────────────────────
 console.log('');
 console.log(`📋  Menyalin app.cfg (${mode})...`);
@@ -99,7 +112,7 @@ if (!fs.existsSync(BUILD_DIR)) {
 }
 
 fs.copyFileSync(APP_CFG_SRC, APP_CFG_DEST);
-console.log(`    ✅  ${path.basename(APP_CFG_SRC)} → build/app.cfg`);
+console.log(`    ✅  ${path.basename(APP_CFG_SRC)} → ${path.relative(ROOT, APP_CFG_DEST)}`);
 
 // ── Step 4: Tampilkan isi app.cfg yang di-copy ───────────────────────────────
 try {
