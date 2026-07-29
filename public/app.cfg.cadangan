@@ -1,0 +1,9 @@
+{
+  "enable_fail_download": true,
+  "debug_save_fail": "",
+  "debug_local_save_fail": "",
+  "server_mode": "local",
+  "server_label": "SERVER CADANGAN",
+  "xendit_payment_timeout_minutes": 5,
+  "xendit_show_simulate": false
+}

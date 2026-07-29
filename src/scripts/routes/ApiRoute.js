@@ -9,6 +9,7 @@ const ApiRoute = {
   BSO_X: `${Config.BASE_URL}/csa/resto/bso_x`,
   BITMSO_X: `${Config.BASE_URL}/csa/resto/bitmso_x`,
   BQO_X: `${Config.BASE_URL}/csa/resto/bqo_x`,
+  BBANK_X: `${Config.BASE_URL}/csa/resto/bbank_x`,
 };
 
 export default ApiRoute;

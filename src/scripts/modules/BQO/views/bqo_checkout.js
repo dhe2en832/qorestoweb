@@ -4,6 +4,7 @@ import Container from '@mui/material/Container';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
+import DialogTitle from '@mui/material/DialogTitle';
 import AppBar from '@mui/material/AppBar';
 import Grid from '@mui/material/Grid';
 import Toolbar from '@mui/material/Toolbar';
@@ -11,12 +12,15 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
 import NoteIcon from '@mui/icons-material/NoteAltOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import TrashIcon from '@mui/icons-material/DeleteOutline';
 import BackIcon from '@mui/icons-material/ArrowBackIos';
+import CashierIcon from '@mui/icons-material/PointOfSale';
+import SelfPayIcon from '@mui/icons-material/PhoneAndroid';
 import Placeholder from '../../../../images/placeholder.png';
 import useResponsive from '../../../hooks/useResponsive';
 import { toCurrencyIDR } from '../../../utils/formatter';
@@ -226,7 +230,10 @@ export default function BQOCheckout() {
     ToastBar('error', `${title} Harus Diisi.`);
   };
 
-  const handleOnCheckout = async () => {
+  // Dialog pilihan metode bayar: kasir vs mandiri
+  const [showPaymentMethodDlg, setShowPaymentMethodDlg] = useState(false);
+
+  const handleOnCheckout = () => {
     if (info.seatNumber === '') {
       showValidation('Nomor Meja');
       return;
@@ -239,15 +246,40 @@ export default function BQOCheckout() {
       showValidation('Nomor Telepon');
       return;
     }
+    // Tampilkan dialog pilihan: bayar di kasir atau mandiri
+    setShowPaymentMethodDlg(true);
+  };
 
-    const payload = {
-      info,
-      cart: Object.values(cart),
-    };
-    const postToAPI = await bqo_api.add(payload);
-    postToAPI.result === true
-      ? ToastBar('success', `API berhasil diinput.`)
-      : ToastBar('error', `API gagal. Error: ${!postToAPI.result && postToAPI.onfail.cerror}.`);
+  // Bayar di kasir — submit pesanan ke backend, tanpa halaman payment
+  const [isSubmittingKasir, setIsSubmittingKasir] = useState(false);
+  const handlePayAtKasir = async () => {
+    setShowPaymentMethodDlg(false);
+    setIsSubmittingKasir(true);
+    try {
+      const payload = { info, cart: Object.values(cart) };
+      const result = await bqo_api.add(payload);
+      if (result.result === true) {
+        ToastBar('success', 'Pesanan diterima! Silakan bayar di kasir.', 4000);
+        // Bersihkan cart setelah sukses
+        window.localStorage.removeItem('QoCart');
+        window.localStorage.removeItem('QoOrderInfo');
+        navigate('/menu');
+      } else {
+        const errMsg = result.onfail?.cerror || 'Gagal mengirim pesanan.';
+        ToastBar('error', `Gagal: ${errMsg}`, 5000);
+      }
+    } catch (_) {
+      ToastBar('error', 'Server tidak bisa dijangkau. Coba lagi.', 5000);
+    } finally {
+      setIsSubmittingKasir(false);
+    }
+  };
+
+  // Bayar mandiri — lanjut ke halaman payment
+  const handlePaySelf = () => {
+    setShowPaymentMethodDlg(false);
+    window.localStorage.setItem('QoOrderInfo', JSON.stringify(info));
+    navigate('/payment');
   };
 
   return (
@@ -479,8 +511,12 @@ export default function BQOCheckout() {
             textAlign: 'center',
           }}
         >
-          <Button variant="contained" onClick={handleOnCheckout}>
-            Lanjutkan Pesanan
+          <Button
+            variant="contained"
+            onClick={handleOnCheckout}
+            disabled={isSubmittingKasir}
+          >
+            {isSubmittingKasir ? 'Mengirim...' : 'Lanjutkan Pesanan'}
           </Button>
         </Container>
         {/* Copyright */}
@@ -522,6 +558,96 @@ export default function BQOCheckout() {
             </DialogActions>
           </>
         )}
+      </Dialog>
+
+      {/* Dialog Pilihan Pembayaran: Kasir vs Mandiri */}
+      <Dialog
+        key="PaymentMethodDlg"
+        open={showPaymentMethodDlg}
+        onClose={() => setShowPaymentMethodDlg(false)}
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: 3, mx: 2 } }}
+      >
+        <DialogTitle sx={{ textAlign: 'center', pb: 0 }}>
+          <Typography variant="h6" fontWeight={700}>
+            Pilih Cara Pembayaran
+          </Typography>
+          <Typography variant="body2" color="text.secondary" mt={0.5}>
+            Bayar sekarang atau nanti di kasir?
+          </Typography>
+        </DialogTitle>
+        <DialogContent sx={{ pt: 2, pb: 1 }}>
+          {/* Pilihan 1: Bayar di Kasir */}
+          <Button
+            fullWidth
+            variant="outlined"
+            onClick={handlePayAtKasir}
+            sx={{
+              py: 2,
+              mb: 1.5,
+              borderRadius: 2,
+              borderWidth: 2,
+              justifyContent: 'flex-start',
+              gap: 2,
+              textTransform: 'none',
+              '&:hover': { borderWidth: 2, bgcolor: '#f0f4ff' },
+            }}
+          >
+            <CashierIcon sx={{ fontSize: 32, color: '#3f50b5' }} />
+            <div style={{ textAlign: 'left' }}>
+              <Typography variant="body1" fontWeight={600} color="text.primary">
+                Bayar di Kasir
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                Pesanan langsung dikirim ke dapur.{'\n'}
+                Bayar saat mengambil atau di meja kasir.
+              </Typography>
+            </div>
+          </Button>
+
+          <Divider sx={{ my: 1 }}>
+            <Typography variant="caption" color="text.secondary">atau</Typography>
+          </Divider>
+
+          {/* Pilihan 2: Bayar Mandiri */}
+          <Button
+            fullWidth
+            variant="outlined"
+            color="success"
+            onClick={handlePaySelf}
+            sx={{
+              py: 2,
+              mt: 1.5,
+              borderRadius: 2,
+              borderWidth: 2,
+              justifyContent: 'flex-start',
+              gap: 2,
+              textTransform: 'none',
+              '&:hover': { borderWidth: 2, bgcolor: '#f0fff4' },
+            }}
+          >
+            <SelfPayIcon sx={{ fontSize: 32, color: '#2e7d32' }} />
+            <div style={{ textAlign: 'left' }}>
+              <Typography variant="body1" fontWeight={600} color="text.primary">
+                Bayar Sendiri (Mandiri)
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                Bayar sekarang lewat QRIS, transfer,{'\n'}
+                atau metode digital lainnya.
+              </Typography>
+            </div>
+          </Button>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2, justifyContent: 'center' }}>
+          <Button
+            size="small"
+            color="inherit"
+            onClick={() => setShowPaymentMethodDlg(false)}
+          >
+            Batal
+          </Button>
+        </DialogActions>
       </Dialog>
     </>
   );
