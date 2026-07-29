@@ -186,7 +186,7 @@ yarn build:cadangan
 ### Output:
 
 ```
-build/
+build-cadangan/
 ├── static/
 │   ├── css/
 │   ├── js/
@@ -201,24 +201,16 @@ build/
 
 ## 6. Build Keduanya Sekaligus
 
-> ⚠️ Build ini menjalankan dua proses secara **berurutan**. Setelah `build:primary` selesai, langsung dilanjutkan `build:cadangan`. Folder `build/` akhir berisi versi **cadangan** (yang terakhir dijalankan).
+> ⚠️ Build ini menjalankan dua proses secara **berurutan**. Hasil masing-masing tersimpan di folder terpisah — tidak saling menimpa.
 
 ```bash
 yarn build:all
 ```
 
-**Jika perlu menyimpan kedua versi secara terpisah**, jalankan manual dan pindahkan folder build sebelum build berikutnya:
-
-```bash
-# Build utama
-yarn build:primary
-# Rename/pindahkan hasil
-move build build-primary
-
-# Build cadangan
-yarn build:cadangan
-# Rename/pindahkan hasil
-move build build-cadangan
+Hasil:
+```
+build/            ← versi PRIMARY (URL: /qorestoweb/)
+build-cadangan/   ← versi CADANGAN (URL: /qorestoweb-cad/)
 ```
 
 ---
@@ -245,9 +237,9 @@ Pastikan struktur file di server:
 
 ### Contoh deploy ke server cadangan (192.168.100.85):
 
-Gunakan hasil `yarn build:cadangan`, salin ke:
+Gunakan hasil `yarn build:cadangan`, salin isi `build-cadangan/` ke:
 ```
-/var/www/html/qorestoweb/
+/var/www/html/qorestoweb-cad/
 ```
 
 File `app.cfg` akan otomatis berisi `server_mode: "local"`.

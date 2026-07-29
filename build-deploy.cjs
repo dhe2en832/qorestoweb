@@ -33,7 +33,7 @@ const isCadangan = mode === 'cadangan';
 
 // ── Paths ───────────────────────────────────────────────────────────────────
 const ROOT       = __dirname;
-const BUILD_DIR  = path.join(ROOT, 'build');
+const BUILD_DIR  = path.join(ROOT, isCadangan ? 'build-cadangan' : 'build');
 const PUBLIC_DIR = path.join(ROOT, 'public');
 
 const APP_CFG_SRC = isCadangan
@@ -115,6 +115,6 @@ try {
 console.log('');
 console.log('╔══════════════════════════════════════════════════╗');
 console.log(`║  ✅  BUILD ${mode.toUpperCase()} SELESAI!`.padEnd(51) + '║');
-console.log(`║  📁  Output: ./build/`.padEnd(51) + '║');
+console.log(`║  📁  Output: ./${isCadangan ? 'build-cadangan' : 'build'}/`.padEnd(51) + '║');
 console.log('╚══════════════════════════════════════════════════╝');
 console.log('');

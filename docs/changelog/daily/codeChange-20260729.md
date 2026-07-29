@@ -328,7 +328,68 @@
 
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260729.md [20260729_131609]
+#### 1. docs/changelog/daily/codeChange-20260729.md [20260729_132557]
+**Fungsi:** Implementasi: codeChange-20260729  
+**Perubahan:** Tambah state management; Tambah error handling; Akses localStorage; Tambah side effect; Tambah HTTP request  
+**Lines:** 7-129, 146-207, 268-325, 329-388, 392-449, 453-454, 456, 458-510, 512, 514, 575, 632-635, 637-689, 695-698, 702-725, 730, 791, 803, 805-856, 858-878, 884, 887, 890-924, 929-990, 1008-1017, 1023-1039, 1043-1063, 1084, 1086-1087, 1089-1141, 1145, 1147-1202, 1208-1212
+
+```javascript
+// Line 4:
+- #### 1. src/scripts/modules/BQO/index.js [20260729_131606]
++ #### 1. src/scripts/modules/BQO/hooks/usePrintReceipt.js [20260729_131609]
++ **Fungsi:** Custom hook: usePrintReceipt  
++ **Perubahan:** Import: react; Tambah state management; Tambah error handling  
++ **Lines:** 1-55
++ 
++ ```javascript
++ // Line 1:
++ + /**
++ +  * usePrintReceipt.js
++ +  *
++ +  * Hook untuk print struk restoran (thermal 80mm).
++ +  * Menggunakan window.print() dengan inline style — tidak butuh library tambahan
++ +  * agar tidak bergantung jaringan saat server mati.
++ +  */
++ + 
++ + import { useRef, useState, useCallback } from 'react';
++ + 
++ + export default function usePrintReceipt({ callbackAfterPrint } = {}) {
++ +   const printComponentRef = useRef();
++ +   const [printCount, setPrintCount] = useState(0);
++ + 
++ +   const handlePrint = useCallback(() => {
++ +     const content = printComponentRef.current;
+  // ... (truncated)
++ +       a.download = filename;
++ +       a.click();
++ +       URL.revokeObjectURL(url);
++ + 
++ +       setIsDownloaded(true);
++ +     } catch (err) {
++ +       console.error('Gagal download transaksi:', err);
++ +     }
++ +   };
++ + 
++ +   const resetDownloadState = () => setIsDownloaded(false);
++ + 
++ +   return { isDownloaded, downloadFailedTrx, resetDownloadState };
++ + }
++ ```
+- - **📖 Documentation:** 4 items
+- - **🔌 API:** 4 items
+- - **⚙️ Config:** 3 items
+- - **⚙️ Others:** 6 items
+- - **Total Files Modified:** 23
++ - **📖 Documentation:** 6 items
++ - **🔌 API:** 5 items
++ - **⚙️ Config:** 4 items
++ - **⚙️ Others:** 5 items
++ - **Total Files Modified:** 26
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260729.md [20260729_131609]
 **Fungsi:** Implementasi: codeChange-20260729  
 **Perubahan:** Akses localStorage; Tambah state management; Tambah error handling; Tambah HTTP request; Tambah side effect  
 **Lines:** 5-108, 111-172, 229-240, 270-348, 364-440, 442-448
@@ -389,7 +450,7 @@
 
 ---
 
-#### 2. docs/major-update-payment-dualserver-print.md [20260729_131609]
+#### 3. docs/major-update-payment-dualserver-print.md [20260729_131609]
 **Fungsi:** Implementasi: major-update-payment-dualserver-print  
 **Perubahan:** Akses localStorage  
 **Lines:** 1-298
@@ -450,7 +511,7 @@
 
 ---
 
-#### 3. docs/panduan-build-dan-development.md [20260729_131609]
+#### 4. docs/panduan-build-dan-development.md [20260729_131609]
 **Fungsi:** Implementasi: panduan-build-dan-development  
 **Perubahan:** Pembaruan kode  
 **Lines:** 1-391
@@ -511,7 +572,7 @@
 
 ---
 
-#### 4. docs/changelog/daily/codeChange-20260729.md [20260729_112046]
+#### 5. docs/changelog/daily/codeChange-20260729.md [20260729_112046]
 **Fungsi:** Implementasi: codeChange-20260729  
 **Perubahan:** Pembaruan kode  
 **Lines:** 5-63, 93, 95-96, 98-104, 109, 111-113
@@ -572,7 +633,7 @@
 
 ---
 
-#### 5. docs/changelog/daily/codeChange-20260729.md [20260729_104543]
+#### 6. docs/changelog/daily/codeChange-20260729.md [20260729_104543]
 **Fungsi:** Implementasi: codeChange-20260729  
 **Perubahan:** Pembaruan kode  
 **Lines:** 1-46
@@ -629,63 +690,39 @@
 
 ---
 
-#### 6. docs/changelog/daily/codeChange-20260729.md [20260729_132745]
-**Fungsi:** Implementasi: codeChange-20260729  
-**Perubahan:** Akses localStorage; Tambah state management  
-**Lines:** 111, 113-420, 481, 483-485, 756, 763-770
+#### 7. docs/panduan-build-dan-development.md [20260729_133713]
+**Fungsi:** Implementasi: panduan-build-dan-development  
+**Perubahan:** Pembaruan kode  
+**Lines:** 189, 204, 210-213, 240, 242
 
 ```javascript
-// Line 108:
-+ <<<<<<< HEAD
-+ =======
-+ #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_132523]
-+ **Fungsi:** Implementasi: codeChange-20260729  
-+ **Perubahan:** Akses localStorage; Tambah state management  
-+ **Lines:** 331-392, 453, 514, 575, 636, 884-899, 944, 1005, 1023
-+ 
-+ ```javascript
-+ // Line 328:
-+ - #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_131609]
-+ + #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_132417]
-+ + **Fungsi:** Implementasi: codeChange-20260729  
-+ + **Perubahan:** Tambah state management; Tambah error handling; Akses localStorage; Tambah side effect; Tambah HTTP request  
-+ + **Lines:** 7-129, 146-207, 268-325, 329-388, 392-449, 453-454, 456, 458-510, 512, 514, 575, 632-633, 635, 637-647, 653-656, 660-683, 688, 749, 761, 763-814, 816-836, 842, 845, 848-943, 948, 966-980, 982-990, 996-1012, 1016-1036, 1057, 1059-1060, 1062-1114, 1118, 1120-1175, 1181-1185
-+ + 
-+ + ```javascript
-+ + // Line 4:
-+ + - #### 1. src/scripts/modules/BQO/index.js [20260729_131606]
-+ + + #### 1. src/scripts/modules/BQO/hooks/usePrintReceipt.js [20260729_131609]
-+ + + **Fungsi:** Custom hook: usePrintReceipt  
-+ + + **Perubahan:** Import: react; Tambah state management; Tambah error handling  
-+ + + **Lines:** 1-55
-+ + + 
-+ + + ```javascript
-  // ... (truncated)
-+ + 
-+ + ---
-+ + 
-+ + *Dokumen ini berlaku untuk qorestoweb versi setelah update 29 Juli 2026.*
+// Line 186:
+- build/
++ build-cadangan/
+// Line 201:
+- > ⚠️ Build ini menjalankan dua proses secara **berurutan**. Setelah `build:primary` selesai, langsung dilanjutkan `build:cadangan`. Folder `build/` akhir berisi versi **cadangan** (yang terakhir dijalankan).
++ > ⚠️ Build ini menjalankan dua proses secara **berurutan**. Hasil masing-masing tersimpan di folder terpisah — tidak saling menimpa.
+- **Jika perlu menyimpan kedua versi secara terpisah**, jalankan manual dan pindahkan folder build sebelum build berikutnya:
+- 
+- ```bash
+- # Build utama
+- yarn build:primary
+- # Rename/pindahkan hasil
+- move build build-primary
+- 
+- # Build cadangan
+- yarn build:cadangan
+- # Rename/pindahkan hasil
+- move build build-cadangan
++ Hasil:
 + ```
-+ 
-+ ---
-+ 
-+ #### 6. docs/changelog/daily/codeChange-20260729.md [20260729_112046]
-+ >>>>>>> cc028c3 (chore: update 29 Juli 2026)
-// Line 478:
-+ <<<<<<< HEAD
-+ =======
-+ #### 7. docs/changelog/daily/codeChange-20260729.md [20260729_104543]
-+ >>>>>>> cc028c3 (chore: update 29 Juli 2026)
-// Line 753:
-+ <<<<<<< HEAD
-+ =======
-+ - **📖 Documentation:** 7 items
-+ - **🔌 API:** 5 items
-+ - **⚙️ Config:** 5 items
-+ - **⚙️ Others:** 5 items
-+ - **Total Files Modified:** 28
-+ - **Main Focus:** 📖 Documentation
-+ >>>>>>> cc028c3 (chore: update 29 Juli 2026)
++ build/            ← versi PRIMARY (URL: /qorestoweb/)
++ build-cadangan/   ← versi CADANGAN (URL: /qorestoweb-cad/)
+// Line 237:
+- Gunakan hasil `yarn build:cadangan`, salin ke:
++ Gunakan hasil `yarn build:cadangan`, salin isi `build-cadangan/` ke:
+- /var/www/html/qorestoweb/
++ /var/www/html/qorestoweb-cad/
 ```
 
 ---
@@ -1018,6 +1055,22 @@
 
 ---
 
+#### 5. build-deploy.cjs [20260729_133713]
+**Fungsi:** Implementasi: build-deploy  
+**Perubahan:** Hapus debug log  
+**Lines:** 36, 118
+
+```javascript
+// Line 33:
+- const BUILD_DIR  = path.join(ROOT, 'build');
++ const BUILD_DIR  = path.join(ROOT, isCadangan ? 'build-cadangan' : 'build');
+// Line 115:
+- console.log(`║  📁  Output: ./build/`.padEnd(51) + '║');
++ console.log(`║  📁  Output: ./${isCadangan ? 'build-cadangan' : 'build'}/`.padEnd(51) + '║');
+```
+
+---
+
 ### ⚙️ Others
 
 #### 1. public/app.cfg [20260729_131609]
@@ -1203,11 +1256,17 @@
 
 ---
 
+#### 6. env-cmdrc [20260729_133713]
+**Fungsi:** Implementasi: env-cmdrc  
+**Perubahan:** Ubah konfigurasi environment / API endpoint  
+
+---
+
 ## 📊 **Summary**
 - **✨ Features:** 6 items
-- **📖 Documentation:** 6 items
+- **📖 Documentation:** 7 items
 - **🔌 API:** 5 items
-- **⚙️ Config:** 4 items
-- **⚙️ Others:** 5 items
-- **Total Files Modified:** 26
-- **Main Focus:** Features
+- **⚙️ Config:** 5 items
+- **⚙️ Others:** 6 items
+- **Total Files Modified:** 29
+- **Main Focus:** 📖 Documentation
