@@ -39,23 +39,25 @@ yarn install
 
 ## 2. Struktur Environment
 
-File konfigurasi: `.env-cmdrc` di root project.
+File konfigurasi tersimpan di folder `env/qorestoweb/` (pola tiruan webcsa-v2/trenly).
 
 ```
-.env-cmdrc
-├── development   → dev server lokal, API ke 192.168.100.13
-├── qa            → testing lokal, API ke localhost:3002
-├── staging       → build SERVER CADANGAN (.85 sebagai utama)
-└── production    → build SERVER UTAMA (.13 sebagai utama)
+env/qorestoweb/
+├── .env                  → shared config (xendit, bank code, dll)
+├── .env.dev              → dev server lokal, API ke 192.168.100.13
+├── .env.qa               → testing lokal, API ke localhost:3002
+├── .env.prod             → build SERVER UTAMA (.13 sebagai utama)
+└── .env.prod.cadangan    → build SERVER CADANGAN (.85 sebagai utama)
 ```
 
 ### Peta IP per environment
 
 | Environment | API Utama | API Fallback | Payment API |
 |---|---|---|---|
-| `development` | 192.168.100.13 | 192.168.100.85 | 192.168.100.13 |
-| `staging` (cadangan) | **192.168.100.85** | 192.168.100.13 | **192.168.100.85** |
-| `production` (utama) | **192.168.100.13** | 192.168.100.85 | **192.168.100.13** |
+| `.env.dev` | 192.168.100.13 | 192.168.100.85 | 192.168.100.13 |
+| `.env.qa` | localhost:3002 | — | — |
+| `.env.prod` (utama) | **192.168.100.13** | 192.168.100.85 | **192.168.100.13** |
+| `.env.prod.cadangan` | **192.168.100.85** | 192.168.100.13 | **192.168.100.85** |
 
 > **Aturan**: Server utama selalu `.13`, server cadangan `.85` sebagai utama dengan `.13` sebagai fallback-nya.
 
@@ -66,27 +68,27 @@ File konfigurasi: `.env-cmdrc` di root project.
 Untuk menjalankan aplikasi di komputer pengembang (hot-reload aktif):
 
 ```bash
-yarn start:dev
+yarn dev:qorestoweb
 ```
 
-Ini menjalankan dev server CRA dengan env `development`:
+Ini menjalankan dev server CRA dengan env dari `.env` + `.env.dev`:
 - API → `http://192.168.100.13/api`
 - URL app → `http://localhost:3000/qorestoweb/`
 - Xendit payment → **nonaktif** (`REACT_APP_USE_XENDIT_PAYMENT=N`)
 
 ### Aktifkan Xendit saat development
 
-Edit `.env-cmdrc`, bagian `"development"`:
+Edit `env/qorestoweb/.env`:
 
-```json
-"REACT_APP_USE_XENDIT_PAYMENT": "Y",
-"REACT_APP_XENDIT_MODE": "invoice"
+```
+REACT_APP_USE_XENDIT_PAYMENT=Y
+REACT_APP_XENDIT_MODE=invoice
 ```
 
 Kemudian restart dev server:
 
 ```bash
-yarn start:dev
+yarn dev:qorestoweb
 ```
 
 ### Mode QA (localhost API)
@@ -94,7 +96,7 @@ yarn start:dev
 Jika API berjalan di komputer sendiri (port 3002):
 
 ```bash
-yarn start:qa
+yarn qa:qorestoweb
 ```
 
 ---
@@ -104,17 +106,18 @@ yarn start:qa
 Server utama = **192.168.100.13** sebagai API utama, 192.168.100.85 sebagai fallback.
 
 ```bash
-yarn build:primary
+yarn prod:qorestoweb
 ```
 
 ### Yang dilakukan otomatis:
 
-1. Hapus folder `build/` lama
-2. Build CRA dengan env `production`:
+1. Hapus folder `build/prod/qorestoweb/` lama
+2. Build CRA dengan env `.env` + `.env.prod`:
    - `REACT_APP_API_ENDPOINT` = `http://192.168.100.13/api`
    - `REACT_APP_API_LOCAL_ENDPOINT` = `http://192.168.100.85/api`
    - `PUBLIC_URL` = `/qorestoweb/`
-3. Copy `public/app.cfg` → `build/app.cfg`:
+   - `BUILD_PATH` = `build/prod/qorestoweb`
+3. Copy `public/app.cfg` → `build/prod/qorestoweb/app.cfg`:
    ```json
    { "server_mode": "primary", "server_label": "" }
    ```
@@ -122,7 +125,7 @@ yarn build:primary
 ### Output:
 
 ```
-build/
+build/prod/qorestoweb/
 ├── static/
 │   ├── css/
 │   ├── js/
@@ -137,21 +140,22 @@ build/
 
 ```
 ╔══════════════════════════════════════════════════╗
-║  QORESTOWEB BUILD — PRIMARY                     ║
+║  QORESTOWEB BUILD — PRIMARY                      ║
 ╠══════════════════════════════════════════════════╣
-║  Mode      : primary                             ║
-║  Env key   : production                          ║
-║  app.cfg   : app.cfg                             ║
+║  Mode       : primary                            ║
+║  PUBLIC_URL : /qorestoweb/                       ║
+║  BUILD_PATH : build/prod/qorestoweb              ║
+║  app.cfg    : app.cfg                            ║
 ╚══════════════════════════════════════════════════╝
 
 🧹  Membersihkan build lama...
-⚙️   Menjalankan CRA build (env: production)...
+⚙️   Menjalankan CRA build...
 📋  Menyalin app.cfg (primary)...
-    ✅  app.cfg → build/app.cfg
+    ✅  app.cfg → build/prod/qorestoweb/app.cfg
 
 ╔══════════════════════════════════════════════════╗
 ║  ✅  BUILD PRIMARY SELESAI!                      ║
-║  📁  Output: ./build/                            ║
+║  📁  Output: ./build/prod/qorestoweb/            ║
 ╚══════════════════════════════════════════════════╝
 ```
 
@@ -162,17 +166,18 @@ build/
 Server cadangan = **192.168.100.85** sebagai API utama, 192.168.100.13 sebagai fallback.
 
 ```bash
-yarn build:cadangan
+yarn prod:qorestoweb-cadangan
 ```
 
 ### Yang dilakukan otomatis:
 
-1. Hapus folder `build/` lama
-2. Build CRA dengan env `staging`:
+1. Hapus folder `build/prod/qorestoweb-cad/` lama
+2. Build CRA dengan env `.env` + `.env.prod.cadangan`:
    - `REACT_APP_API_ENDPOINT` = `http://192.168.100.85/api`
    - `REACT_APP_API_LOCAL_ENDPOINT` = `http://192.168.100.13/api`
-   - `PUBLIC_URL` = `/qorestoweb/`
-3. Copy `public/app.cfg.cadangan` → `build/app.cfg`:
+   - `PUBLIC_URL` = `/qorestoweb-cad/`
+   - `BUILD_PATH` = `build/prod/qorestoweb-cad`
+3. Copy `public/app.cfg.cadangan` → `build/prod/qorestoweb-cad/app.cfg`:
    ```json
    { "server_mode": "local", "server_label": "SERVER CADANGAN" }
    ```
@@ -186,7 +191,7 @@ yarn build:cadangan
 ### Output:
 
 ```
-build-cadangan/
+build/prod/qorestoweb-cad/
 ├── static/
 │   ├── css/
 │   ├── js/
@@ -201,29 +206,30 @@ build-cadangan/
 
 ## 6. Build Keduanya Sekaligus
 
-> ⚠️ Build ini menjalankan dua proses secara **berurutan**. Hasil masing-masing tersimpan di folder terpisah — tidak saling menimpa.
+Build ini menjalankan dua proses secara **berurutan**. Hasil masing-masing tersimpan di folder terpisah — tidak saling menimpa.
 
 ```bash
-yarn build:all
+yarn prod:qorestoweb-all
 ```
 
 Hasil:
 ```
-build/            ← versi PRIMARY (URL: /qorestoweb/)
-build-cadangan/   ← versi CADANGAN (URL: /qorestoweb-cad/)
+build/prod/
+├── qorestoweb/        ← PRIMARY  (URL: /qorestoweb/)
+└── qorestoweb-cad/    ← CADANGAN (URL: /qorestoweb-cad/)
 ```
 
 ---
 
 ## 7. Deploy ke Server
 
-Setelah build selesai, salin isi folder `build/` ke web server.
+Setelah build selesai, salin isi folder hasil build ke web server.
 
-### Contoh deploy ke server utama (192.168.100.13):
+### Deploy ke server utama (192.168.100.13):
 
-Salin seluruh isi `build/` ke direktori web server, misalnya:
+Salin isi `build/prod/qorestoweb/` ke direktori web server:
 ```
-/var/www/html/qorestoweb/
+htdocs/qorestoweb/
 ```
 
 Pastikan struktur file di server:
@@ -235,18 +241,18 @@ Pastikan struktur file di server:
 └── ...
 ```
 
-### Contoh deploy ke server cadangan (192.168.100.85):
+### Deploy ke server cadangan (192.168.100.85):
 
-Gunakan hasil `yarn build:cadangan`, salin isi `build-cadangan/` ke:
+Salin isi `build/prod/qorestoweb-cad/` ke:
 ```
-/var/www/html/qorestoweb-cad/
+htdocs/qorestoweb-cad/
 ```
 
 File `app.cfg` akan otomatis berisi `server_mode: "local"`.
 
 ### Web server config (Apache `.htaccess`)
 
-Untuk React Router (SPA) agar refresh halaman tidak 404:
+Untuk React Router (SPA) agar refresh halaman tidak 404, buat file `.htaccess` di masing-masing folder:
 
 ```apache
 Options -MultiViews
@@ -255,13 +261,20 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^ index.html [QSA,L]
 ```
 
+Pastikan `mod_rewrite` aktif di Apache (`httpd.conf`):
+```
+LoadModule rewrite_module modules/mod_rewrite.so
+```
+
 ---
 
 ## 8. Edit Config Tanpa Rebuild (`app.cfg`)
 
 File `app.cfg` di folder build bisa diedit langsung di server **tanpa perlu rebuild dan deploy ulang**.
 
-Lokasi di server: `{webroot}/qorestoweb/app.cfg`
+Lokasi di server:
+- Utama: `htdocs/qorestoweb/app.cfg`
+- Cadangan: `htdocs/qorestoweb-cad/app.cfg`
 
 ### Contoh: Aktifkan download failsafe
 
@@ -308,27 +321,20 @@ Lokasi di server: `{webroot}/qorestoweb/app.cfg`
 ## 9. Referensi Semua Scripts
 
 ```bash
-# ── Development ──────────────────────────────────────────────────────────
-yarn start:dev          # Dev server dengan env development (API: .13)
-yarn start:qa           # Dev server dengan env qa (API: localhost:3002)
+# ── Development ──────────────────────────────────────────────────────────────
+yarn dev:qorestoweb             # Dev server (API: .13, URL: /qorestoweb/)
+yarn qa:qorestoweb              # Dev server QA (API: localhost:3002)
 
-# ── Build Production ──────────────────────────────────────────────────────
-yarn build:primary      # Build untuk server UTAMA (.13), pakai app.cfg primary
-yarn build:cadangan     # Build untuk server CADANGAN (.85), pakai app.cfg.cadangan
-yarn build:all          # Build keduanya berurutan (hasil akhir = cadangan)
+# ── Build Production ──────────────────────────────────────────────────────────
+yarn prod:qorestoweb            # Build SERVER UTAMA  → build/prod/qorestoweb/
+yarn prod:qorestoweb-cadangan   # Build SERVER CADANGAN → build/prod/qorestoweb-cad/
+yarn prod:qorestoweb-all        # Build keduanya berurutan
 
-# ── Build manual (tanpa build-deploy.cjs) ─────────────────────────────────
-yarn build:prod         # CRA build env production (TANPA auto-copy app.cfg)
-yarn build:staging      # CRA build env staging (TANPA auto-copy app.cfg)
-
-# ── Utilities ─────────────────────────────────────────────────────────────
-yarn changelog          # Generate changelog harian
-yarn ship               # Commit + push ke Git
-yarn new-package        # Hapus node_modules + yarn.lock, install ulang
+# ── Utilities ─────────────────────────────────────────────────────────────────
+yarn changelog                  # Generate changelog harian
+yarn ship                       # Commit + push ke Git
+yarn new-package                # Hapus node_modules + yarn.lock, install ulang
 ```
-
-> **Selalu gunakan `build:primary` atau `build:cadangan`** untuk build production.  
-> `build:prod` dan `build:staging` tidak meng-copy `app.cfg` yang sesuai secara otomatis.
 
 ---
 
@@ -345,8 +351,8 @@ Pastikan `env-cmd` ada di `devDependencies`.
 ### Build gagal: `Cannot read properties of undefined (reading 'trim')`
 
 Berarti env var `REACT_APP_API_ENDPOINT` tidak terbaca. Pastikan:
-- `.env-cmdrc` ada di root project
-- Menjalankan lewat `build:primary` atau `build:cadangan`, bukan `yarn build` langsung
+- File `env/qorestoweb/.env.prod` atau `.env.prod.cadangan` ada
+- Menjalankan lewat `prod:qorestoweb` atau `prod:qorestoweb-cadangan`, bukan `yarn build` langsung
 
 ### Dev server tidak bisa akses API (CORS error)
 
@@ -361,11 +367,11 @@ Atau gunakan proxy di `package.json`:
 
 Pastikan file ada di root folder build (bukan di subfolder):
 ```
-build/app.cfg   ✅
-build/static/app.cfg  ❌
+build/prod/qorestoweb/app.cfg   ✅
+build/prod/qorestoweb/static/app.cfg  ❌
 ```
 
-Jika pakai `yarn build:primary` atau `yarn build:cadangan`, ini ditangani otomatis.
+Jika pakai `prod:qorestoweb` atau `prod:qorestoweb-cadangan`, ini ditangani otomatis.
 
 ### Setelah edit `app.cfg` di server, perubahan tidak efektif
 

@@ -103,24 +103,26 @@ Kembali ke menu         ┌──────┴──────────�
 | `src/scripts/modules/BQO/index.js` | Tambah route `/payment` → `BQOPayment` |
 | `src/scripts/modules/BQO/views/bqo_checkout.js` | Tambah dialog pilihan kasir/mandiri. Bayar kasir: langsung submit. Bayar mandiri: navigate ke `/payment`. |
 | `src/scripts/App.js` | Tambah `loadAppConfig()` saat app pertama mount |
-| `.env-cmdrc` | Tambah 6 env vars baru |
-| `package.json` | Tambah 3 script build baru |
+| `env/qorestoweb/.env` | Tambah shared env vars (xendit, bank code) |
+| `env/qorestoweb/.env.prod` | Env production primary dengan `BUILD_PATH` dan `PUBLIC_URL` |
+| `env/qorestoweb/.env.prod.cadangan` | Env production cadangan dengan `BUILD_PATH` dan `PUBLIC_URL` berbeda |
+| `package.json` | Script build diganti ke pola trenly (`prod:qorestoweb`, `prod:qorestoweb-cadangan`, dll) |
 
 ---
 
 ## 5. Environment Variables Baru
 
-Ditambahkan ke `.env-cmdrc`:
+Ditambahkan ke `env/qorestoweb/.env` (shared) dan masing-masing file env:
 
-| Key | Nilai Default | Keterangan |
-|---|---|---|
-| `REACT_APP_API_LOCAL_ENDPOINT` | `http://192.168.100.85/api` | URL server lokal (fallback) |
-| `REACT_APP_PAYMENT_API_ENDPOINT` | `http://192.168.100.13/xendit-csa/endpoints` | PHP Xendit gateway utama |
-| `REACT_APP_PAYMENT_API_LOCAL_ENDPOINT` | `http://192.168.100.85/xendit-csa/endpoints` | PHP Xendit gateway lokal |
-| `REACT_APP_USE_XENDIT_PAYMENT` | `N` | `Y` untuk aktifkan pilihan Xendit di dialog |
-| `REACT_APP_XENDIT_MODE` | `invoice` | `invoice` atau `payment-request` |
-| `REACT_APP_CASH_BANK_CODE` | `TUNAI` | Kode bank untuk pembayaran tunai |
-| `REACT_APP_XENDIT_BANK_CODE` | `XENDIT` | Kode bank untuk pembayaran Xendit |
+| Key | File | Nilai Default | Keterangan |
+|---|---|---|---|
+| `REACT_APP_API_LOCAL_ENDPOINT` | `.env.prod` / `.env.prod.cadangan` | `http://192.168.100.85/api` | URL server lokal (fallback) |
+| `REACT_APP_PAYMENT_API_ENDPOINT` | `.env.prod` / `.env.prod.cadangan` | `http://192.168.100.13/xendit-csa/endpoints` | PHP Xendit gateway utama |
+| `REACT_APP_PAYMENT_API_LOCAL_ENDPOINT` | `.env.prod` / `.env.prod.cadangan` | `http://192.168.100.85/xendit-csa/endpoints` | PHP Xendit gateway lokal |
+| `REACT_APP_USE_XENDIT_PAYMENT` | `.env` (shared) | `N` | `Y` untuk aktifkan pilihan Xendit di dialog |
+| `REACT_APP_XENDIT_MODE` | `.env` (shared) | `invoice` | `invoice` atau `payment-request` |
+| `REACT_APP_CASH_BANK_CODE` | `.env` (shared) | `TUNAI` | Kode bank untuk pembayaran tunai |
+| `REACT_APP_XENDIT_BANK_CODE` | `.env` (shared) | `XENDIT` | Kode bank untuk pembayaran Xendit |
 
 ---
 
@@ -237,29 +239,51 @@ Komponen: `BQOReceipt.jsx` — thermal 80mm, font monospace.
 
 ## 10. Build Otomatis
 
-### Scripts baru di `package.json`:
+### Scripts di `package.json` (pola tiruan webcsa-v2/trenly):
 
 ```bash
-yarn build:primary    # Build server utama  (.13 utama, .85 fallback)
-yarn build:cadangan   # Build server cadangan (.85 utama, .13 fallback)
-yarn build:all        # Build keduanya sekaligus
+yarn dev:qorestoweb             # Dev server (API: .13)
+yarn qa:qorestoweb              # Dev server QA (API: localhost:3002)
+yarn prod:qorestoweb            # Build server UTAMA  → build/prod/qorestoweb/
+yarn prod:qorestoweb-cadangan   # Build server CADANGAN → build/prod/qorestoweb-cad/
+yarn prod:qorestoweb-all        # Build keduanya sekaligus
+```
+
+### Struktur env file (tiruan trenly):
+
+```
+env/qorestoweb/
+├── .env                  → shared (xendit config, bank code)
+├── .env.dev              → development
+├── .env.qa               → qa / testing
+├── .env.prod             → production primary
+└── .env.prod.cadangan    → production cadangan
 ```
 
 ### Yang dilakukan `build-deploy.cjs`:
 
-1. Hapus folder `build/` lama
-2. Jalankan CRA build dengan env yang sesuai:
-   - `primary` → env `production`
-   - `cadangan` → env `staging`
-3. Copy `app.cfg` yang sesuai ke `build/app.cfg`:
+1. Baca `BUILD_PATH` dan `PUBLIC_URL` dari env (sudah di-inject `env-cmd`)
+2. Hapus folder target lama
+3. Jalankan CRA build — CRA v5 otomatis pakai `BUILD_PATH` dari env
+4. Copy `app.cfg` yang sesuai ke dalam folder hasil build:
    - `primary` → `public/app.cfg` (server_mode: primary)
    - `cadangan` → `public/app.cfg.cadangan` (server_mode: local)
-4. Tampilkan ringkasan isi `app.cfg` yang diterapkan
+5. Tampilkan ringkasan isi `app.cfg` yang diterapkan
+
+### Output folder:
+
+```
+build/prod/
+├── qorestoweb/        ← URL: /qorestoweb/   (PRIMARY)
+└── qorestoweb-cad/    ← URL: /qorestoweb-cad/ (CADANGAN)
+```
 
 ### Perbedaan env primary vs cadangan:
 
-| Setting | Primary (production) | Cadangan (staging) |
+| Setting | Primary (`.env.prod`) | Cadangan (`.env.prod.cadangan`) |
 |---|---|---|
+| `PUBLIC_URL` | `/qorestoweb/` | `/qorestoweb-cad/` |
+| `BUILD_PATH` | `build/prod/qorestoweb` | `build/prod/qorestoweb-cad` |
 | `REACT_APP_API_ENDPOINT` | `192.168.100.13` | `192.168.100.85` |
 | `REACT_APP_API_LOCAL_ENDPOINT` | `192.168.100.85` | `192.168.100.13` |
 | `REACT_APP_PAYMENT_API_ENDPOINT` | `192.168.100.13` | `192.168.100.85` |
@@ -289,7 +313,7 @@ yarn build:all        # Build keduanya sekaligus
 | `BBANK_X` data di backend | Backend perlu menyediakan data channel bayar untuk endpoint `bbank_x` |
 | Auto-sync lokal → utama | Setelah server utama hidup kembali, transaksi lokal perlu di-sync manual atau otomatis |
 | Credential fallback yang aman | `auth_local_user` / `auth_local_pass` di localStorage adalah solusi sementara — perlu shared session store |
-| Aktivasi Xendit | Set `REACT_APP_USE_XENDIT_PAYMENT=Y` di `.env-cmdrc` dan pastikan PHP gateway server sudah berjalan |
+| Aktivasi Xendit | Set `REACT_APP_USE_XENDIT_PAYMENT=Y` di `env/qorestoweb/.env` dan pastikan PHP gateway server sudah berjalan |
 | Backend `bqo_x` terima `paymentInfo` | Backend perlu handle field `paymentInfo: { cbnkid, namount }` dalam action `add` |
 
 ---

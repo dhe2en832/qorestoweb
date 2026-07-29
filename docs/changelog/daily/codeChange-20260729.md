@@ -328,7 +328,68 @@
 
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260729.md [20260729_133715]
+#### 1. docs/changelog/daily/codeChange-20260729.md [20260729_133927]
+**Fungsi:** Implementasi: codeChange-20260729  
+**Perubahan:** Akses localStorage; Hapus debug log  
+**Lines:** 331-429, 490, 551, 612, 673, 734, 982-1011, 1056, 1117, 1135, 1148-1150, 1341, 1343-1345
+
+```javascript
+// Line 328:
+- #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_132557]
++ #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_133715]
++ **Fungsi:** Implementasi: codeChange-20260729  
++ **Perubahan:** Akses localStorage; Tambah state management  
++ **Lines:** 331-392, 453, 514, 575, 636, 693-696, 699-717, 719-725, 1058-1073, 1259-1264, 1267, 1269-1272
++ 
++ ```javascript
++ // Line 328:
++ - #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_131609]
++ + #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_132557]
++ + **Fungsi:** Implementasi: codeChange-20260729  
++ + **Perubahan:** Tambah state management; Tambah error handling; Akses localStorage; Tambah side effect; Tambah HTTP request  
++ + **Lines:** 7-129, 146-207, 268-325, 329-388, 392-449, 453-454, 456, 458-510, 512, 514, 575, 632-635, 637-689, 695-698, 702-725, 730, 791, 803, 805-856, 858-878, 884, 887, 890-924, 929-990, 1008-1017, 1023-1039, 1043-1063, 1084, 1086-1087, 1089-1141, 1145, 1147-1202, 1208-1212
++ + 
++ + ```javascript
++ + // Line 4:
++ + - #### 1. src/scripts/modules/BQO/index.js [20260729_131606]
++ + + #### 1. src/scripts/modules/BQO/hooks/usePrintReceipt.js [20260729_131609]
++ + + **Fungsi:** Custom hook: usePrintReceipt  
++ + + **Perubahan:** Import: react; Tambah state management; Tambah error handling  
++ + + **Lines:** 1-55
++ + + 
++ + + ```javascript
++ + + // Line 1:
+  // ... (truncated)
+- ```javascript
+- // Line 33:
+- - const BUILD_DIR  = path.join(ROOT, 'build');
+- + const BUILD_DIR  = path.join(ROOT, isCadangan ? 'build-cadangan' : 'build');
+- // Line 115:
+- - console.log(`║  📁  Output: ./build/`.padEnd(51) + '║');
+- + console.log(`║  📁  Output: ./${isCadangan ? 'build-cadangan' : 'build'}/`.padEnd(51) + '║');
+- ```
++ #### 7. uild-deploy.cjs [20260729_133925]
++ **Fungsi:** Implementasi: uild-deploy  
++ **Perubahan:** Pembaruan kode  
+// Line 1336:
+- #### 6. env-cmdrc [20260729_133713]
+- **Fungsi:** Implementasi: env-cmdrc  
+- **Perubahan:** Ubah konfigurasi environment / API endpoint  
+- 
+- 
+- - **📖 Documentation:** 7 items
++ - **📖 Documentation:** 8 items
+- - **⚙️ Config:** 5 items
+- - **⚙️ Others:** 6 items
+- - **Total Files Modified:** 29
++ - **⚙️ Config:** 7 items
++ - **⚙️ Others:** 5 items
++ - **Total Files Modified:** 31
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260729.md [20260729_133715]
 **Fungsi:** Implementasi: codeChange-20260729  
 **Perubahan:** Akses localStorage; Tambah state management  
 **Lines:** 331-392, 453, 514, 575, 636, 693-696, 699-717, 719-725, 1058-1073, 1259-1264, 1267, 1269-1272
@@ -389,7 +450,7 @@
 
 ---
 
-#### 2. docs/panduan-build-dan-development.md [20260729_133715]
+#### 3. docs/panduan-build-dan-development.md [20260729_133715]
 **Fungsi:** Implementasi: panduan-build-dan-development  
 **Perubahan:** Pembaruan kode  
 **Lines:** 189, 204, 210-213, 240, 242
@@ -426,7 +487,7 @@
 
 ---
 
-#### 3. docs/changelog/daily/codeChange-20260729.md [20260729_132557]
+#### 4. docs/changelog/daily/codeChange-20260729.md [20260729_132557]
 **Fungsi:** Implementasi: codeChange-20260729  
 **Perubahan:** Tambah state management; Tambah error handling; Akses localStorage; Tambah side effect; Tambah HTTP request  
 **Lines:** 7-129, 146-207, 268-325, 329-388, 392-449, 453-454, 456, 458-510, 512, 514, 575, 632-635, 637-689, 695-698, 702-725, 730, 791, 803, 805-856, 858-878, 884, 887, 890-924, 929-990, 1008-1017, 1023-1039, 1043-1063, 1084, 1086-1087, 1089-1141, 1145, 1147-1202, 1208-1212
@@ -487,7 +548,7 @@
 
 ---
 
-#### 4. docs/changelog/daily/codeChange-20260729.md [20260729_131609]
+#### 5. docs/changelog/daily/codeChange-20260729.md [20260729_131609]
 **Fungsi:** Implementasi: codeChange-20260729  
 **Perubahan:** Akses localStorage; Tambah state management; Tambah error handling; Tambah HTTP request; Tambah side effect  
 **Lines:** 5-108, 111-172, 229-240, 270-348, 364-440, 442-448
@@ -548,7 +609,7 @@
 
 ---
 
-#### 5. docs/major-update-payment-dualserver-print.md [20260729_131609]
+#### 6. docs/major-update-payment-dualserver-print.md [20260729_131609]
 **Fungsi:** Implementasi: major-update-payment-dualserver-print  
 **Perubahan:** Akses localStorage  
 **Lines:** 1-298
@@ -609,7 +670,7 @@
 
 ---
 
-#### 6. docs/panduan-build-dan-development.md [20260729_131609]
+#### 7. docs/panduan-build-dan-development.md [20260729_131609]
 **Fungsi:** Implementasi: panduan-build-dan-development  
 **Perubahan:** Pembaruan kode  
 **Lines:** 1-391
@@ -670,7 +731,7 @@
 
 ---
 
-#### 7. docs/changelog/daily/codeChange-20260729.md [20260729_112046]
+#### 8. docs/changelog/daily/codeChange-20260729.md [20260729_112046]
 **Fungsi:** Implementasi: codeChange-20260729  
 **Perubahan:** Pembaruan kode  
 **Lines:** 5-63, 93, 95-96, 98-104, 109, 111-113
@@ -731,7 +792,7 @@
 
 ---
 
-#### 8. docs/changelog/daily/codeChange-20260729.md [20260729_104543]
+#### 9. docs/changelog/daily/codeChange-20260729.md [20260729_104543]
 **Fungsi:** Implementasi: codeChange-20260729  
 **Perubahan:** Pembaruan kode  
 **Lines:** 1-46
@@ -784,6 +845,128 @@
 + - **⚙️ Others:** 1 item
 + - **Total Files Modified:** 2
 + - **Main Focus:** 🔌 API
+```
+
+---
+
+#### 10. docs/major-update-payment-dualserver-print.md [20260729_141925]
+**Fungsi:** Implementasi: major-update-payment-dualserver-print  
+**Perubahan:** Pembaruan kode  
+**Lines:** 106-109, 115, 117-125, 242, 245-260, 265-268, 271-279, 283, 285-286, 316
+
+```javascript
+// Line 103:
+- | `.env-cmdrc` | Tambah 6 env vars baru |
+- | `package.json` | Tambah 3 script build baru |
++ | `env/qorestoweb/.env` | Tambah shared env vars (xendit, bank code) |
++ | `env/qorestoweb/.env.prod` | Env production primary dengan `BUILD_PATH` dan `PUBLIC_URL` |
++ | `env/qorestoweb/.env.prod.cadangan` | Env production cadangan dengan `BUILD_PATH` dan `PUBLIC_URL` berbeda |
++ | `package.json` | Script build diganti ke pola trenly (`prod:qorestoweb`, `prod:qorestoweb-cadangan`, dll) |
+- Ditambahkan ke `.env-cmdrc`:
++ Ditambahkan ke `env/qorestoweb/.env` (shared) dan masing-masing file env:
+- | Key | Nilai Default | Keterangan |
+- |---|---|---|
+- | `REACT_APP_API_LOCAL_ENDPOINT` | `http://192.168.100.85/api` | URL server lokal (fallback) |
+- | `REACT_APP_PAYMENT_API_ENDPOINT` | `http://192.168.100.13/xendit-csa/endpoints` | PHP Xendit gateway utama |
+- | `REACT_APP_PAYMENT_API_LOCAL_ENDPOINT` | `http://192.168.100.85/xendit-csa/endpoints` | PHP Xendit gateway lokal |
+- | `REACT_APP_USE_XENDIT_PAYMENT` | `N` | `Y` untuk aktifkan pilihan Xendit di dialog |
+- | `REACT_APP_XENDIT_MODE` | `invoice` | `invoice` atau `payment-request` |
+- | `REACT_APP_CASH_BANK_CODE` | `TUNAI` | Kode bank untuk pembayaran tunai |
+- | `REACT_APP_XENDIT_BANK_CODE` | `XENDIT` | Kode bank untuk pembayaran Xendit |
++ | Key | File | Nilai Default | Keterangan |
++ |---|---|---|---|
++ | `REACT_APP_API_LOCAL_ENDPOINT` | `.env.prod` / `.env.prod.cadangan` | `http://192.168.100.85/api` | URL server lokal (fallback) |
++ | `REACT_APP_PAYMENT_API_ENDPOINT` | `.env.prod` / `.env.prod.cadangan` | `http://192.168.100.13/xendit-csa/endpoints` | PHP Xendit gateway utama |
++ | `REACT_APP_PAYMENT_API_LOCAL_ENDPOINT` | `.env.prod` / `.env.prod.cadangan` | `http://192.168.100.85/xendit-csa/endpoints` | PHP Xendit gateway lokal |
++ | `REACT_APP_USE_XENDIT_PAYMENT` | `.env` (shared) | `N` | `Y` untuk aktifkan pilihan Xendit di dialog |
++ | `REACT_APP_XENDIT_MODE` | `.env` (shared) | `invoice` | `invoice` atau `payment-request` |
+  // ... (truncated)
+- 2. Jalankan CRA build dengan env yang sesuai:
+-    - `primary` → env `production`
+-    - `cadangan` → env `staging`
+- 3. Copy `app.cfg` yang sesuai ke `build/app.cfg`:
++ 1. Baca `BUILD_PATH` dan `PUBLIC_URL` dari env (sudah di-inject `env-cmd`)
++ 2. Hapus folder target lama
++ 3. Jalankan CRA build — CRA v5 otomatis pakai `BUILD_PATH` dari env
++ 4. Copy `app.cfg` yang sesuai ke dalam folder hasil build:
+- 4. Tampilkan ringkasan isi `app.cfg` yang diterapkan
++ 5. Tampilkan ringkasan isi `app.cfg` yang diterapkan
++ 
++ ### Output folder:
++ 
++ ```
++ build/prod/
++ ├── qorestoweb/        ← URL: /qorestoweb/   (PRIMARY)
++ └── qorestoweb-cad/    ← URL: /qorestoweb-cad/ (CADANGAN)
++ ```
+- | Setting | Primary (production) | Cadangan (staging) |
++ | Setting | Primary (`.env.prod`) | Cadangan (`.env.prod.cadangan`) |
++ | `PUBLIC_URL` | `/qorestoweb/` | `/qorestoweb-cad/` |
++ | `BUILD_PATH` | `build/prod/qorestoweb` | `build/prod/qorestoweb-cad` |
+// Line 313:
+- | Aktivasi Xendit | Set `REACT_APP_USE_XENDIT_PAYMENT=Y` di `.env-cmdrc` dan pastikan PHP gateway server sudah berjalan |
++ | Aktivasi Xendit | Set `REACT_APP_USE_XENDIT_PAYMENT=Y` di `env/qorestoweb/.env` dan pastikan PHP gateway server sudah berjalan |
+```
+
+---
+
+#### 11. docs/panduan-build-dan-development.md [20260729_141925]
+**Fungsi:** Implementasi: panduan-build-dan-development  
+**Perubahan:** Pembaruan kode  
+**Lines:** 42, 45-50, 57-60, 71, 74, 81, 83-85, 91, 99, 109, 114-115, 119-120, 128, 143, 145-148, 152, 154, 158, 169, 174-175, 178-180, 194, 209, 212, 217-219, 226, 228, 230, 232, 244, 246, 248, 255, 264-268, 275-277, 324-326, 328-331, 333-336, 354-355, 370-371, 374
+
+```javascript
+// Line 39:
+- File konfigurasi: `.env-cmdrc` di root project.
++ File konfigurasi tersimpan di folder `env/qorestoweb/` (pola tiruan webcsa-v2/trenly).
+- .env-cmdrc
+- ├── development   → dev server lokal, API ke 192.168.100.13
+- ├── qa            → testing lokal, API ke localhost:3002
+- ├── staging       → build SERVER CADANGAN (.85 sebagai utama)
+- └── production    → build SERVER UTAMA (.13 sebagai utama)
++ env/qorestoweb/
++ ├── .env                  → shared config (xendit, bank code, dll)
++ ├── .env.dev              → dev server lokal, API ke 192.168.100.13
++ ├── .env.qa               → testing lokal, API ke localhost:3002
++ ├── .env.prod             → build SERVER UTAMA (.13 sebagai utama)
++ └── .env.prod.cadangan    → build SERVER CADANGAN (.85 sebagai utama)
+- | `development` | 192.168.100.13 | 192.168.100.85 | 192.168.100.13 |
+- | `staging` (cadangan) | **192.168.100.85** | 192.168.100.13 | **192.168.100.85** |
+- | `production` (utama) | **192.168.100.13** | 192.168.100.85 | **192.168.100.13** |
++ | `.env.dev` | 192.168.100.13 | 192.168.100.85 | 192.168.100.13 |
++ | `.env.qa` | localhost:3002 | — | — |
++ | `.env.prod` (utama) | **192.168.100.13** | 192.168.100.85 | **192.168.100.13** |
++ | `.env.prod.cadangan` | **192.168.100.85** | 192.168.100.13 | **192.168.100.85** |
+// Line 68:
+- yarn start:dev
++ yarn dev:qorestoweb
+- Ini menjalankan dev server CRA dengan env `development`:
+  // ... (truncated)
+- yarn build:staging      # CRA build env staging (TANPA auto-copy app.cfg)
+- 
+- # ── Utilities ─────────────────────────────────────────────────────────────
+- yarn changelog          # Generate changelog harian
+- yarn ship               # Commit + push ke Git
+- yarn new-package        # Hapus node_modules + yarn.lock, install ulang
++ # ── Utilities ─────────────────────────────────────────────────────────────────
++ yarn changelog                  # Generate changelog harian
++ yarn ship                       # Commit + push ke Git
++ yarn new-package                # Hapus node_modules + yarn.lock, install ulang
+- > **Selalu gunakan `build:primary` atau `build:cadangan`** untuk build production.  
+- > `build:prod` dan `build:staging` tidak meng-copy `app.cfg` yang sesuai secara otomatis.
+- 
+// Line 351:
+- - `.env-cmdrc` ada di root project
+- - Menjalankan lewat `build:primary` atau `build:cadangan`, bukan `yarn build` langsung
++ - File `env/qorestoweb/.env.prod` atau `.env.prod.cadangan` ada
++ - Menjalankan lewat `prod:qorestoweb` atau `prod:qorestoweb-cadangan`, bukan `yarn build` langsung
+// Line 367:
+- build/app.cfg   ✅
+- build/static/app.cfg  ❌
++ build/prod/qorestoweb/app.cfg   ✅
++ build/prod/qorestoweb/static/app.cfg  ❌
+- Jika pakai `yarn build:primary` atau `yarn build:cadangan`, ini ditangani otomatis.
++ Jika pakai `prod:qorestoweb` atau `prod:qorestoweb-cadangan`, ini ditangani otomatis.
 ```
 
 ---
@@ -979,7 +1162,34 @@
 
 ### ⚙️ Config
 
-#### 1. .env-cmdrc [20260729_133715]
+#### 1. build-deploy.cjs [20260729_133927]
+**Fungsi:** Implementasi: build-deploy  
+**Perubahan:** Hapus debug log  
+**Lines:** 92-104, 115
+
+```javascript
+// Line 89:
++ // ── Step 2b: Pindahkan output CRA ke folder tujuan (khusus cadangan) ─────────
++ // CRA selalu output ke ./build/, jadi perlu di-rename ke BUILD_DIR jika cadangan.
++ if (isCadangan) {
++   const CRA_DEFAULT_DIR = path.join(ROOT, 'build');
++   console.log('');
++   console.log(`📦  Memindahkan ./build/ → ./build-cadangan/...`);
++   if (fs.existsSync(BUILD_DIR)) {
++     fs.rmSync(BUILD_DIR, { recursive: true, force: true });
++   }
++   fs.renameSync(CRA_DEFAULT_DIR, BUILD_DIR);
++   console.log('    ✅  Selesai dipindahkan.');
++ }
++ 
+// Line 112:
+- console.log(`    ✅  ${path.basename(APP_CFG_SRC)} → build/app.cfg`);
++ console.log(`    ✅  ${path.basename(APP_CFG_SRC)} → ${path.relative(ROOT, APP_CFG_DEST)}`);
+```
+
+---
+
+#### 2. .env-cmdrc [20260729_133715]
 **Fungsi:** Implementasi: .env-cmdrc  
 **Perubahan:** Ubah konfigurasi environment / API endpoint  
 **Lines:** 36
@@ -992,7 +1202,7 @@
 
 ---
 
-#### 2. build-deploy.cjs [20260729_133715]
+#### 3. build-deploy.cjs [20260729_133715]
 **Fungsi:** Implementasi: build-deploy  
 **Perubahan:** Hapus debug log  
 **Lines:** 36, 118
@@ -1008,7 +1218,7 @@
 
 ---
 
-#### 3. .env-cmdrc [20260729_131609]
+#### 4. .env-cmdrc [20260729_131609]
 **Fungsi:** Implementasi: .env-cmdrc  
 **Perubahan:** Ubah konfigurasi environment / API endpoint  
 **Lines:** 5-12, 17-23, 29-35, 40-47, 51
@@ -1053,7 +1263,7 @@
 
 ---
 
-#### 4. build-deploy.cjs [20260729_131609]
+#### 5. build-deploy.cjs [20260729_131609]
 **Fungsi:** Implementasi: build-deploy  
 **Perubahan:** Tambah error handling  
 **Lines:** 1-120
@@ -1114,7 +1324,7 @@
 
 ---
 
-#### 5. package.json [20260729_131609]
+#### 6. package.json [20260729_131609]
 **Fungsi:** Implementasi: package  
 **Perubahan:** Pembaruan kode  
 **Lines:** 47-51
@@ -1132,7 +1342,7 @@
 
 ---
 
-#### 6. .env-cmdrc [20260729_104543]
+#### 7. .env-cmdrc [20260729_104543]
 **Fungsi:** Implementasi: .env-cmdrc  
 **Perubahan:** Ubah konfigurasi environment / API endpoint  
 **Lines:** 19
@@ -1145,9 +1355,87 @@
 
 ---
 
-#### 7. uild-deploy.cjs [20260729_133925]
-**Fungsi:** Implementasi: uild-deploy  
-**Perubahan:** Pembaruan kode  
+#### 8. build-deploy.cjs [20260729_141925]
+**Fungsi:** Implementasi: build-deploy  
+**Perubahan:** Hapus debug log  
+**Lines:** 5, 7-9, 12-16, 19-21, 24, 26, 36-37, 40, 42, 45, 51-54, 64, 68, 74, 76, 80, 85, 91, 103, 105, 108-109, 111, 115
+
+```javascript
+// Line 2:
+-  * Menggantikan fungsi vite.config.js di webcsa-v2 (trenly) untuk CRA.
++  * Dipanggil setelah env sudah di-inject oleh env-cmd.
+-  * Usage:
+-  *   node build-deploy.cjs --mode=primary    → build server utama
+-  *   node build-deploy.cjs --mode=cadangan   → build server cadangan
++  * Usage (via package.json):
++  *   yarn prod:qorestoweb           → build server utama   (primary)
++  *   yarn prod:qorestoweb-cadangan  → build server cadangan
+-  *   1. Set env vars dari .env-cmdrc sesuai environment
+-  *   2. Jalankan CRA build
+-  *   3. Copy app.cfg.primary atau app.cfg.cadangan → build/app.cfg
+-  *   4. Tampilkan ringkasan hasil build
++  *   1. Baca BUILD_PATH dan PUBLIC_URL dari env (sudah di-inject env-cmd)
++  *   2. Hapus folder BUILD_PATH lama
++  *   3. Jalankan CRA build (CRA v5 otomatis pakai BUILD_PATH dari env)
++  *   4. Copy app.cfg yang sesuai ke dalam folder hasil build
++  *   5. Tampilkan ringkasan
+- const { execSync }   = require('child_process');
+- const fs             = require('fs');
+- const path           = require('path');
++ const { execSync } = require('child_process');
++ const fs           = require('fs');
++ const path         = require('path');
+- const args = process.argv.slice(2);
+  // ... (truncated)
+-   console.log(`📦  Memindahkan ./build/ → ./build-cadangan/...`);
+-   if (fs.existsSync(BUILD_DIR)) {
+-     fs.rmSync(BUILD_DIR, { recursive: true, force: true });
+-   }
+-   fs.renameSync(CRA_DEFAULT_DIR, BUILD_DIR);
+-   console.log('    ✅  Selesai dipindahkan.');
+- }
+- 
+- // ── Step 3: Copy app.cfg yang sesuai ─────────────────────────────────────────
++ // ── Step 3: Copy app.cfg ──────────────────────────────────────────────────────
+// Line 100:
+- // ── Step 4: Tampilkan isi app.cfg yang di-copy ───────────────────────────────
++ // ── Step 4: Tampilkan isi app.cfg ─────────────────────────────────────────────
+-   const cfgContent = JSON.parse(fs.readFileSync(APP_CFG_DEST, 'utf-8'));
++   const cfg = JSON.parse(fs.readFileSync(APP_CFG_DEST, 'utf-8'));
+-   Object.entries(cfgContent).forEach(([k, v]) => {
+-     console.log(`      ${k}: ${JSON.stringify(v)}`);
+-   });
+- } catch (_) { /* skip */ }
++   Object.entries(cfg).forEach(([k, v]) => console.log(`      ${k}: ${JSON.stringify(v)}`));
++ } catch { /* skip */ }
+- // ── Selesai ──────────────────────────────────────────────────────────────────
++ // ── Selesai ───────────────────────────────────────────────────────────────────
+- console.log(`║  📁  Output: ./${isCadangan ? 'build-cadangan' : 'build'}/`.padEnd(51) + '║');
++ console.log(`║  📁  Output: ./${path.relative(ROOT, BUILD_DIR)}/`.padEnd(51) + '║');
+```
+
+---
+
+#### 9. package.json [20260729_141925]
+**Fungsi:** Implementasi: package  
+**Perubahan:** Tambah/ubah npm script  
+**Lines:** 45-49
+
+```javascript
+// Line 42:
+-     "start:dev": "env-cmd -e development yarn start",
+-     "start:qa": "env-cmd -e qa yarn start",
+-     "build:staging": "rm -rf build && env-cmd -e staging react-scripts build",
+-     "build:prod": "rm -rf build && env-cmd -e production react-scripts build",
+-     "build:primary": "node build-deploy.cjs --mode=primary",
+-     "build:cadangan": "node build-deploy.cjs --mode=cadangan",
+-     "build:all": "node build-deploy.cjs --mode=primary && node build-deploy.cjs --mode=cadangan",
++     "dev:qorestoweb": "env-cmd -f ./env/qorestoweb/.env -f ./env/qorestoweb/.env.dev yarn start",
++     "qa:qorestoweb": "env-cmd -f ./env/qorestoweb/.env -f ./env/qorestoweb/.env.qa yarn start",
++     "prod:qorestoweb": "env-cmd -f ./env/qorestoweb/.env -f ./env/qorestoweb/.env.prod node build-deploy.cjs --mode=primary",
++     "prod:qorestoweb-cadangan": "env-cmd -f ./env/qorestoweb/.env -f ./env/qorestoweb/.env.prod.cadangan node build-deploy.cjs --mode=cadangan",
++     "prod:qorestoweb-all": "yarn prod:qorestoweb && yarn prod:qorestoweb-cadangan",
+```
 
 ---
 
@@ -1336,11 +1624,23 @@
 
 ---
 
+#### 6. env-cmdrc [20260729_141925]
+**Fungsi:** Implementasi: env-cmdrc  
+**Perubahan:** Ubah konfigurasi environment / API endpoint  
+
+---
+
+#### 7. env/ [20260729_141925]
+**Fungsi:** Implementasi: env  
+**Perubahan:** Pembaruan kode  
+
+---
+
 ## 📊 **Summary**
 - **✨ Features:** 6 items
-- **📖 Documentation:** 8 items
+- **📖 Documentation:** 11 items
 - **🔌 API:** 5 items
-- **⚙️ Config:** 7 items
-- **⚙️ Others:** 5 items
-- **Total Files Modified:** 31
+- **⚙️ Config:** 9 items
+- **⚙️ Others:** 7 items
+- **Total Files Modified:** 38
 - **Main Focus:** 📖 Documentation
