@@ -13,6 +13,7 @@ import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
+import CircularProgress from '@mui/material/CircularProgress';
 import NoteIcon from '@mui/icons-material/NoteAltOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
@@ -21,11 +22,15 @@ import TrashIcon from '@mui/icons-material/DeleteOutline';
 import BackIcon from '@mui/icons-material/ArrowBackIos';
 import CashierIcon from '@mui/icons-material/PointOfSale';
 import SelfPayIcon from '@mui/icons-material/PhoneAndroid';
+import PrintIcon from '@mui/icons-material/Print';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import Placeholder from '../../../../images/placeholder.png';
 import useResponsive from '../../../hooks/useResponsive';
 import { toCurrencyIDR } from '../../../utils/formatter';
 import ToastBar from '../../../components/ToastBar';
 import bqo_api from '../controllers/bqo_api';
+import usePrintReceipt from '../hooks/usePrintReceipt';
+import BQOReceipt from '../reports/BQOReceipt';
 
 const TAX_PERCENT = 11;
 export default function BQOCheckout() {
@@ -233,6 +238,10 @@ export default function BQOCheckout() {
   // Dialog pilihan metode bayar: kasir vs mandiri
   const [showPaymentMethodDlg, setShowPaymentMethodDlg] = useState(false);
 
+  // Dialog konfirmasi pesanan kasir + struk
+  const [kasirResult, setKasirResult] = useState(null); // { nomorBon, cartItems, subtotal, taxAmount, total }
+  const { printComponentRef, handlePrint, printCount } = usePrintReceipt();
+
   const handleOnCheckout = () => {
     if (info.seatNumber === '') {
       showValidation('Nomor Meja');
@@ -250,20 +259,23 @@ export default function BQOCheckout() {
     setShowPaymentMethodDlg(true);
   };
 
-  // Bayar di kasir — submit pesanan ke backend, tanpa halaman payment
+  // Bayar di kasir — submit pesanan ke backend, lalu tampilkan struk
   const [isSubmittingKasir, setIsSubmittingKasir] = useState(false);
   const handlePayAtKasir = async () => {
     setShowPaymentMethodDlg(false);
     setIsSubmittingKasir(true);
     try {
-      const payload = { info, cart: Object.values(cart) };
-      const result = await bqo_api.add(payload);
+      const cartItems = Object.values(cart);
+      const subtotal  = cartItems.reduce((acc, d) => acc + parseFloat(d.item.sellPrice) * d.qty, 0);
+      const taxAmount = Math.floor(subtotal * (TAX_PERCENT / 100));
+      const total     = subtotal + taxAmount;
+
+      const payload = { info, cart: cartItems };
+      const result  = await bqo_api.add(payload);
       if (result.result === true) {
-        ToastBar('success', 'Pesanan diterima! Silakan bayar di kasir.', 4000);
-        // Bersihkan cart setelah sukses
-        window.localStorage.removeItem('QoCart');
-        window.localStorage.removeItem('QoOrderInfo');
-        navigate('/menu');
+        const bon = result.onsuccess?.cordernum || result.onsuccess?.csonum || '';
+        // Tampilkan dialog konfirmasi + struk
+        setKasirResult({ nomorBon: bon, cartItems, subtotal, taxAmount, total });
       } else {
         const errMsg = result.onfail?.cerror || 'Gagal mengirim pesanan.';
         ToastBar('error', `Gagal: ${errMsg}`, 5000);
@@ -273,6 +285,13 @@ export default function BQOCheckout() {
     } finally {
       setIsSubmittingKasir(false);
     }
+  };
+
+  const handleNewOrderAfterKasir = () => {
+    setKasirResult(null);
+    window.localStorage.removeItem('QoCart');
+    window.localStorage.removeItem('QoOrderInfo');
+    navigate('/menu');
   };
 
   // Bayar mandiri — lanjut ke halaman payment
@@ -646,6 +665,114 @@ export default function BQOCheckout() {
             onClick={() => setShowPaymentMethodDlg(false)}
           >
             Batal
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Hidden receipt component untuk kasir — rendered tapi tidak terlihat */}
+      {kasirResult && (
+        <div style={{ display: 'none' }}>
+          <BQOReceipt
+            ref={printComponentRef}
+            datas={{
+              cart:          kasirResult.cartItems,
+              orderInfo:     info,
+              subtotal:      kasirResult.subtotal,
+              taxAmount:     kasirResult.taxAmount,
+              total:         kasirResult.total,
+              paymentMethod: 'Bayar di Kasir',
+              nomorBon:      kasirResult.nomorBon,
+              isLocalServer: false,
+              showArchiveCopy: false,
+              isUnrecorded:  false,
+            }}
+          />
+        </div>
+      )}
+
+      {/* Dialog Konfirmasi Pesanan Kasir + Struk */}
+      <Dialog
+        key="KasirConfirmDlg"
+        open={!!kasirResult}
+        onClose={() => {}}   // tidak bisa ditutup tanpa aksi — harus cetak atau skip
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: 3, mx: 2 } }}
+      >
+        <DialogTitle sx={{ textAlign: 'center', pb: 0 }}>
+          <CheckCircleIcon sx={{ fontSize: 48, color: 'success.main', mb: 0.5 }} />
+          <Typography variant="h6" fontWeight={700} display="block">
+            Pesanan Diterima!
+          </Typography>
+          {kasirResult?.nomorBon && (
+            <Typography variant="body2" color="text.secondary" mt={0.3}>
+              No. Pesanan: <b>{kasirResult.nomorBon}</b>
+            </Typography>
+          )}
+        </DialogTitle>
+        <DialogContent sx={{ pt: 1.5, pb: 0 }}>
+          <Typography variant="body2" color="text.secondary" textAlign="center">
+            Tunjukkan struk ini ke kasir saat pembayaran.
+          </Typography>
+          <Divider sx={{ mt: 1.5, mb: 0.5 }} />
+          {/* Ringkasan item */}
+          {kasirResult?.cartItems?.map((d, i) => (
+            <Grid key={i} container justifyContent="space-between" py={0.3}>
+              <Grid item xs={8}>
+                <Typography variant="caption">
+                  {d.qty}× {d.item.name}
+                  {d.note ? <span style={{ color: '#999' }}> ({d.note})</span> : ''}
+                </Typography>
+              </Grid>
+              <Grid item>
+                <Typography variant="caption">
+                  Rp {toCurrencyIDR(parseFloat(d.item.sellPrice) * d.qty)}
+                </Typography>
+              </Grid>
+            </Grid>
+          ))}
+          <Divider sx={{ mt: 0.5, mb: 0.5 }} />
+          <Grid container justifyContent="space-between">
+            <Typography variant="caption" color="text.secondary">Subtotal</Typography>
+            <Typography variant="caption">Rp {toCurrencyIDR(kasirResult?.subtotal || 0)}</Typography>
+          </Grid>
+          <Grid container justifyContent="space-between">
+            <Typography variant="caption" color="text.secondary">Pajak (11%)</Typography>
+            <Typography variant="caption">Rp {toCurrencyIDR(kasirResult?.taxAmount || 0)}</Typography>
+          </Grid>
+          <Grid container justifyContent="space-between" mt={0.3}>
+            <Typography variant="body2" fontWeight={700}>Total</Typography>
+            <Typography variant="body2" fontWeight={700} color="primary">
+              Rp {toCurrencyIDR(kasirResult?.total || 0)}
+            </Typography>
+          </Grid>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            display="block"
+            textAlign="center"
+            mt={1}
+            sx={{ fontStyle: 'italic' }}
+          >
+            Meja: {info.seatNumber} · {info.orderByName}
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 2, pb: 2, pt: 1.5, flexDirection: 'column', gap: 1 }}>
+          <Button
+            fullWidth
+            variant="contained"
+            startIcon={<PrintIcon />}
+            onClick={handlePrint}
+            color={printCount > 0 ? 'success' : 'primary'}
+          >
+            {printCount > 0 ? `Cetak Ulang (${printCount}×)` : 'Cetak Struk'}
+          </Button>
+          <Button
+            fullWidth
+            variant="outlined"
+            onClick={handleNewOrderAfterKasir}
+          >
+            Pesanan Baru
           </Button>
         </DialogActions>
       </Dialog>

@@ -1,11 +1,25 @@
 import Config from '../../../Config';
 import ApiRoute from '../../../routes/ApiRoute';
+import bqo_mock from './bqo_mock';
 
 // URL server lokal sebagai fallback. Kosong = fitur lokal tidak aktif.
 const LOCAL_BASE_URL = (process.env.REACT_APP_API_LOCAL_ENDPOINT || '').trim();
 
+// Aktifkan mock hanya saat REACT_APP_USE_MOCK_BQO=Y (development only)
+const USE_MOCK = process.env.REACT_APP_USE_MOCK_BQO === 'Y';
+
 class bqo_api {
   static async fetching(action, data) {
+    // ── MOCK MODE ───────────────────────────────────────────────────────────
+    if (USE_MOCK) {
+      try {
+        return await bqo_mock.handle(action, data);
+      } catch (error) {
+        // Teruskan error agar perilaku network-error tetap bisa diuji
+        return error;
+      }
+    }
+    // ── NORMAL MODE ─────────────────────────────────────────────────────────
     try {
       const res = await fetch(ApiRoute.BQO_X, {
         method: 'POST',

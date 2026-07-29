@@ -326,530 +326,137 @@
 
 ---
 
+#### 7. src/scripts/modules/BQO/views/bqo_checkout.js [20260729_160320]
+**Fungsi:** Halaman checkout & submit order  
+**Perubahan:** Import: CircularProgress; Import: Print; Import: CheckCircle; Import: usePrintReceipt; Import: BQOReceipt; Tambah state management; Tambah fungsi: handleNewOrderAfterKasir; Akses localStorage; Tambah navigasi halaman  
+**Lines:** 16, 25-26, 32-33, 241-244, 262, 268-274, 276-278, 290-296, 671-778
+
+```javascript
+// Line 13:
++ import CircularProgress from '@mui/material/CircularProgress';
+// Line 22:
++ import PrintIcon from '@mui/icons-material/Print';
++ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
++ import usePrintReceipt from '../hooks/usePrintReceipt';
++ import BQOReceipt from '../reports/BQOReceipt';
+// Line 238:
++   // Dialog konfirmasi pesanan kasir + struk
++   const [kasirResult, setKasirResult] = useState(null); // { nomorBon, cartItems, subtotal, taxAmount, total }
++   const { printComponentRef, handlePrint, printCount } = usePrintReceipt();
++ 
+// Line 259:
+-   // Bayar di kasir — submit pesanan ke backend, tanpa halaman payment
++   // Bayar di kasir — submit pesanan ke backend, lalu tampilkan struk
+-       const payload = { info, cart: Object.values(cart) };
+-       const result = await bqo_api.add(payload);
++       const cartItems = Object.values(cart);
++       const subtotal  = cartItems.reduce((acc, d) => acc + parseFloat(d.item.sellPrice) * d.qty, 0);
++       const taxAmount = Math.floor(subtotal * (TAX_PERCENT / 100));
++       const total     = subtotal + taxAmount;
++ 
++       const payload = { info, cart: cartItems };
++       const result  = await bqo_api.add(payload);
+-         ToastBar('success', 'Pesanan diterima! Silakan bayar di kasir.', 4000);
+  // ... (truncated)
++             mt={1}
++             sx={{ fontStyle: 'italic' }}
++           >
++             Meja: {info.seatNumber} · {info.orderByName}
++           </Typography>
++         </DialogContent>
++         <DialogActions sx={{ px: 2, pb: 2, pt: 1.5, flexDirection: 'column', gap: 1 }}>
++           <Button
++             fullWidth
++             variant="contained"
++             startIcon={<PrintIcon />}
++             onClick={handlePrint}
++             color={printCount > 0 ? 'success' : 'primary'}
++           >
++             {printCount > 0 ? `Cetak Ulang (${printCount}×)` : 'Cetak Struk'}
++           </Button>
++           <Button
++             fullWidth
++             variant="outlined"
++             onClick={handleNewOrderAfterKasir}
++           >
++             Pesanan Baru
++           </Button>
++         </DialogActions>
++       </Dialog>
+```
+
+---
+
+#### 8. src/scripts/modules/BQO/controllers/bqo_mock.js [20260729_160320]
+**Fungsi:** Modul: bqo_mock  
+**Perubahan:** Pembaruan kode  
+
+---
+
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260729.md [20260729_133927]
+#### 1. docs/changelog/daily/codeChange-20260729.md [20260729_141928]
 **Fungsi:** Implementasi: codeChange-20260729  
-**Perubahan:** Akses localStorage; Hapus debug log  
-**Lines:** 331-429, 490, 551, 612, 673, 734, 982-1011, 1056, 1117, 1135, 1148-1150, 1341, 1343-1345
+**Perubahan:** Akses localStorage  
+**Lines:** 331-392, 453, 490, 551, 612, 673, 734, 795, 852-973, 1165-1192, 1205, 1221, 1266, 1327, 1345, 1358-1438, 1627-1638, 1641, 1643-1645
 
 ```javascript
 // Line 328:
-- #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_132557]
-+ #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_133715]
+- #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_133715]
++ #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_133927]
 + **Fungsi:** Implementasi: codeChange-20260729  
-+ **Perubahan:** Akses localStorage; Tambah state management  
-+ **Lines:** 331-392, 453, 514, 575, 636, 693-696, 699-717, 719-725, 1058-1073, 1259-1264, 1267, 1269-1272
++ **Perubahan:** Akses localStorage; Hapus debug log  
++ **Lines:** 331-429, 490, 551, 612, 673, 734, 982-1011, 1056, 1117, 1135, 1148-1150, 1341, 1343-1345
 + 
 + ```javascript
 + // Line 328:
-+ - #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_131609]
-+ + #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_132557]
++ - #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_132557]
++ + #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_133715]
 + + **Fungsi:** Implementasi: codeChange-20260729  
-+ + **Perubahan:** Tambah state management; Tambah error handling; Akses localStorage; Tambah side effect; Tambah HTTP request  
-+ + **Lines:** 7-129, 146-207, 268-325, 329-388, 392-449, 453-454, 456, 458-510, 512, 514, 575, 632-635, 637-689, 695-698, 702-725, 730, 791, 803, 805-856, 858-878, 884, 887, 890-924, 929-990, 1008-1017, 1023-1039, 1043-1063, 1084, 1086-1087, 1089-1141, 1145, 1147-1202, 1208-1212
++ + **Perubahan:** Akses localStorage; Tambah state management  
++ + **Lines:** 331-392, 453, 514, 575, 636, 693-696, 699-717, 719-725, 1058-1073, 1259-1264, 1267, 1269-1272
 + + 
 + + ```javascript
-+ + // Line 4:
-+ + - #### 1. src/scripts/modules/BQO/index.js [20260729_131606]
-+ + + #### 1. src/scripts/modules/BQO/hooks/usePrintReceipt.js [20260729_131609]
-+ + + **Fungsi:** Custom hook: usePrintReceipt  
-+ + + **Perubahan:** Import: react; Tambah state management; Tambah error handling  
-+ + + **Lines:** 1-55
++ + // Line 328:
++ + - #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_131609]
++ + + #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_132557]
++ + + **Fungsi:** Implementasi: codeChange-20260729  
++ + + **Perubahan:** Tambah state management; Tambah error handling; Akses localStorage; Tambah side effect; Tambah HTTP request  
++ + + **Lines:** 7-129, 146-207, 268-325, 329-388, 392-449, 453-454, 456, 458-510, 512, 514, 575, 632-635, 637-689, 695-698, 702-725, 730, 791, 803, 805-856, 858-878, 884, 887, 890-924, 929-990, 1008-1017, 1023-1039, 1043-1063, 1084, 1086-1087, 1089-1141, 1145, 1147-1202, 1208-1212
 + + + 
 + + + ```javascript
-+ + + // Line 1:
++ + + // Line 4:
   // ... (truncated)
-- ```javascript
-- // Line 33:
-- - const BUILD_DIR  = path.join(ROOT, 'build');
-- + const BUILD_DIR  = path.join(ROOT, isCadangan ? 'build-cadangan' : 'build');
-- // Line 115:
-- - console.log(`║  📁  Output: ./build/`.padEnd(51) + '║');
-- + console.log(`║  📁  Output: ./${isCadangan ? 'build-cadangan' : 'build'}/`.padEnd(51) + '║');
-- ```
-+ #### 7. uild-deploy.cjs [20260729_133925]
-+ **Fungsi:** Implementasi: uild-deploy  
-+ **Perubahan:** Pembaruan kode  
-// Line 1336:
-- #### 6. env-cmdrc [20260729_133713]
-- **Fungsi:** Implementasi: env-cmdrc  
-- **Perubahan:** Ubah konfigurasi environment / API endpoint  
-- 
-- 
-- - **📖 Documentation:** 7 items
-+ - **📖 Documentation:** 8 items
-- - **⚙️ Config:** 5 items
-- - **⚙️ Others:** 6 items
-- - **Total Files Modified:** 29
-+ - **⚙️ Config:** 7 items
-+ - **⚙️ Others:** 5 items
-+ - **Total Files Modified:** 31
-```
-
----
-
-#### 2. docs/changelog/daily/codeChange-20260729.md [20260729_133715]
-**Fungsi:** Implementasi: codeChange-20260729  
-**Perubahan:** Akses localStorage; Tambah state management  
-**Lines:** 331-392, 453, 514, 575, 636, 693-696, 699-717, 719-725, 1058-1073, 1259-1264, 1267, 1269-1272
-
-```javascript
-// Line 328:
-- #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_131609]
-+ #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_132557]
-+ **Fungsi:** Implementasi: codeChange-20260729  
-+ **Perubahan:** Tambah state management; Tambah error handling; Akses localStorage; Tambah side effect; Tambah HTTP request  
-+ **Lines:** 7-129, 146-207, 268-325, 329-388, 392-449, 453-454, 456, 458-510, 512, 514, 575, 632-635, 637-689, 695-698, 702-725, 730, 791, 803, 805-856, 858-878, 884, 887, 890-924, 929-990, 1008-1017, 1023-1039, 1043-1063, 1084, 1086-1087, 1089-1141, 1145, 1147-1202, 1208-1212
-+ 
-+ ```javascript
-+ // Line 4:
-+ - #### 1. src/scripts/modules/BQO/index.js [20260729_131606]
-+ + #### 1. src/scripts/modules/BQO/hooks/usePrintReceipt.js [20260729_131609]
-+ + **Fungsi:** Custom hook: usePrintReceipt  
-+ + **Perubahan:** Import: react; Tambah state management; Tambah error handling  
-+ + **Lines:** 1-55
-+ + 
-+ + ```javascript
-+ + // Line 1:
-+ + + /**
-+ + +  * usePrintReceipt.js
-+ + +  *
-+ + +  * Hook untuk print struk restoran (thermal 80mm).
-+ + +  * Menggunakan window.print() dengan inline style — tidak butuh library tambahan
-+ + +  * agar tidak bergantung jaringan saat server mati.
-+ + +  */
-+ + + 
-  // ... (truncated)
-+ + const BUILD_DIR  = path.join(ROOT, isCadangan ? 'build-cadangan' : 'build');
-+ // Line 115:
-+ - console.log(`║  📁  Output: ./build/`.padEnd(51) + '║');
-+ + console.log(`║  📁  Output: ./${isCadangan ? 'build-cadangan' : 'build'}/`.padEnd(51) + '║');
++ +     "prod:qorestoweb": "env-cmd -f ./env/qorestoweb/.env -f ./env/qorestoweb/.env.prod node build-deploy.cjs --mode=primary",
++ +     "prod:qorestoweb-cadangan": "env-cmd -f ./env/qorestoweb/.env -f ./env/qorestoweb/.env.prod.cadangan node build-deploy.cjs --mode=cadangan",
++ +     "prod:qorestoweb-all": "yarn prod:qorestoweb && yarn prod:qorestoweb-cadangan",
 + ```
-+ 
-+ ---
-+ 
-// Line 1256:
-+ #### 6. env-cmdrc [20260729_133713]
+// Line 1624:
++ #### 6. env-cmdrc [20260729_141925]
 + **Fungsi:** Implementasi: env-cmdrc  
 + **Perubahan:** Ubah konfigurasi environment / API endpoint  
 + 
 + ---
 + 
-- - **📖 Documentation:** 6 items
-+ - **📖 Documentation:** 7 items
-- - **⚙️ Config:** 4 items
++ #### 7. env/ [20260729_141925]
++ **Fungsi:** Implementasi: env  
++ **Perubahan:** Pembaruan kode  
++ 
++ ---
++ 
+- - **📖 Documentation:** 8 items
++ - **📖 Documentation:** 11 items
+- - **⚙️ Config:** 7 items
 - - **⚙️ Others:** 5 items
-- - **Total Files Modified:** 26
-- - **Main Focus:** Features
-+ - **⚙️ Config:** 5 items
-+ - **⚙️ Others:** 6 items
-+ - **Total Files Modified:** 29
-+ - **Main Focus:** 📖 Documentation
+- - **Total Files Modified:** 31
++ - **⚙️ Config:** 9 items
++ - **⚙️ Others:** 7 items
++ - **Total Files Modified:** 38
 ```
 
 ---
 
-#### 3. docs/panduan-build-dan-development.md [20260729_133715]
-**Fungsi:** Implementasi: panduan-build-dan-development  
-**Perubahan:** Pembaruan kode  
-**Lines:** 189, 204, 210-213, 240, 242
-
-```javascript
-// Line 186:
-- build/
-+ build-cadangan/
-// Line 201:
-- > ⚠️ Build ini menjalankan dua proses secara **berurutan**. Setelah `build:primary` selesai, langsung dilanjutkan `build:cadangan`. Folder `build/` akhir berisi versi **cadangan** (yang terakhir dijalankan).
-+ > ⚠️ Build ini menjalankan dua proses secara **berurutan**. Hasil masing-masing tersimpan di folder terpisah — tidak saling menimpa.
-- **Jika perlu menyimpan kedua versi secara terpisah**, jalankan manual dan pindahkan folder build sebelum build berikutnya:
-- 
-- ```bash
-- # Build utama
-- yarn build:primary
-- # Rename/pindahkan hasil
-- move build build-primary
-- 
-- # Build cadangan
-- yarn build:cadangan
-- # Rename/pindahkan hasil
-- move build build-cadangan
-+ Hasil:
-+ ```
-+ build/            ← versi PRIMARY (URL: /qorestoweb/)
-+ build-cadangan/   ← versi CADANGAN (URL: /qorestoweb-cad/)
-// Line 237:
-- Gunakan hasil `yarn build:cadangan`, salin ke:
-+ Gunakan hasil `yarn build:cadangan`, salin isi `build-cadangan/` ke:
-- /var/www/html/qorestoweb/
-+ /var/www/html/qorestoweb-cad/
-```
-
----
-
-#### 4. docs/changelog/daily/codeChange-20260729.md [20260729_132557]
-**Fungsi:** Implementasi: codeChange-20260729  
-**Perubahan:** Tambah state management; Tambah error handling; Akses localStorage; Tambah side effect; Tambah HTTP request  
-**Lines:** 7-129, 146-207, 268-325, 329-388, 392-449, 453-454, 456, 458-510, 512, 514, 575, 632-635, 637-689, 695-698, 702-725, 730, 791, 803, 805-856, 858-878, 884, 887, 890-924, 929-990, 1008-1017, 1023-1039, 1043-1063, 1084, 1086-1087, 1089-1141, 1145, 1147-1202, 1208-1212
-
-```javascript
-// Line 4:
-- #### 1. src/scripts/modules/BQO/index.js [20260729_131606]
-+ #### 1. src/scripts/modules/BQO/hooks/usePrintReceipt.js [20260729_131609]
-+ **Fungsi:** Custom hook: usePrintReceipt  
-+ **Perubahan:** Import: react; Tambah state management; Tambah error handling  
-+ **Lines:** 1-55
-+ 
-+ ```javascript
-+ // Line 1:
-+ + /**
-+ +  * usePrintReceipt.js
-+ +  *
-+ +  * Hook untuk print struk restoran (thermal 80mm).
-+ +  * Menggunakan window.print() dengan inline style — tidak butuh library tambahan
-+ +  * agar tidak bergantung jaringan saat server mati.
-+ +  */
-+ + 
-+ + import { useRef, useState, useCallback } from 'react';
-+ + 
-+ + export default function usePrintReceipt({ callbackAfterPrint } = {}) {
-+ +   const printComponentRef = useRef();
-+ +   const [printCount, setPrintCount] = useState(0);
-+ + 
-+ +   const handlePrint = useCallback(() => {
-+ +     const content = printComponentRef.current;
-  // ... (truncated)
-+ +       a.download = filename;
-+ +       a.click();
-+ +       URL.revokeObjectURL(url);
-+ + 
-+ +       setIsDownloaded(true);
-+ +     } catch (err) {
-+ +       console.error('Gagal download transaksi:', err);
-+ +     }
-+ +   };
-+ + 
-+ +   const resetDownloadState = () => setIsDownloaded(false);
-+ + 
-+ +   return { isDownloaded, downloadFailedTrx, resetDownloadState };
-+ + }
-+ ```
-- - **📖 Documentation:** 4 items
-- - **🔌 API:** 4 items
-- - **⚙️ Config:** 3 items
-- - **⚙️ Others:** 6 items
-- - **Total Files Modified:** 23
-+ - **📖 Documentation:** 6 items
-+ - **🔌 API:** 5 items
-+ - **⚙️ Config:** 4 items
-+ - **⚙️ Others:** 5 items
-+ - **Total Files Modified:** 26
-```
-
----
-
-#### 5. docs/changelog/daily/codeChange-20260729.md [20260729_131609]
-**Fungsi:** Implementasi: codeChange-20260729  
-**Perubahan:** Akses localStorage; Tambah state management; Tambah error handling; Tambah HTTP request; Tambah side effect  
-**Lines:** 5-108, 111-172, 229-240, 270-348, 364-440, 442-448
-
-```javascript
-// Line 2:
-+ ### ✨ Features
-+ 
-+ #### 1. src/scripts/modules/BQO/index.js [20260729_131606]
-+ **Fungsi:** Entry point / registrasi React  
-+ **Perubahan:** Import: bqo_payment  
-+ **Lines:** 6, 13, 15-16
-+ 
-+ ```javascript
-+ // Line 3:
-+ + import BQOPayment from './views/bqo_payment';
-+ -                     <Route path={"/menu"} element={<BQOHome />} />
-+ +                     <Route path={"/menu"}     element={<BQOHome />} />
-+ -                     <Route path="*" element={<Navigate to="/404" />} />
-+ +                     <Route path={"/payment"}  element={<BQOPayment />} />
-+ +                     <Route path="*"           element={<Navigate to="/404" />} />
-+ ```
-+ 
-+ ---
-+ 
-+ #### 2. src/scripts/modules/BQO/views/bqo_checkout.js [20260729_131606]
-+ **Fungsi:** Halaman checkout & submit order  
-+ **Perubahan:** Import: DialogTitle; Import: Divider; Import: PointOfSale; Import: PhoneAndroid; Tambah state management; Tambah fungsi: handleOnCheckout; Tambah fungsi: handlePayAtKasir; Tambah error handling; Akses localStorage; Tambah navigasi halaman; Tambah fungsi: handlePaySelf  
-+ **Lines:** 7, 15, 22-23, 233-236, 249-276, 278-282, 514-519, 562-651
-+ 
-  // ... (truncated)
-+ 
-+ #### 5. src/scripts/utils/app-config.js [20260729_131606]
-+ **Fungsi:** Entry point aplikasi React  
-+ **Perubahan:** Pembaruan kode  
-+ 
-+ ---
-+ 
-+ #### 6. src/scripts/utils/failed-trx-download.js [20260729_131606]
-+ **Fungsi:** Utility: failed-trx-download  
-+ **Perubahan:** Pembaruan kode  
-+ 
-+ ---
-+ 
-- - **📖 Documentation:** 1 item
-- - **🔌 API:** 1 item
-- - **⚙️ Config:** 1 item
-- - **Total Files Modified:** 3
-- - **Main Focus:** 📖 Documentation
-+ - **✨ Features:** 6 items
-+ - **📖 Documentation:** 4 items
-+ - **🔌 API:** 4 items
-+ - **⚙️ Config:** 3 items
-+ - **⚙️ Others:** 6 items
-+ - **Total Files Modified:** 23
-+ - **Main Focus:** Features
-```
-
----
-
-#### 6. docs/major-update-payment-dualserver-print.md [20260729_131609]
-**Fungsi:** Implementasi: major-update-payment-dualserver-print  
-**Perubahan:** Akses localStorage  
-**Lines:** 1-298
-
-```javascript
-// Line 1:
-+ # Major Update: Payment System, Dual Server & Printout
-+ 
-+ **Tanggal**: 29 Juli 2026  
-+ **Project**: qorestoweb  
-+ **Referensi**: webcsa-v2 (trenly) sebagai basis implementasi
-+ 
-+ ---
-+ 
-+ ## 1. Ringkasan Perubahan
-+ 
-+ Update ini menambahkan tiga fitur besar ke modul BQO (restoran):
-+ 
-+ | Fitur | Deskripsi |
-+ |---|---|
-+ | **Payment System** | Dialog pilihan bayar di kasir atau mandiri (Tunai / Xendit) |
-+ | **Dual Server** | Fallback otomatis ke server lokal jika server utama mati |
-+ | **Printout Struk** | Cetak struk thermal 80mm dengan variasi per kondisi server |
-+ | **Build Otomatis** | Script build untuk server utama dan server cadangan |
-+ 
-+ ---
-+ 
-+ ## 2. Alur Baru Konsumen
-+ 
-+ ```
-  // ... (truncated)
-+ | Build tool | Vite | CRA (react-scripts) |
-+ | Config runtime | `vite-plugin-static-copy` copy app.cfg | `build-deploy.cjs` copy app.cfg |
-+ | Payment module | `bjual_payment.jsx` + `BJUAL_X` | `bqo_payment.js` + `BQO_X` |
-+ | Save ke lokal | `bjual_api.addToLocal()` | `bqo_api.addToLocal()` |
-+ | Template struk | `xrprnjua.js` (external, runtime) | `BQOReceipt.jsx` (inline JSX) |
-+ | Print library | `react-to-print` | Native popup window |
-+ | Dialog pilih metode | `handleGoToPaymentPage()` + SweetAlert2 | Dialog MUI inline di `bqo_checkout.js` |
-+ | Pilihan bayar kasir | ❌ (kasir yang input) | ✅ Konsumen bisa pilih bayar di kasir |
-+ 
-+ ---
-+ 
-+ ## 12. Yang Belum Diimplementasikan (Roadmap)
-+ 
-+ | Item | Keterangan |
-+ |---|---|
-+ | `BBANK_X` data di backend | Backend perlu menyediakan data channel bayar untuk endpoint `bbank_x` |
-+ | Auto-sync lokal → utama | Setelah server utama hidup kembali, transaksi lokal perlu di-sync manual atau otomatis |
-+ | Credential fallback yang aman | `auth_local_user` / `auth_local_pass` di localStorage adalah solusi sementara — perlu shared session store |
-+ | Aktivasi Xendit | Set `REACT_APP_USE_XENDIT_PAYMENT=Y` di `.env-cmdrc` dan pastikan PHP gateway server sudah berjalan |
-+ | Backend `bqo_x` terima `paymentInfo` | Backend perlu handle field `paymentInfo: { cbnkid, namount }` dalam action `add` |
-+ 
-+ ---
-+ 
-+ *Dokumentasi ini dibuat berdasarkan implementasi pada 29 Juli 2026.*  
-+ *Referensi: `webcsa-v2/src/scripts/modules/BJUAL/` (trenly payment system)*
-```
-
----
-
-#### 7. docs/panduan-build-dan-development.md [20260729_131609]
-**Fungsi:** Implementasi: panduan-build-dan-development  
-**Perubahan:** Pembaruan kode  
-**Lines:** 1-391
-
-```javascript
-// Line 1:
-+ # Panduan Build Production & Mode Development
-+ 
-+ **Project**: qorestoweb  
-+ **Build tool**: Create React App (CRA) + `env-cmd` + `build-deploy.cjs`
-+ 
-+ ---
-+ 
-+ ## Daftar Isi
-+ 
-+ 1. [Prasyarat](#1-prasyarat)
-+ 2. [Struktur Environment](#2-struktur-environment)
-+ 3. [Mode Development](#3-mode-development)
-+ 4. [Build Production — Server Utama](#4-build-production--server-utama)
-+ 5. [Build Production — Server Cadangan](#5-build-production--server-cadangan)
-+ 6. [Build Keduanya Sekaligus](#6-build-keduanya-sekaligus)
-+ 7. [Deploy ke Server](#7-deploy-ke-server)
-+ 8. [Edit Config Tanpa Rebuild](#8-edit-config-tanpa-rebuild-appcfg)
-+ 9. [Referensi Semua Scripts](#9-referensi-semua-scripts)
-+ 10. [Troubleshooting](#10-troubleshooting)
-+ 
-+ ---
-+ 
-+ ## 1. Prasyarat
-+ 
-  // ... (truncated)
-+ 
-+ ### `app.cfg` tidak terbaca di browser
-+ 
-+ Pastikan file ada di root folder build (bukan di subfolder):
-+ ```
-+ build/app.cfg   ✅
-+ build/static/app.cfg  ❌
-+ ```
-+ 
-+ Jika pakai `yarn build:primary` atau `yarn build:cadangan`, ini ditangani otomatis.
-+ 
-+ ### Setelah edit `app.cfg` di server, perubahan tidak efektif
-+ 
-+ Hard refresh browser: **Ctrl + Shift + R** (Windows) atau **Cmd + Shift + R** (Mac).  
-+ Config di-cache di `sessionStorage` — tab baru atau hard refresh akan membaca ulang dari server.
-+ 
-+ ### Struk tidak tercetak (popup diblokir)
-+ 
-+ Browser memblokir popup. Izinkan popup untuk domain aplikasi:
-+ - Chrome: klik ikon 🔒 di address bar → **Izinkan pop-up**
-+ - Atau buka `chrome://settings/content/popups` dan tambahkan pengecualian
-+ 
-+ ---
-+ 
-+ *Dokumen ini berlaku untuk qorestoweb versi setelah update 29 Juli 2026.*
-```
-
----
-
-#### 8. docs/changelog/daily/codeChange-20260729.md [20260729_112046]
-**Fungsi:** Implementasi: codeChange-20260729  
-**Perubahan:** Pembaruan kode  
-**Lines:** 5-63, 93, 95-96, 98-104, 109, 111-113
-
-```javascript
-// Line 2:
-+ ### 📖 Documentation
-+ 
-+ #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_104543]
-+ **Fungsi:** Implementasi: codeChange-20260729  
-+ **Perubahan:** Pembaruan kode  
-+ **Lines:** 1-46
-+ 
-+ ```javascript
-+ // Line 1:
-+ + # Code Changes Summary
-+ + 
-+ + ## 29 Juli 2026
-+ + 
-+ + ### 🔌 API
-+ + 
-+ + #### 1. src/scripts/routes/ApiRoute.js [20260729_104543]
-+ + **Fungsi:** Route: ApiRoute  
-+ + **Perubahan:** Pembaruan kode  
-+ + **Lines:** 4-11
-+ + 
-+ + ```javascript
-+ + // Line 1:
-+ + -   LOGIN_X: `${Config.BASE_URL}/csa/pulauplastik/login_x`,
-+ + -   BCUST_X: `${Config.BASE_URL}/csa/pulauplastik/bcust_x`,
-  // ... (truncated)
-+ ```
-+ 
-+ ---
-+ 
-// Line 90:
-- ### ⚙️ Others
-+ ### ⚙️ Config
-- #### 1. env-cmdrc [20260729_104543]
-- **Fungsi:** Implementasi: env-cmdrc  
-+ #### 1. .env-cmdrc [20260729_104543]
-+ **Fungsi:** Implementasi: .env-cmdrc  
-+ **Lines:** 19
-+ 
-+ ```javascript
-+ // Line 16:
-+ -         "REACT_APP_API_ENDPOINT": "https://csacomputer.ddns.net/api",
-+ +          "REACT_APP_API_ENDPOINT": "http://192.168.100.13/api",
-+ ```
-+ - **📖 Documentation:** 1 item
-- - **⚙️ Others:** 1 item
-- - **Total Files Modified:** 2
-- - **Main Focus:** 🔌 API
-+ - **⚙️ Config:** 1 item
-+ - **Total Files Modified:** 3
-+ - **Main Focus:** 📖 Documentation
-```
-
----
-
-#### 9. docs/changelog/daily/codeChange-20260729.md [20260729_104543]
-**Fungsi:** Implementasi: codeChange-20260729  
-**Perubahan:** Pembaruan kode  
-**Lines:** 1-46
-
-```javascript
-// Line 1:
-+ # Code Changes Summary
-+ 
-+ ## 29 Juli 2026
-+ 
-+ ### 🔌 API
-+ 
-+ #### 1. src/scripts/routes/ApiRoute.js [20260729_104543]
-+ **Fungsi:** Route: ApiRoute  
-+ **Perubahan:** Pembaruan kode  
-+ **Lines:** 4-11
-+ 
-+ ```javascript
-+ // Line 1:
-+ -   LOGIN_X: `${Config.BASE_URL}/csa/pulauplastik/login_x`,
-+ -   BCUST_X: `${Config.BASE_URL}/csa/pulauplastik/bcust_x`,
-+ -   BWHSE_X: `${Config.BASE_URL}/csa/pulauplastik/bwhse_x`,
-+ -   BSALESP_X: `${Config.BASE_URL}/csa/pulauplastik/bsalesp_x`,
-+ -   BSTOCK_X: `${Config.BASE_URL}/csa/pulauplastik/bstock_x`,
-+ -   BSO_X: `${Config.BASE_URL}/csa/pulauplastik/bso_x`,
-+ -   BITMSO_X: `${Config.BASE_URL}/csa/pulauplastik/bitmso_x`,
-+ -   BQO_X: `${Config.BASE_URL}/csa/pulauplastik/bqo_x`,
-+ +   LOGIN_X: `${Config.BASE_URL}/csa/resto/login_x`,
-+ +   BCUST_X: `${Config.BASE_URL}/csa/resto/bcust_x`,
-+ +   BWHSE_X: `${Config.BASE_URL}/csa/resto/bwhse_x`,
-+ +   BSALESP_X: `${Config.BASE_URL}/csa/resto/bsalesp_x`,
-+ +   BSTOCK_X: `${Config.BASE_URL}/csa/resto/bstock_x`,
-+ +   BSO_X: `${Config.BASE_URL}/csa/resto/bso_x`,
-+ +   BITMSO_X: `${Config.BASE_URL}/csa/resto/bitmso_x`,
-+ +   BQO_X: `${Config.BASE_URL}/csa/resto/bqo_x`,
-+ ```
-+ 
-+ ---
-+ 
-+ ### ⚙️ Others
-+ 
-+ #### 1. env-cmdrc [20260729_104543]
-+ **Fungsi:** Implementasi: env-cmdrc  
-+ **Perubahan:** Ubah konfigurasi environment / API endpoint  
-+ 
-+ ---
-+ 
-+ ## 📊 **Summary**
-+ - **🔌 API:** 1 item
-+ - **⚙️ Others:** 1 item
-+ - **Total Files Modified:** 2
-+ - **Main Focus:** 🔌 API
-```
-
----
-
-#### 10. docs/major-update-payment-dualserver-print.md [20260729_141925]
+#### 2. docs/major-update-payment-dualserver-print.md [20260729_141928]
 **Fungsi:** Implementasi: major-update-payment-dualserver-print  
 **Perubahan:** Pembaruan kode  
 **Lines:** 106-109, 115, 117-125, 242, 245-260, 265-268, 271-279, 283, 285-286, 316
@@ -910,7 +517,7 @@
 
 ---
 
-#### 11. docs/panduan-build-dan-development.md [20260729_141925]
+#### 3. docs/panduan-build-dan-development.md [20260729_141928]
 **Fungsi:** Implementasi: panduan-build-dan-development  
 **Perubahan:** Pembaruan kode  
 **Lines:** 42, 45-50, 57-60, 71, 74, 81, 83-85, 91, 99, 109, 114-115, 119-120, 128, 143, 145-148, 152, 154, 158, 169, 174-175, 178-180, 194, 209, 212, 217-219, 226, 228, 230, 232, 244, 246, 248, 255, 264-268, 275-277, 324-326, 328-331, 333-336, 354-355, 370-371, 374
@@ -967,6 +574,527 @@
 + build/prod/qorestoweb/static/app.cfg  ❌
 - Jika pakai `yarn build:primary` atau `yarn build:cadangan`, ini ditangani otomatis.
 + Jika pakai `prod:qorestoweb` atau `prod:qorestoweb-cadangan`, ini ditangani otomatis.
+```
+
+---
+
+#### 4. docs/changelog/daily/codeChange-20260729.md [20260729_133927]
+**Fungsi:** Implementasi: codeChange-20260729  
+**Perubahan:** Akses localStorage; Hapus debug log  
+**Lines:** 331-429, 490, 551, 612, 673, 734, 982-1011, 1056, 1117, 1135, 1148-1150, 1341, 1343-1345
+
+```javascript
+// Line 328:
+- #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_132557]
++ #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_133715]
++ **Fungsi:** Implementasi: codeChange-20260729  
++ **Perubahan:** Akses localStorage; Tambah state management  
++ **Lines:** 331-392, 453, 514, 575, 636, 693-696, 699-717, 719-725, 1058-1073, 1259-1264, 1267, 1269-1272
++ 
++ ```javascript
++ // Line 328:
++ - #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_131609]
++ + #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_132557]
++ + **Fungsi:** Implementasi: codeChange-20260729  
++ + **Perubahan:** Tambah state management; Tambah error handling; Akses localStorage; Tambah side effect; Tambah HTTP request  
++ + **Lines:** 7-129, 146-207, 268-325, 329-388, 392-449, 453-454, 456, 458-510, 512, 514, 575, 632-635, 637-689, 695-698, 702-725, 730, 791, 803, 805-856, 858-878, 884, 887, 890-924, 929-990, 1008-1017, 1023-1039, 1043-1063, 1084, 1086-1087, 1089-1141, 1145, 1147-1202, 1208-1212
++ + 
++ + ```javascript
++ + // Line 4:
++ + - #### 1. src/scripts/modules/BQO/index.js [20260729_131606]
++ + + #### 1. src/scripts/modules/BQO/hooks/usePrintReceipt.js [20260729_131609]
++ + + **Fungsi:** Custom hook: usePrintReceipt  
++ + + **Perubahan:** Import: react; Tambah state management; Tambah error handling  
++ + + **Lines:** 1-55
++ + + 
++ + + ```javascript
++ + + // Line 1:
+  // ... (truncated)
+- ```javascript
+- // Line 33:
+- - const BUILD_DIR  = path.join(ROOT, 'build');
+- + const BUILD_DIR  = path.join(ROOT, isCadangan ? 'build-cadangan' : 'build');
+- // Line 115:
+- - console.log(`║  📁  Output: ./build/`.padEnd(51) + '║');
+- + console.log(`║  📁  Output: ./${isCadangan ? 'build-cadangan' : 'build'}/`.padEnd(51) + '║');
+- ```
++ #### 7. uild-deploy.cjs [20260729_133925]
++ **Fungsi:** Implementasi: uild-deploy  
++ **Perubahan:** Pembaruan kode  
+// Line 1336:
+- #### 6. env-cmdrc [20260729_133713]
+- **Fungsi:** Implementasi: env-cmdrc  
+- **Perubahan:** Ubah konfigurasi environment / API endpoint  
+- 
+- 
+- - **📖 Documentation:** 7 items
++ - **📖 Documentation:** 8 items
+- - **⚙️ Config:** 5 items
+- - **⚙️ Others:** 6 items
+- - **Total Files Modified:** 29
++ - **⚙️ Config:** 7 items
++ - **⚙️ Others:** 5 items
++ - **Total Files Modified:** 31
+```
+
+---
+
+#### 5. docs/changelog/daily/codeChange-20260729.md [20260729_133715]
+**Fungsi:** Implementasi: codeChange-20260729  
+**Perubahan:** Akses localStorage; Tambah state management  
+**Lines:** 331-392, 453, 514, 575, 636, 693-696, 699-717, 719-725, 1058-1073, 1259-1264, 1267, 1269-1272
+
+```javascript
+// Line 328:
+- #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_131609]
++ #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_132557]
++ **Fungsi:** Implementasi: codeChange-20260729  
++ **Perubahan:** Tambah state management; Tambah error handling; Akses localStorage; Tambah side effect; Tambah HTTP request  
++ **Lines:** 7-129, 146-207, 268-325, 329-388, 392-449, 453-454, 456, 458-510, 512, 514, 575, 632-635, 637-689, 695-698, 702-725, 730, 791, 803, 805-856, 858-878, 884, 887, 890-924, 929-990, 1008-1017, 1023-1039, 1043-1063, 1084, 1086-1087, 1089-1141, 1145, 1147-1202, 1208-1212
++ 
++ ```javascript
++ // Line 4:
++ - #### 1. src/scripts/modules/BQO/index.js [20260729_131606]
++ + #### 1. src/scripts/modules/BQO/hooks/usePrintReceipt.js [20260729_131609]
++ + **Fungsi:** Custom hook: usePrintReceipt  
++ + **Perubahan:** Import: react; Tambah state management; Tambah error handling  
++ + **Lines:** 1-55
++ + 
++ + ```javascript
++ + // Line 1:
++ + + /**
++ + +  * usePrintReceipt.js
++ + +  *
++ + +  * Hook untuk print struk restoran (thermal 80mm).
++ + +  * Menggunakan window.print() dengan inline style — tidak butuh library tambahan
++ + +  * agar tidak bergantung jaringan saat server mati.
++ + +  */
++ + + 
+  // ... (truncated)
++ + const BUILD_DIR  = path.join(ROOT, isCadangan ? 'build-cadangan' : 'build');
++ // Line 115:
++ - console.log(`║  📁  Output: ./build/`.padEnd(51) + '║');
++ + console.log(`║  📁  Output: ./${isCadangan ? 'build-cadangan' : 'build'}/`.padEnd(51) + '║');
++ ```
++ 
++ ---
++ 
+// Line 1256:
++ #### 6. env-cmdrc [20260729_133713]
++ **Fungsi:** Implementasi: env-cmdrc  
++ **Perubahan:** Ubah konfigurasi environment / API endpoint  
++ 
++ ---
++ 
+- - **📖 Documentation:** 6 items
++ - **📖 Documentation:** 7 items
+- - **⚙️ Config:** 4 items
+- - **⚙️ Others:** 5 items
+- - **Total Files Modified:** 26
+- - **Main Focus:** Features
++ - **⚙️ Config:** 5 items
++ - **⚙️ Others:** 6 items
++ - **Total Files Modified:** 29
++ - **Main Focus:** 📖 Documentation
+```
+
+---
+
+#### 6. docs/panduan-build-dan-development.md [20260729_133715]
+**Fungsi:** Implementasi: panduan-build-dan-development  
+**Perubahan:** Pembaruan kode  
+**Lines:** 189, 204, 210-213, 240, 242
+
+```javascript
+// Line 186:
+- build/
++ build-cadangan/
+// Line 201:
+- > ⚠️ Build ini menjalankan dua proses secara **berurutan**. Setelah `build:primary` selesai, langsung dilanjutkan `build:cadangan`. Folder `build/` akhir berisi versi **cadangan** (yang terakhir dijalankan).
++ > ⚠️ Build ini menjalankan dua proses secara **berurutan**. Hasil masing-masing tersimpan di folder terpisah — tidak saling menimpa.
+- **Jika perlu menyimpan kedua versi secara terpisah**, jalankan manual dan pindahkan folder build sebelum build berikutnya:
+- 
+- ```bash
+- # Build utama
+- yarn build:primary
+- # Rename/pindahkan hasil
+- move build build-primary
+- 
+- # Build cadangan
+- yarn build:cadangan
+- # Rename/pindahkan hasil
+- move build build-cadangan
++ Hasil:
++ ```
++ build/            ← versi PRIMARY (URL: /qorestoweb/)
++ build-cadangan/   ← versi CADANGAN (URL: /qorestoweb-cad/)
+// Line 237:
+- Gunakan hasil `yarn build:cadangan`, salin ke:
++ Gunakan hasil `yarn build:cadangan`, salin isi `build-cadangan/` ke:
+- /var/www/html/qorestoweb/
++ /var/www/html/qorestoweb-cad/
+```
+
+---
+
+#### 7. docs/changelog/daily/codeChange-20260729.md [20260729_132557]
+**Fungsi:** Implementasi: codeChange-20260729  
+**Perubahan:** Tambah state management; Tambah error handling; Akses localStorage; Tambah side effect; Tambah HTTP request  
+**Lines:** 7-129, 146-207, 268-325, 329-388, 392-449, 453-454, 456, 458-510, 512, 514, 575, 632-635, 637-689, 695-698, 702-725, 730, 791, 803, 805-856, 858-878, 884, 887, 890-924, 929-990, 1008-1017, 1023-1039, 1043-1063, 1084, 1086-1087, 1089-1141, 1145, 1147-1202, 1208-1212
+
+```javascript
+// Line 4:
+- #### 1. src/scripts/modules/BQO/index.js [20260729_131606]
++ #### 1. src/scripts/modules/BQO/hooks/usePrintReceipt.js [20260729_131609]
++ **Fungsi:** Custom hook: usePrintReceipt  
++ **Perubahan:** Import: react; Tambah state management; Tambah error handling  
++ **Lines:** 1-55
++ 
++ ```javascript
++ // Line 1:
++ + /**
++ +  * usePrintReceipt.js
++ +  *
++ +  * Hook untuk print struk restoran (thermal 80mm).
++ +  * Menggunakan window.print() dengan inline style — tidak butuh library tambahan
++ +  * agar tidak bergantung jaringan saat server mati.
++ +  */
++ + 
++ + import { useRef, useState, useCallback } from 'react';
++ + 
++ + export default function usePrintReceipt({ callbackAfterPrint } = {}) {
++ +   const printComponentRef = useRef();
++ +   const [printCount, setPrintCount] = useState(0);
++ + 
++ +   const handlePrint = useCallback(() => {
++ +     const content = printComponentRef.current;
+  // ... (truncated)
++ +       a.download = filename;
++ +       a.click();
++ +       URL.revokeObjectURL(url);
++ + 
++ +       setIsDownloaded(true);
++ +     } catch (err) {
++ +       console.error('Gagal download transaksi:', err);
++ +     }
++ +   };
++ + 
++ +   const resetDownloadState = () => setIsDownloaded(false);
++ + 
++ +   return { isDownloaded, downloadFailedTrx, resetDownloadState };
++ + }
++ ```
+- - **📖 Documentation:** 4 items
+- - **🔌 API:** 4 items
+- - **⚙️ Config:** 3 items
+- - **⚙️ Others:** 6 items
+- - **Total Files Modified:** 23
++ - **📖 Documentation:** 6 items
++ - **🔌 API:** 5 items
++ - **⚙️ Config:** 4 items
++ - **⚙️ Others:** 5 items
++ - **Total Files Modified:** 26
+```
+
+---
+
+#### 8. docs/changelog/daily/codeChange-20260729.md [20260729_131609]
+**Fungsi:** Implementasi: codeChange-20260729  
+**Perubahan:** Akses localStorage; Tambah state management; Tambah error handling; Tambah HTTP request; Tambah side effect  
+**Lines:** 5-108, 111-172, 229-240, 270-348, 364-440, 442-448
+
+```javascript
+// Line 2:
++ ### ✨ Features
++ 
++ #### 1. src/scripts/modules/BQO/index.js [20260729_131606]
++ **Fungsi:** Entry point / registrasi React  
++ **Perubahan:** Import: bqo_payment  
++ **Lines:** 6, 13, 15-16
++ 
++ ```javascript
++ // Line 3:
++ + import BQOPayment from './views/bqo_payment';
++ -                     <Route path={"/menu"} element={<BQOHome />} />
++ +                     <Route path={"/menu"}     element={<BQOHome />} />
++ -                     <Route path="*" element={<Navigate to="/404" />} />
++ +                     <Route path={"/payment"}  element={<BQOPayment />} />
++ +                     <Route path="*"           element={<Navigate to="/404" />} />
++ ```
++ 
++ ---
++ 
++ #### 2. src/scripts/modules/BQO/views/bqo_checkout.js [20260729_131606]
++ **Fungsi:** Halaman checkout & submit order  
++ **Perubahan:** Import: DialogTitle; Import: Divider; Import: PointOfSale; Import: PhoneAndroid; Tambah state management; Tambah fungsi: handleOnCheckout; Tambah fungsi: handlePayAtKasir; Tambah error handling; Akses localStorage; Tambah navigasi halaman; Tambah fungsi: handlePaySelf  
++ **Lines:** 7, 15, 22-23, 233-236, 249-276, 278-282, 514-519, 562-651
++ 
+  // ... (truncated)
++ 
++ #### 5. src/scripts/utils/app-config.js [20260729_131606]
++ **Fungsi:** Entry point aplikasi React  
++ **Perubahan:** Pembaruan kode  
++ 
++ ---
++ 
++ #### 6. src/scripts/utils/failed-trx-download.js [20260729_131606]
++ **Fungsi:** Utility: failed-trx-download  
++ **Perubahan:** Pembaruan kode  
++ 
++ ---
++ 
+- - **📖 Documentation:** 1 item
+- - **🔌 API:** 1 item
+- - **⚙️ Config:** 1 item
+- - **Total Files Modified:** 3
+- - **Main Focus:** 📖 Documentation
++ - **✨ Features:** 6 items
++ - **📖 Documentation:** 4 items
++ - **🔌 API:** 4 items
++ - **⚙️ Config:** 3 items
++ - **⚙️ Others:** 6 items
++ - **Total Files Modified:** 23
++ - **Main Focus:** Features
+```
+
+---
+
+#### 9. docs/major-update-payment-dualserver-print.md [20260729_131609]
+**Fungsi:** Implementasi: major-update-payment-dualserver-print  
+**Perubahan:** Akses localStorage  
+**Lines:** 1-298
+
+```javascript
+// Line 1:
++ # Major Update: Payment System, Dual Server & Printout
++ 
++ **Tanggal**: 29 Juli 2026  
++ **Project**: qorestoweb  
++ **Referensi**: webcsa-v2 (trenly) sebagai basis implementasi
++ 
++ ---
++ 
++ ## 1. Ringkasan Perubahan
++ 
++ Update ini menambahkan tiga fitur besar ke modul BQO (restoran):
++ 
++ | Fitur | Deskripsi |
++ |---|---|
++ | **Payment System** | Dialog pilihan bayar di kasir atau mandiri (Tunai / Xendit) |
++ | **Dual Server** | Fallback otomatis ke server lokal jika server utama mati |
++ | **Printout Struk** | Cetak struk thermal 80mm dengan variasi per kondisi server |
++ | **Build Otomatis** | Script build untuk server utama dan server cadangan |
++ 
++ ---
++ 
++ ## 2. Alur Baru Konsumen
++ 
++ ```
+  // ... (truncated)
++ | Build tool | Vite | CRA (react-scripts) |
++ | Config runtime | `vite-plugin-static-copy` copy app.cfg | `build-deploy.cjs` copy app.cfg |
++ | Payment module | `bjual_payment.jsx` + `BJUAL_X` | `bqo_payment.js` + `BQO_X` |
++ | Save ke lokal | `bjual_api.addToLocal()` | `bqo_api.addToLocal()` |
++ | Template struk | `xrprnjua.js` (external, runtime) | `BQOReceipt.jsx` (inline JSX) |
++ | Print library | `react-to-print` | Native popup window |
++ | Dialog pilih metode | `handleGoToPaymentPage()` + SweetAlert2 | Dialog MUI inline di `bqo_checkout.js` |
++ | Pilihan bayar kasir | ❌ (kasir yang input) | ✅ Konsumen bisa pilih bayar di kasir |
++ 
++ ---
++ 
++ ## 12. Yang Belum Diimplementasikan (Roadmap)
++ 
++ | Item | Keterangan |
++ |---|---|
++ | `BBANK_X` data di backend | Backend perlu menyediakan data channel bayar untuk endpoint `bbank_x` |
++ | Auto-sync lokal → utama | Setelah server utama hidup kembali, transaksi lokal perlu di-sync manual atau otomatis |
++ | Credential fallback yang aman | `auth_local_user` / `auth_local_pass` di localStorage adalah solusi sementara — perlu shared session store |
++ | Aktivasi Xendit | Set `REACT_APP_USE_XENDIT_PAYMENT=Y` di `.env-cmdrc` dan pastikan PHP gateway server sudah berjalan |
++ | Backend `bqo_x` terima `paymentInfo` | Backend perlu handle field `paymentInfo: { cbnkid, namount }` dalam action `add` |
++ 
++ ---
++ 
++ *Dokumentasi ini dibuat berdasarkan implementasi pada 29 Juli 2026.*  
++ *Referensi: `webcsa-v2/src/scripts/modules/BJUAL/` (trenly payment system)*
+```
+
+---
+
+#### 10. docs/panduan-build-dan-development.md [20260729_131609]
+**Fungsi:** Implementasi: panduan-build-dan-development  
+**Perubahan:** Pembaruan kode  
+**Lines:** 1-391
+
+```javascript
+// Line 1:
++ # Panduan Build Production & Mode Development
++ 
++ **Project**: qorestoweb  
++ **Build tool**: Create React App (CRA) + `env-cmd` + `build-deploy.cjs`
++ 
++ ---
++ 
++ ## Daftar Isi
++ 
++ 1. [Prasyarat](#1-prasyarat)
++ 2. [Struktur Environment](#2-struktur-environment)
++ 3. [Mode Development](#3-mode-development)
++ 4. [Build Production — Server Utama](#4-build-production--server-utama)
++ 5. [Build Production — Server Cadangan](#5-build-production--server-cadangan)
++ 6. [Build Keduanya Sekaligus](#6-build-keduanya-sekaligus)
++ 7. [Deploy ke Server](#7-deploy-ke-server)
++ 8. [Edit Config Tanpa Rebuild](#8-edit-config-tanpa-rebuild-appcfg)
++ 9. [Referensi Semua Scripts](#9-referensi-semua-scripts)
++ 10. [Troubleshooting](#10-troubleshooting)
++ 
++ ---
++ 
++ ## 1. Prasyarat
++ 
+  // ... (truncated)
++ 
++ ### `app.cfg` tidak terbaca di browser
++ 
++ Pastikan file ada di root folder build (bukan di subfolder):
++ ```
++ build/app.cfg   ✅
++ build/static/app.cfg  ❌
++ ```
++ 
++ Jika pakai `yarn build:primary` atau `yarn build:cadangan`, ini ditangani otomatis.
++ 
++ ### Setelah edit `app.cfg` di server, perubahan tidak efektif
++ 
++ Hard refresh browser: **Ctrl + Shift + R** (Windows) atau **Cmd + Shift + R** (Mac).  
++ Config di-cache di `sessionStorage` — tab baru atau hard refresh akan membaca ulang dari server.
++ 
++ ### Struk tidak tercetak (popup diblokir)
++ 
++ Browser memblokir popup. Izinkan popup untuk domain aplikasi:
++ - Chrome: klik ikon 🔒 di address bar → **Izinkan pop-up**
++ - Atau buka `chrome://settings/content/popups` dan tambahkan pengecualian
++ 
++ ---
++ 
++ *Dokumen ini berlaku untuk qorestoweb versi setelah update 29 Juli 2026.*
+```
+
+---
+
+#### 11. docs/changelog/daily/codeChange-20260729.md [20260729_112046]
+**Fungsi:** Implementasi: codeChange-20260729  
+**Perubahan:** Pembaruan kode  
+**Lines:** 5-63, 93, 95-96, 98-104, 109, 111-113
+
+```javascript
+// Line 2:
++ ### 📖 Documentation
++ 
++ #### 1. docs/changelog/daily/codeChange-20260729.md [20260729_104543]
++ **Fungsi:** Implementasi: codeChange-20260729  
++ **Perubahan:** Pembaruan kode  
++ **Lines:** 1-46
++ 
++ ```javascript
++ // Line 1:
++ + # Code Changes Summary
++ + 
++ + ## 29 Juli 2026
++ + 
++ + ### 🔌 API
++ + 
++ + #### 1. src/scripts/routes/ApiRoute.js [20260729_104543]
++ + **Fungsi:** Route: ApiRoute  
++ + **Perubahan:** Pembaruan kode  
++ + **Lines:** 4-11
++ + 
++ + ```javascript
++ + // Line 1:
++ + -   LOGIN_X: `${Config.BASE_URL}/csa/pulauplastik/login_x`,
++ + -   BCUST_X: `${Config.BASE_URL}/csa/pulauplastik/bcust_x`,
+  // ... (truncated)
++ ```
++ 
++ ---
++ 
+// Line 90:
+- ### ⚙️ Others
++ ### ⚙️ Config
+- #### 1. env-cmdrc [20260729_104543]
+- **Fungsi:** Implementasi: env-cmdrc  
++ #### 1. .env-cmdrc [20260729_104543]
++ **Fungsi:** Implementasi: .env-cmdrc  
++ **Lines:** 19
++ 
++ ```javascript
++ // Line 16:
++ -         "REACT_APP_API_ENDPOINT": "https://csacomputer.ddns.net/api",
++ +          "REACT_APP_API_ENDPOINT": "http://192.168.100.13/api",
++ ```
++ - **📖 Documentation:** 1 item
+- - **⚙️ Others:** 1 item
+- - **Total Files Modified:** 2
+- - **Main Focus:** 🔌 API
++ - **⚙️ Config:** 1 item
++ - **Total Files Modified:** 3
++ - **Main Focus:** 📖 Documentation
+```
+
+---
+
+#### 12. docs/changelog/daily/codeChange-20260729.md [20260729_104543]
+**Fungsi:** Implementasi: codeChange-20260729  
+**Perubahan:** Pembaruan kode  
+**Lines:** 1-46
+
+```javascript
+// Line 1:
++ # Code Changes Summary
++ 
++ ## 29 Juli 2026
++ 
++ ### 🔌 API
++ 
++ #### 1. src/scripts/routes/ApiRoute.js [20260729_104543]
++ **Fungsi:** Route: ApiRoute  
++ **Perubahan:** Pembaruan kode  
++ **Lines:** 4-11
++ 
++ ```javascript
++ // Line 1:
++ -   LOGIN_X: `${Config.BASE_URL}/csa/pulauplastik/login_x`,
++ -   BCUST_X: `${Config.BASE_URL}/csa/pulauplastik/bcust_x`,
++ -   BWHSE_X: `${Config.BASE_URL}/csa/pulauplastik/bwhse_x`,
++ -   BSALESP_X: `${Config.BASE_URL}/csa/pulauplastik/bsalesp_x`,
++ -   BSTOCK_X: `${Config.BASE_URL}/csa/pulauplastik/bstock_x`,
++ -   BSO_X: `${Config.BASE_URL}/csa/pulauplastik/bso_x`,
++ -   BITMSO_X: `${Config.BASE_URL}/csa/pulauplastik/bitmso_x`,
++ -   BQO_X: `${Config.BASE_URL}/csa/pulauplastik/bqo_x`,
++ +   LOGIN_X: `${Config.BASE_URL}/csa/resto/login_x`,
++ +   BCUST_X: `${Config.BASE_URL}/csa/resto/bcust_x`,
++ +   BWHSE_X: `${Config.BASE_URL}/csa/resto/bwhse_x`,
++ +   BSALESP_X: `${Config.BASE_URL}/csa/resto/bsalesp_x`,
++ +   BSTOCK_X: `${Config.BASE_URL}/csa/resto/bstock_x`,
++ +   BSO_X: `${Config.BASE_URL}/csa/resto/bso_x`,
++ +   BITMSO_X: `${Config.BASE_URL}/csa/resto/bitmso_x`,
++ +   BQO_X: `${Config.BASE_URL}/csa/resto/bqo_x`,
++ ```
++ 
++ ---
++ 
++ ### ⚙️ Others
++ 
++ #### 1. env-cmdrc [20260729_104543]
++ **Fungsi:** Implementasi: env-cmdrc  
++ **Perubahan:** Ubah konfigurasi environment / API endpoint  
++ 
++ ---
++ 
++ ## 📊 **Summary**
++ - **🔌 API:** 1 item
++ - **⚙️ Others:** 1 item
++ - **Total Files Modified:** 2
++ - **Main Focus:** 🔌 API
 ```
 
 ---
@@ -1160,202 +1288,94 @@
 
 ---
 
-### ⚙️ Config
-
-#### 1. build-deploy.cjs [20260729_133927]
-**Fungsi:** Implementasi: build-deploy  
-**Perubahan:** Hapus debug log  
-**Lines:** 92-104, 115
-
-```javascript
-// Line 89:
-+ // ── Step 2b: Pindahkan output CRA ke folder tujuan (khusus cadangan) ─────────
-+ // CRA selalu output ke ./build/, jadi perlu di-rename ke BUILD_DIR jika cadangan.
-+ if (isCadangan) {
-+   const CRA_DEFAULT_DIR = path.join(ROOT, 'build');
-+   console.log('');
-+   console.log(`📦  Memindahkan ./build/ → ./build-cadangan/...`);
-+   if (fs.existsSync(BUILD_DIR)) {
-+     fs.rmSync(BUILD_DIR, { recursive: true, force: true });
-+   }
-+   fs.renameSync(CRA_DEFAULT_DIR, BUILD_DIR);
-+   console.log('    ✅  Selesai dipindahkan.');
-+ }
-+ 
-// Line 112:
-- console.log(`    ✅  ${path.basename(APP_CFG_SRC)} → build/app.cfg`);
-+ console.log(`    ✅  ${path.basename(APP_CFG_SRC)} → ${path.relative(ROOT, APP_CFG_DEST)}`);
-```
-
----
-
-#### 2. .env-cmdrc [20260729_133715]
-**Fungsi:** Implementasi: .env-cmdrc  
-**Perubahan:** Ubah konfigurasi environment / API endpoint  
-**Lines:** 36
-
-```javascript
-// Line 33:
--         "PUBLIC_URL": "/qorestoweb/"
-+         "PUBLIC_URL": "/qorestoweb-cad/"
-```
-
----
-
-#### 3. build-deploy.cjs [20260729_133715]
-**Fungsi:** Implementasi: build-deploy  
-**Perubahan:** Hapus debug log  
-**Lines:** 36, 118
-
-```javascript
-// Line 33:
-- const BUILD_DIR  = path.join(ROOT, 'build');
-+ const BUILD_DIR  = path.join(ROOT, isCadangan ? 'build-cadangan' : 'build');
-// Line 115:
-- console.log(`║  📁  Output: ./build/`.padEnd(51) + '║');
-+ console.log(`║  📁  Output: ./${isCadangan ? 'build-cadangan' : 'build'}/`.padEnd(51) + '║');
-```
-
----
-
-#### 4. .env-cmdrc [20260729_131609]
-**Fungsi:** Implementasi: .env-cmdrc  
-**Perubahan:** Ubah konfigurasi environment / API endpoint  
-**Lines:** 5-12, 17-23, 29-35, 40-47, 51
-
-```javascript
-// Line 2:
--         "PUBLIC_URL": "/qorestoweb/"       
-+         "REACT_APP_API_LOCAL_ENDPOINT": "http://192.168.100.85/api",
-+         "REACT_APP_PAYMENT_API_ENDPOINT": "http://192.168.100.13/xendit-csa/endpoints",
-+         "REACT_APP_PAYMENT_API_LOCAL_ENDPOINT": "http://192.168.100.85/xendit-csa/endpoints",
-+         "REACT_APP_USE_XENDIT_PAYMENT": "N",
-+         "REACT_APP_XENDIT_MODE": "invoice",
-+         "REACT_APP_CASH_BANK_CODE": "TUNAI",
-+         "REACT_APP_XENDIT_BANK_CODE": "XENDIT",
-+         "PUBLIC_URL": "/qorestoweb/"
-+         "REACT_APP_API_LOCAL_ENDPOINT": "",
-+         "REACT_APP_PAYMENT_API_ENDPOINT": "",
-+         "REACT_APP_PAYMENT_API_LOCAL_ENDPOINT": "",
-+         "REACT_APP_USE_XENDIT_PAYMENT": "N",
-+         "REACT_APP_XENDIT_MODE": "invoice",
-+         "REACT_APP_CASH_BANK_CODE": "TUNAI",
-+         "REACT_APP_XENDIT_BANK_CODE": "XENDIT",
-+         "REACT_APP_API_LOCAL_ENDPOINT": "http://192.168.100.13/api",
-+         "REACT_APP_PAYMENT_API_ENDPOINT": "http://192.168.100.85/xendit-csa/endpoints",
-+         "REACT_APP_PAYMENT_API_LOCAL_ENDPOINT": "http://192.168.100.13/xendit-csa/endpoints",
-+         "REACT_APP_USE_XENDIT_PAYMENT": "N",
-+         "REACT_APP_XENDIT_MODE": "invoice",
-+         "REACT_APP_CASH_BANK_CODE": "TUNAI",
-+         "REACT_APP_XENDIT_BANK_CODE": "XENDIT",
--          "REACT_APP_API_ENDPOINT": "http://192.168.100.13/api",
-+         "REACT_APP_API_ENDPOINT": "http://192.168.100.13/api",
-+         "REACT_APP_API_LOCAL_ENDPOINT": "http://192.168.100.85/api",
-+         "REACT_APP_PAYMENT_API_ENDPOINT": "http://192.168.100.13/xendit-csa/endpoints",
-+         "REACT_APP_PAYMENT_API_LOCAL_ENDPOINT": "http://192.168.100.85/xendit-csa/endpoints",
-+         "REACT_APP_USE_XENDIT_PAYMENT": "N",
-+         "REACT_APP_XENDIT_MODE": "invoice",
-+         "REACT_APP_CASH_BANK_CODE": "TUNAI",
-+         "REACT_APP_XENDIT_BANK_CODE": "XENDIT",
-- }
-+ }
-```
-
----
-
-#### 5. build-deploy.cjs [20260729_131609]
-**Fungsi:** Implementasi: build-deploy  
-**Perubahan:** Tambah error handling  
-**Lines:** 1-120
+#### 6. src/scripts/modules/BQO/controllers/bqo_api.js [20260729_160320]
+**Fungsi:** Modul: bqo_api  
+**Perubahan:** Import: bqo_mock; Tambah error handling  
+**Lines:** 3, 8-10, 13-22
 
 ```javascript
 // Line 1:
-+ /**
-+  * build-deploy.cjs
-+  *
-+  * Script build otomatis untuk qorestoweb.
-+  * Menggantikan fungsi vite.config.js di webcsa-v2 (trenly) untuk CRA.
-+  *
-+  * Usage:
-+  *   node build-deploy.cjs --mode=primary    → build server utama
-+  *   node build-deploy.cjs --mode=cadangan   → build server cadangan
-+  *
-+  * Yang dilakukan script ini:
-+  *   1. Set env vars dari .env-cmdrc sesuai environment
-+  *   2. Jalankan CRA build
-+  *   3. Copy app.cfg.primary atau app.cfg.cadangan → build/app.cfg
-+  *   4. Tampilkan ringkasan hasil build
-+  */
++ import bqo_mock from './bqo_mock';
++ // Aktifkan mock hanya saat REACT_APP_USE_MOCK_BQO=Y (development only)
++ const USE_MOCK = process.env.REACT_APP_USE_MOCK_BQO === 'Y';
 + 
-+ const { execSync }   = require('child_process');
-+ const fs             = require('fs');
-+ const path           = require('path');
-+ 
-+ // ── Parse args ──────────────────────────────────────────────────────────────
-+ const args = process.argv.slice(2);
-+ const modeArg = args.find((a) => a.startsWith('--mode='));
-  // ... (truncated)
-+ if (!fs.existsSync(BUILD_DIR)) {
-+   console.error('❌  Folder build tidak ditemukan setelah build selesai.');
-+   process.exit(1);
-+ }
-+ 
-+ fs.copyFileSync(APP_CFG_SRC, APP_CFG_DEST);
-+ console.log(`    ✅  ${path.basename(APP_CFG_SRC)} → build/app.cfg`);
-+ 
-+ // ── Step 4: Tampilkan isi app.cfg yang di-copy ───────────────────────────────
-+ try {
-+   const cfgContent = JSON.parse(fs.readFileSync(APP_CFG_DEST, 'utf-8'));
-+   console.log('');
-+   console.log('    Isi app.cfg yang diterapkan:');
-+   Object.entries(cfgContent).forEach(([k, v]) => {
-+     console.log(`      ${k}: ${JSON.stringify(v)}`);
-+   });
-+ } catch (_) { /* skip */ }
-+ 
-+ // ── Selesai ──────────────────────────────────────────────────────────────────
-+ console.log('');
-+ console.log('╔══════════════════════════════════════════════════╗');
-+ console.log(`║  ✅  BUILD ${mode.toUpperCase()} SELESAI!`.padEnd(51) + '║');
-+ console.log(`║  📁  Output: ./build/`.padEnd(51) + '║');
-+ console.log('╚══════════════════════════════════════════════════╝');
-+ console.log('');
++     // ── MOCK MODE ───────────────────────────────────────────────────────────
++     if (USE_MOCK) {
++       try {
++         return await bqo_mock.handle(action, data);
++       } catch (error) {
++         // Teruskan error agar perilaku network-error tetap bisa diuji
++         return error;
++       }
++     }
++     // ── NORMAL MODE ─────────────────────────────────────────────────────────
 ```
 
 ---
 
-#### 6. package.json [20260729_131609]
-**Fungsi:** Implementasi: package  
-**Perubahan:** Pembaruan kode  
-**Lines:** 47-51
+### ⚙️ Config
 
-```javascript
-// Line 44:
--     "build:staging": "rm -rf build && env-cmd -e staging yarn build",
--     "build:prod": "rm -rf build && env-cmd -e production yarn build",
-+     "build:staging": "rm -rf build && env-cmd -e staging react-scripts build",
-+     "build:prod": "rm -rf build && env-cmd -e production react-scripts build",
-+     "build:primary": "node build-deploy.cjs --mode=primary",
-+     "build:cadangan": "node build-deploy.cjs --mode=cadangan",
-+     "build:all": "node build-deploy.cjs --mode=primary && node build-deploy.cjs --mode=cadangan",
-```
-
----
-
-#### 7. .env-cmdrc [20260729_104543]
+#### 1. .env-cmdrc [20260729_141928]
 **Fungsi:** Implementasi: .env-cmdrc  
 **Perubahan:** Ubah konfigurasi environment / API endpoint  
-**Lines:** 19
 
 ```javascript
-// Line 16:
--         "REACT_APP_API_ENDPOINT": "https://csacomputer.ddns.net/api",
-+          "REACT_APP_API_ENDPOINT": "http://192.168.100.13/api",
+// Line 0:
+- {
+-     "development": {
+-         "REACT_APP_STATUS": "development",
+-         "REACT_APP_API_ENDPOINT": "http://192.168.100.13/api",
+-         "REACT_APP_API_LOCAL_ENDPOINT": "http://192.168.100.85/api",
+-         "REACT_APP_PAYMENT_API_ENDPOINT": "http://192.168.100.13/xendit-csa/endpoints",
+-         "REACT_APP_PAYMENT_API_LOCAL_ENDPOINT": "http://192.168.100.85/xendit-csa/endpoints",
+-         "REACT_APP_USE_XENDIT_PAYMENT": "N",
+-         "REACT_APP_XENDIT_MODE": "invoice",
+-         "REACT_APP_CASH_BANK_CODE": "TUNAI",
+-         "REACT_APP_XENDIT_BANK_CODE": "XENDIT",
+-         "PUBLIC_URL": "/qorestoweb/"
+-     },
+-     "qa": {
+-         "REACT_APP_STATUS": "qa",
+-         "REACT_APP_API_ENDPOINT": "http://localhost:3002/api",
+-         "REACT_APP_API_LOCAL_ENDPOINT": "",
+-         "REACT_APP_PAYMENT_API_ENDPOINT": "",
+-         "REACT_APP_PAYMENT_API_LOCAL_ENDPOINT": "",
+-         "REACT_APP_USE_XENDIT_PAYMENT": "N",
+-         "REACT_APP_XENDIT_MODE": "invoice",
+-         "REACT_APP_CASH_BANK_CODE": "TUNAI",
+-         "REACT_APP_XENDIT_BANK_CODE": "XENDIT",
+-         "PUBLIC_URL": "/qorestoweb/"
+  // ... (truncated)
+-     "staging": {
+-         "REACT_APP_STATUS": "staging",
+-         "REACT_APP_API_ENDPOINT": "http://192.168.100.85/api",
+-         "REACT_APP_API_LOCAL_ENDPOINT": "http://192.168.100.13/api",
+-         "REACT_APP_PAYMENT_API_ENDPOINT": "http://192.168.100.85/xendit-csa/endpoints",
+-         "REACT_APP_PAYMENT_API_LOCAL_ENDPOINT": "http://192.168.100.13/xendit-csa/endpoints",
+-         "REACT_APP_USE_XENDIT_PAYMENT": "N",
+-         "REACT_APP_XENDIT_MODE": "invoice",
+-         "REACT_APP_CASH_BANK_CODE": "TUNAI",
+-         "REACT_APP_XENDIT_BANK_CODE": "XENDIT",
+-         "PUBLIC_URL": "/qorestoweb-cad/"
+-     },
+-     "production": {
+-         "REACT_APP_STATUS": "production",
+-         "REACT_APP_API_ENDPOINT": "http://192.168.100.13/api",
+-         "REACT_APP_API_LOCAL_ENDPOINT": "http://192.168.100.85/api",
+-         "REACT_APP_PAYMENT_API_ENDPOINT": "http://192.168.100.13/xendit-csa/endpoints",
+-         "REACT_APP_PAYMENT_API_LOCAL_ENDPOINT": "http://192.168.100.85/xendit-csa/endpoints",
+-         "REACT_APP_USE_XENDIT_PAYMENT": "N",
+-         "REACT_APP_XENDIT_MODE": "invoice",
+-         "REACT_APP_CASH_BANK_CODE": "TUNAI",
+-         "REACT_APP_XENDIT_BANK_CODE": "XENDIT",
+-         "PUBLIC_URL": "/qorestoweb/"
+-     }
+- }
 ```
 
 ---
 
-#### 8. build-deploy.cjs [20260729_141925]
+#### 2. build-deploy.cjs [20260729_141928]
 **Fungsi:** Implementasi: build-deploy  
 **Perubahan:** Hapus debug log  
 **Lines:** 5, 7-9, 12-16, 19-21, 24, 26, 36-37, 40, 42, 45, 51-54, 64, 68, 74, 76, 80, 85, 91, 103, 105, 108-109, 111, 115
@@ -1416,7 +1436,115 @@
 
 ---
 
-#### 9. package.json [20260729_141925]
+#### 3. env/qorestoweb/.env [20260729_141928]
+**Fungsi:** Implementasi: .env  
+**Perubahan:** Ubah konfigurasi environment / API endpoint  
+**Lines:** 1-5
+
+```javascript
+// Line 1:
++ # Shared config — sama untuk semua mode
++ REACT_APP_USE_XENDIT_PAYMENT=N
++ REACT_APP_XENDIT_MODE=invoice
++ REACT_APP_CASH_BANK_CODE=TUNAI
++ REACT_APP_XENDIT_BANK_CODE=XENDIT
+```
+
+---
+
+#### 4. env/qorestoweb/.env.dev [20260729_141928]
+**Fungsi:** Implementasi: .env  
+**Perubahan:** Ubah konfigurasi environment / API endpoint  
+**Lines:** 1-12
+
+```javascript
+// Line 1:
++ # PATHS
++ PUBLIC_URL=/qorestoweb/
++ BUILD_PATH=build/prod/qorestoweb
++ 
++ # STATUS
++ REACT_APP_STATUS=development
++ 
++ # API
++ REACT_APP_API_ENDPOINT=http://192.168.100.13/api
++ REACT_APP_API_LOCAL_ENDPOINT=http://192.168.100.85/api
++ REACT_APP_PAYMENT_API_ENDPOINT=http://192.168.100.13/xendit-csa/endpoints
++ REACT_APP_PAYMENT_API_LOCAL_ENDPOINT=http://192.168.100.85/xendit-csa/endpoints
+```
+
+---
+
+#### 5. env/qorestoweb/.env.prod [20260729_141928]
+**Fungsi:** Implementasi: .env  
+**Perubahan:** Ubah konfigurasi environment / API endpoint  
+**Lines:** 1-12
+
+```javascript
+// Line 1:
++ # PATHS
++ PUBLIC_URL=/qorestoweb/
++ BUILD_PATH=build/prod/qorestoweb
++ 
++ # STATUS
++ REACT_APP_STATUS=production
++ 
++ # API — server utama: .13, fallback: .85
++ REACT_APP_API_ENDPOINT=http://192.168.100.13/api
++ REACT_APP_API_LOCAL_ENDPOINT=http://192.168.100.85/api
++ REACT_APP_PAYMENT_API_ENDPOINT=http://192.168.100.13/xendit-csa/endpoints
++ REACT_APP_PAYMENT_API_LOCAL_ENDPOINT=http://192.168.100.85/xendit-csa/endpoints
+```
+
+---
+
+#### 6. env/qorestoweb/.env.prod.cadangan [20260729_141928]
+**Fungsi:** Implementasi: .env.prod  
+**Perubahan:** Ubah konfigurasi environment / API endpoint  
+**Lines:** 1-12
+
+```javascript
+// Line 1:
++ # PATHS
++ PUBLIC_URL=/qorestoweb-cad/
++ BUILD_PATH=build/prod/qorestoweb-cad
++ 
++ # STATUS
++ REACT_APP_STATUS=production
++ 
++ # API — server cadangan: .85 sebagai utama, .13 sebagai fallback
++ REACT_APP_API_ENDPOINT=http://192.168.100.85/api
++ REACT_APP_API_LOCAL_ENDPOINT=http://192.168.100.13/api
++ REACT_APP_PAYMENT_API_ENDPOINT=http://192.168.100.85/xendit-csa/endpoints
++ REACT_APP_PAYMENT_API_LOCAL_ENDPOINT=http://192.168.100.13/xendit-csa/endpoints
+```
+
+---
+
+#### 7. env/qorestoweb/.env.qa [20260729_141928]
+**Fungsi:** Implementasi: .env  
+**Perubahan:** Ubah konfigurasi environment / API endpoint  
+**Lines:** 1-12
+
+```javascript
+// Line 1:
++ # PATHS
++ PUBLIC_URL=/qorestoweb/
++ BUILD_PATH=build/prod/qorestoweb
++ 
++ # STATUS
++ REACT_APP_STATUS=qa
++ 
++ # API
++ REACT_APP_API_ENDPOINT=http://localhost:3002/api
++ REACT_APP_API_LOCAL_ENDPOINT=
++ REACT_APP_PAYMENT_API_ENDPOINT=
++ REACT_APP_PAYMENT_API_LOCAL_ENDPOINT=
+```
+
+---
+
+#### 8. package.json [20260729_141928]
 **Fungsi:** Implementasi: package  
 **Perubahan:** Tambah/ubah npm script  
 **Lines:** 45-49
@@ -1435,6 +1563,299 @@
 +     "prod:qorestoweb": "env-cmd -f ./env/qorestoweb/.env -f ./env/qorestoweb/.env.prod node build-deploy.cjs --mode=primary",
 +     "prod:qorestoweb-cadangan": "env-cmd -f ./env/qorestoweb/.env -f ./env/qorestoweb/.env.prod.cadangan node build-deploy.cjs --mode=cadangan",
 +     "prod:qorestoweb-all": "yarn prod:qorestoweb && yarn prod:qorestoweb-cadangan",
+```
+
+---
+
+#### 9. build-deploy.cjs [20260729_133927]
+**Fungsi:** Implementasi: build-deploy  
+**Perubahan:** Hapus debug log  
+**Lines:** 92-104, 115
+
+```javascript
+// Line 89:
++ // ── Step 2b: Pindahkan output CRA ke folder tujuan (khusus cadangan) ─────────
++ // CRA selalu output ke ./build/, jadi perlu di-rename ke BUILD_DIR jika cadangan.
++ if (isCadangan) {
++   const CRA_DEFAULT_DIR = path.join(ROOT, 'build');
++   console.log('');
++   console.log(`📦  Memindahkan ./build/ → ./build-cadangan/...`);
++   if (fs.existsSync(BUILD_DIR)) {
++     fs.rmSync(BUILD_DIR, { recursive: true, force: true });
++   }
++   fs.renameSync(CRA_DEFAULT_DIR, BUILD_DIR);
++   console.log('    ✅  Selesai dipindahkan.');
++ }
++ 
+// Line 112:
+- console.log(`    ✅  ${path.basename(APP_CFG_SRC)} → build/app.cfg`);
++ console.log(`    ✅  ${path.basename(APP_CFG_SRC)} → ${path.relative(ROOT, APP_CFG_DEST)}`);
+```
+
+---
+
+#### 10. .env-cmdrc [20260729_133715]
+**Fungsi:** Implementasi: .env-cmdrc  
+**Perubahan:** Ubah konfigurasi environment / API endpoint  
+**Lines:** 36
+
+```javascript
+// Line 33:
+-         "PUBLIC_URL": "/qorestoweb/"
++         "PUBLIC_URL": "/qorestoweb-cad/"
+```
+
+---
+
+#### 11. build-deploy.cjs [20260729_133715]
+**Fungsi:** Implementasi: build-deploy  
+**Perubahan:** Hapus debug log  
+**Lines:** 36, 118
+
+```javascript
+// Line 33:
+- const BUILD_DIR  = path.join(ROOT, 'build');
++ const BUILD_DIR  = path.join(ROOT, isCadangan ? 'build-cadangan' : 'build');
+// Line 115:
+- console.log(`║  📁  Output: ./build/`.padEnd(51) + '║');
++ console.log(`║  📁  Output: ./${isCadangan ? 'build-cadangan' : 'build'}/`.padEnd(51) + '║');
+```
+
+---
+
+#### 12. .env-cmdrc [20260729_131609]
+**Fungsi:** Implementasi: .env-cmdrc  
+**Perubahan:** Ubah konfigurasi environment / API endpoint  
+**Lines:** 5-12, 17-23, 29-35, 40-47, 51
+
+```javascript
+// Line 2:
+-         "PUBLIC_URL": "/qorestoweb/"       
++         "REACT_APP_API_LOCAL_ENDPOINT": "http://192.168.100.85/api",
++         "REACT_APP_PAYMENT_API_ENDPOINT": "http://192.168.100.13/xendit-csa/endpoints",
++         "REACT_APP_PAYMENT_API_LOCAL_ENDPOINT": "http://192.168.100.85/xendit-csa/endpoints",
++         "REACT_APP_USE_XENDIT_PAYMENT": "N",
++         "REACT_APP_XENDIT_MODE": "invoice",
++         "REACT_APP_CASH_BANK_CODE": "TUNAI",
++         "REACT_APP_XENDIT_BANK_CODE": "XENDIT",
++         "PUBLIC_URL": "/qorestoweb/"
++         "REACT_APP_API_LOCAL_ENDPOINT": "",
++         "REACT_APP_PAYMENT_API_ENDPOINT": "",
++         "REACT_APP_PAYMENT_API_LOCAL_ENDPOINT": "",
++         "REACT_APP_USE_XENDIT_PAYMENT": "N",
++         "REACT_APP_XENDIT_MODE": "invoice",
++         "REACT_APP_CASH_BANK_CODE": "TUNAI",
++         "REACT_APP_XENDIT_BANK_CODE": "XENDIT",
++         "REACT_APP_API_LOCAL_ENDPOINT": "http://192.168.100.13/api",
++         "REACT_APP_PAYMENT_API_ENDPOINT": "http://192.168.100.85/xendit-csa/endpoints",
++         "REACT_APP_PAYMENT_API_LOCAL_ENDPOINT": "http://192.168.100.13/xendit-csa/endpoints",
++         "REACT_APP_USE_XENDIT_PAYMENT": "N",
++         "REACT_APP_XENDIT_MODE": "invoice",
++         "REACT_APP_CASH_BANK_CODE": "TUNAI",
++         "REACT_APP_XENDIT_BANK_CODE": "XENDIT",
+-          "REACT_APP_API_ENDPOINT": "http://192.168.100.13/api",
++         "REACT_APP_API_ENDPOINT": "http://192.168.100.13/api",
++         "REACT_APP_API_LOCAL_ENDPOINT": "http://192.168.100.85/api",
++         "REACT_APP_PAYMENT_API_ENDPOINT": "http://192.168.100.13/xendit-csa/endpoints",
++         "REACT_APP_PAYMENT_API_LOCAL_ENDPOINT": "http://192.168.100.85/xendit-csa/endpoints",
++         "REACT_APP_USE_XENDIT_PAYMENT": "N",
++         "REACT_APP_XENDIT_MODE": "invoice",
++         "REACT_APP_CASH_BANK_CODE": "TUNAI",
++         "REACT_APP_XENDIT_BANK_CODE": "XENDIT",
+- }
++ }
+```
+
+---
+
+#### 13. build-deploy.cjs [20260729_131609]
+**Fungsi:** Implementasi: build-deploy  
+**Perubahan:** Tambah error handling  
+**Lines:** 1-120
+
+```javascript
+// Line 1:
++ /**
++  * build-deploy.cjs
++  *
++  * Script build otomatis untuk qorestoweb.
++  * Menggantikan fungsi vite.config.js di webcsa-v2 (trenly) untuk CRA.
++  *
++  * Usage:
++  *   node build-deploy.cjs --mode=primary    → build server utama
++  *   node build-deploy.cjs --mode=cadangan   → build server cadangan
++  *
++  * Yang dilakukan script ini:
++  *   1. Set env vars dari .env-cmdrc sesuai environment
++  *   2. Jalankan CRA build
++  *   3. Copy app.cfg.primary atau app.cfg.cadangan → build/app.cfg
++  *   4. Tampilkan ringkasan hasil build
++  */
++ 
++ const { execSync }   = require('child_process');
++ const fs             = require('fs');
++ const path           = require('path');
++ 
++ // ── Parse args ──────────────────────────────────────────────────────────────
++ const args = process.argv.slice(2);
++ const modeArg = args.find((a) => a.startsWith('--mode='));
+  // ... (truncated)
++ if (!fs.existsSync(BUILD_DIR)) {
++   console.error('❌  Folder build tidak ditemukan setelah build selesai.');
++   process.exit(1);
++ }
++ 
++ fs.copyFileSync(APP_CFG_SRC, APP_CFG_DEST);
++ console.log(`    ✅  ${path.basename(APP_CFG_SRC)} → build/app.cfg`);
++ 
++ // ── Step 4: Tampilkan isi app.cfg yang di-copy ───────────────────────────────
++ try {
++   const cfgContent = JSON.parse(fs.readFileSync(APP_CFG_DEST, 'utf-8'));
++   console.log('');
++   console.log('    Isi app.cfg yang diterapkan:');
++   Object.entries(cfgContent).forEach(([k, v]) => {
++     console.log(`      ${k}: ${JSON.stringify(v)}`);
++   });
++ } catch (_) { /* skip */ }
++ 
++ // ── Selesai ──────────────────────────────────────────────────────────────────
++ console.log('');
++ console.log('╔══════════════════════════════════════════════════╗');
++ console.log(`║  ✅  BUILD ${mode.toUpperCase()} SELESAI!`.padEnd(51) + '║');
++ console.log(`║  📁  Output: ./build/`.padEnd(51) + '║');
++ console.log('╚══════════════════════════════════════════════════╝');
++ console.log('');
+```
+
+---
+
+#### 14. package.json [20260729_131609]
+**Fungsi:** Implementasi: package  
+**Perubahan:** Pembaruan kode  
+**Lines:** 47-51
+
+```javascript
+// Line 44:
+-     "build:staging": "rm -rf build && env-cmd -e staging yarn build",
+-     "build:prod": "rm -rf build && env-cmd -e production yarn build",
++     "build:staging": "rm -rf build && env-cmd -e staging react-scripts build",
++     "build:prod": "rm -rf build && env-cmd -e production react-scripts build",
++     "build:primary": "node build-deploy.cjs --mode=primary",
++     "build:cadangan": "node build-deploy.cjs --mode=cadangan",
++     "build:all": "node build-deploy.cjs --mode=primary && node build-deploy.cjs --mode=cadangan",
+```
+
+---
+
+#### 15. .env-cmdrc [20260729_104543]
+**Fungsi:** Implementasi: .env-cmdrc  
+**Perubahan:** Ubah konfigurasi environment / API endpoint  
+**Lines:** 19
+
+```javascript
+// Line 16:
+-         "REACT_APP_API_ENDPOINT": "https://csacomputer.ddns.net/api",
++          "REACT_APP_API_ENDPOINT": "http://192.168.100.13/api",
+```
+
+---
+
+#### 16. uild-deploy.cjs [20260729_160320]
+**Fungsi:** Implementasi: uild-deploy  
+**Perubahan:** Pembaruan kode  
+
+---
+
+#### 17. env/qorestoweb/.env [20260729_160320]
+**Fungsi:** Implementasi: .env  
+**Perubahan:** Ubah konfigurasi environment / API endpoint  
+**Lines:** 2, 6-9
+
+```javascript
+// Line 1:
+- REACT_APP_USE_XENDIT_PAYMENT=N
++ REACT_APP_USE_XENDIT_PAYMENT=Y
++ 
++ # Mock BQO backend — default OFF, di-override per mode
++ # Y = aktif (dev/qa), N = mati (production)
++ REACT_APP_USE_MOCK_BQO=N
+```
+
+---
+
+#### 18. env/qorestoweb/.env.dev [20260729_160320]
+**Fungsi:** Implementasi: .env  
+**Perubahan:** Ubah konfigurasi environment / API endpoint  
+**Lines:** 13-15
+
+```javascript
+// Line 10:
++ 
++ # Mock — aktif di development
++ REACT_APP_USE_MOCK_BQO=Y
+```
+
+---
+
+#### 19. env/qorestoweb/.env.prod [20260729_160320]
+**Fungsi:** Implementasi: .env  
+**Perubahan:** Ubah konfigurasi environment / API endpoint  
+**Lines:** 13-15
+
+```javascript
+// Line 10:
++ 
++ # Mock — SELALU OFF di production
++ REACT_APP_USE_MOCK_BQO=N
+```
+
+---
+
+#### 20. env/qorestoweb/.env.prod.cadangan [20260729_160320]
+**Fungsi:** Implementasi: .env.prod  
+**Perubahan:** Ubah konfigurasi environment / API endpoint  
+**Lines:** 13-15
+
+```javascript
+// Line 10:
++ 
++ # Mock — SELALU OFF di production
++ REACT_APP_USE_MOCK_BQO=N
+```
+
+---
+
+#### 21. env/qorestoweb/.env.qa [20260729_160320]
+**Fungsi:** Implementasi: .env  
+**Perubahan:** Ubah konfigurasi environment / API endpoint  
+**Lines:** 13-15
+
+```javascript
+// Line 10:
++ 
++ # Mock — aktif di qa
++ REACT_APP_USE_MOCK_BQO=Y
+```
+
+---
+
+#### 22. package.json [20260729_160320]
+**Fungsi:** Implementasi: package  
+**Perubahan:** Tambah/ubah npm script  
+**Lines:** 45-49
+
+```javascript
+// Line 42:
+-     "dev:qorestoweb": "env-cmd -f ./env/qorestoweb/.env -f ./env/qorestoweb/.env.dev yarn start",
+-     "qa:qorestoweb": "env-cmd -f ./env/qorestoweb/.env -f ./env/qorestoweb/.env.qa yarn start",
+-     "prod:qorestoweb": "env-cmd -f ./env/qorestoweb/.env -f ./env/qorestoweb/.env.prod node build-deploy.cjs --mode=primary",
+-     "prod:qorestoweb-cadangan": "env-cmd -f ./env/qorestoweb/.env -f ./env/qorestoweb/.env.prod.cadangan node build-deploy.cjs --mode=cadangan",
+-     "prod:qorestoweb-all": "yarn prod:qorestoweb && yarn prod:qorestoweb-cadangan",
++     "dev:qorestoweb":          "env-cmd -f ./env/qorestoweb/.env env-cmd -f ./env/qorestoweb/.env.dev yarn start",
++     "qa:qorestoweb":           "env-cmd -f ./env/qorestoweb/.env env-cmd -f ./env/qorestoweb/.env.qa yarn start",
++     "prod:qorestoweb":         "env-cmd -f ./env/qorestoweb/.env env-cmd -f ./env/qorestoweb/.env.prod node build-deploy.cjs --mode=primary",
++     "prod:qorestoweb-cadangan":"env-cmd -f ./env/qorestoweb/.env env-cmd -f ./env/qorestoweb/.env.prod.cadangan node build-deploy.cjs --mode=cadangan",
++     "prod:qorestoweb-all":     "yarn prod:qorestoweb && yarn prod:qorestoweb-cadangan",
 ```
 
 ---
@@ -1624,23 +2045,11 @@
 
 ---
 
-#### 6. env-cmdrc [20260729_141925]
-**Fungsi:** Implementasi: env-cmdrc  
-**Perubahan:** Ubah konfigurasi environment / API endpoint  
-
----
-
-#### 7. env/ [20260729_141925]
-**Fungsi:** Implementasi: env  
-**Perubahan:** Pembaruan kode  
-
----
-
 ## 📊 **Summary**
-- **✨ Features:** 6 items
-- **📖 Documentation:** 11 items
-- **🔌 API:** 5 items
-- **⚙️ Config:** 9 items
-- **⚙️ Others:** 7 items
-- **Total Files Modified:** 38
-- **Main Focus:** 📖 Documentation
+- **✨ Features:** 8 items
+- **📖 Documentation:** 12 items
+- **🔌 API:** 6 items
+- **⚙️ Config:** 22 items
+- **⚙️ Others:** 5 items
+- **Total Files Modified:** 53
+- **Main Focus:** ⚙️ Config
