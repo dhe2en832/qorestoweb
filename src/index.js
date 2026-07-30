@@ -9,14 +9,18 @@ import '@fontsource/roboto/700.css';
 import App from './scripts/App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
+import { loadAppConfig } from './scripts/utils/app-config';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <CssBaseline />
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+// Load app.cfg sebelum render — agar ServerLabel & fitur runtime tersedia sejak awal
+loadAppConfig().finally(() => {
+  ReactDOM.render(
+    <React.StrictMode>
+      <CssBaseline />
+      <App />
+    </React.StrictMode>,
+    document.getElementById('root')
+  );
+});
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

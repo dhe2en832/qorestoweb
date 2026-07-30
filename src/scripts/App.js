@@ -1,4 +1,4 @@
-import React, { useRef, lazy, Suspense, useEffect } from 'react';
+import React, { useRef, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Fab from '@mui/material/Fab';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -8,7 +8,6 @@ import { ProvideAuth } from './contexts/AuthContext';
 import ThemeContext from './contexts/ThemeContext';
 import ModuleContext from './contexts/ModuleContext';
 import PrivateRoute from './routes/PrivateRoute';
-import { loadAppConfig } from './utils/app-config';
 
 const Home = lazy(() => import('./modules/HOME'));
 const Login = lazy(() => import('./modules/LOGIN'));
@@ -16,11 +15,6 @@ const NotFound = lazy(() => import('./modules/NOTFOUND'));
 
 export default function App() {
   const anchorRef = useRef(null);
-
-  // Load runtime config (app.cfg) sekali saat app pertama mount
-  useEffect(() => {
-    loadAppConfig();
-  }, []);
   return (
     <ThemeContext>
       <ProvideAuth>

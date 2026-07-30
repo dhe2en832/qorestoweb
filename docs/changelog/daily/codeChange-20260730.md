@@ -243,7 +243,68 @@
 
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260730.md [20260730_112700]
+#### 1. docs/changelog/daily/codeChange-20260730.md [20260730_141851]
+**Fungsi:** Implementasi: codeChange-20260730  
+**Perubahan:** Akses localStorage; Tambah state management; Tambah side effect; Ubah render/return JSX  
+**Lines:** 246-307, 368, 429, 492-553, 614, 616-619, 621-630, 632-634, 884, 889
+
+```javascript
+// Line 243:
+- #### 1. docs/changelog/daily/codeChange-20260730.md [20260730_104806]
++ #### 1. docs/changelog/daily/codeChange-20260730.md [20260730_112700]
++ **Fungsi:** Implementasi: codeChange-20260730  
++ **Perubahan:** Tambah state management; Tambah side effect; Akses localStorage  
++ **Lines:** 7-68, 129, 190, 227, 244-249, 252-257, 259-276, 278-302, 307, 368, 492-497, 500, 502-522, 756-758, 761
++ 
++ ```javascript
++ // Line 4:
++ - #### 1. src/scripts/modules/BQO/views/bqo_payment.js [20260730_095820]
++ + #### 1. src/scripts/modules/BQO/views/bqo_payment.js [20260730_104806]
++ + **Fungsi:** Modul: bqo_payment  
++ + **Perubahan:** Import: react; Tambah state management; Tambah side effect; Tambah error handling; Tambah fungsi: buildCurrentPayload; Tambah fungsi: handleTunaiRetry; Tambah fungsi: handleTunaiSaveToLocal; Tambah fungsi: handleXenditRetry; Tambah fungsi: handleXenditSaveToLocal; Tambah fungsi: handleSaveToLocal  
++ + **Lines:** 1, 46-56, 60-61, 150-154, 161-183, 187-191, 199-220, 223, 231-232, 234-265, 267-269, 275-278, 346-356, 452-453, 455-483, 489, 571-572, 574-601, 748
++ + 
++ + ```javascript
++ + // Line 1:
++ + - import React, { useState, useEffect, useRef, useCallback } from 'react';
++ + - import { useNavigate } from 'react-router-dom';
++ + + import React, { useState, useEffect, useRef, useCallback } from 'react';import { useNavigate } from 'react-router-dom';
++ + // Line 43:
++ + -   const _appCfg   = getAppConfig();
++ + -   const isLocalServer      = _appCfg.server_mode === 'local';
++ + + 
++ + +   // ── Load app.cfg — force reload saat komponen mount ─────────────────────
+  // ... (truncated)
++ ```javascript
++ // Line 13:
++ + import ServerLabel from '../../components/ServerLabel';
++ // Line 67:
++ -               <Grid item xs={12} mb={3}>
++ +               <Grid item xs={12} mb={1}>
++ +               <Grid item container xs={12} justifyContent="center" mb={2}>
++ +                 <ServerLabel />
++ +               </Grid>
++ ```
+- #### 1. src/scripts/contexts/AuthContext.js [20260730_104806]
++ ---
++ 
++ #### 2. src/scripts/contexts/AuthContext.js [20260730_104806]
+// Line 652:
+- #### 2. rc/scripts/modules/LOGIN/index.js [20260730_112657]
+- **Fungsi:** Entry point / registrasi React  
+- **Perubahan:** Pembaruan kode  
+- 
+- 
+// Line 881:
+- - **📖 Documentation:** 3 items
++ - **📖 Documentation:** 4 items
+- - **Total Files Modified:** 21
++ - **Total Files Modified:** 22
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260730.md [20260730_112700]
 **Fungsi:** Implementasi: codeChange-20260730  
 **Perubahan:** Tambah state management; Tambah side effect; Akses localStorage  
 **Lines:** 7-68, 129, 190, 227, 244-249, 252-257, 259-276, 278-302, 307, 368, 492-497, 500, 502-522, 756-758, 761
@@ -304,7 +365,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260730.md [20260730_104806]
+#### 3. docs/changelog/daily/codeChange-20260730.md [20260730_104806]
 **Fungsi:** Implementasi: codeChange-20260730  
 **Perubahan:** Tambah state management; Tambah side effect; Tambah error handling  
 **Lines:** 7-68, 129, 166, 183, 185-186, 189-195, 197-204, 206-239, 246-307, 370-434, 441-477, 510, 532, 552, 572, 592, 605, 667-668, 670, 673
@@ -365,7 +426,7 @@
 
 ---
 
-#### 3. docs/changelog/daily/codeChange-20260730.md [20260730_095820]
+#### 4. docs/changelog/daily/codeChange-20260730.md [20260730_095820]
 **Fungsi:** Implementasi: codeChange-20260730  
 **Perubahan:** Tambah state management; Tambah side effect; Tambah error handling  
 **Lines:** 7-68, 105, 122-249, 256, 259-285, 289, 311, 331, 351, 369-473, 475-480
@@ -426,7 +487,7 @@
 
 ---
 
-#### 4. docs/changelog/daily/codeChange-20260730.md [20260730_090041]
+#### 5. docs/changelog/daily/codeChange-20260730.md [20260730_090041]
 **Fungsi:** Implementasi: codeChange-20260730  
 **Perubahan:** Pembaruan kode  
 **Lines:** 1-159
@@ -607,6 +668,43 @@
 +     </Box>
 +   );
 + }
+```
+
+---
+
+#### 3. src/scripts/components/ServerLabel.jsx [20260730_142922]
+**Fungsi:** Komponen UI: ServerLabel  
+**Perubahan:** Import: react; Import: app-config; Tambah fungsi: envLabel; Tambah fungsi: label  
+**Lines:** 1, 4, 7, 10-11, 18-20, 23-25
+
+```javascript
+// Line 1:
+- import React, { useState, useEffect } from 'react';
++ import React from 'react';
+- import { getAppConfig, loadAppConfig } from '../utils/app-config';
++ import { getAppConfig } from '../utils/app-config';
+-  * ServerLabel — chip kecil yang tampil di halaman login jika server label di-set.
++  * ServerLabel — chip kecil yang tampil di halaman login jika label server di-set.
+-  * 1. app.cfg → server_label  (runtime, bisa ubah tanpa rebuild)
+-  * 2. .env    → REACT_APP_SERVER_LABEL (build time, fallback — opsional)
++  * 1. app.cfg → server_label  (runtime, edit tanpa rebuild)
++  * 2. .env    → REACT_APP_SERVER_LABEL (build time, fallback opsional)
++  *
++  * Catatan: app.cfg sudah di-load sebelum React render (di src/index.js),
++  * sehingga getAppConfig() langsung mengembalikan nilai yang benar.
+-   const [cfg, setCfg] = useState(() => getAppConfig());
+- 
+-   useEffect(() => {
+-     // Paksa load ulang app.cfg agar dapat nilai terbaru
+-     loadAppConfig().then((c) => setCfg({ ...c }));
+-   }, []);
+- 
+-   const envLabel  = (process.env.REACT_APP_SERVER_LABEL || '').trim();
+-   const cfgLabel  = (cfg.server_label || '').trim();
+-   const label     = cfgLabel || envLabel;
++   const cfg      = getAppConfig();
++   const envLabel = (process.env.REACT_APP_SERVER_LABEL || '').trim();
++   const label    = (cfg.server_label || '').trim() || envLabel;
 ```
 
 ---
@@ -879,12 +977,39 @@
 
 ---
 
+#### 3. rc/index.js [20260730_142922]
+**Fungsi:** Entry point / registrasi React  
+**Perubahan:** Pembaruan kode  
+
+---
+
+#### 4. src/scripts/App.js [20260730_142922]
+**Fungsi:** Entry point aplikasi React  
+**Perubahan:** Import: react  
+**Lines:** 1
+
+```javascript
+// Line 1:
+- import React, { useRef, lazy, Suspense, useEffect } from 'react';
++ import React, { useRef, lazy, Suspense } from 'react';
+// Line 8:
+- import { loadAppConfig } from './utils/app-config';
+// Line 15:
+- 
+-   // Load runtime config (app.cfg) sekali saat app pertama mount
+-   useEffect(() => {
+-     loadAppConfig();
+-   }, []);
+```
+
+---
+
 ## 📊 **Summary**
 - **✨ Features:** 5 items
-- **📖 Documentation:** 4 items
-- **🎨 UI/UX:** 2 items
+- **📖 Documentation:** 5 items
+- **🎨 UI/UX:** 3 items
 - **🔐 Auth/Session:** 2 items
 - **⚙️ Config:** 7 items
-- **⚙️ Others:** 2 items
-- **Total Files Modified:** 22
+- **⚙️ Others:** 4 items
+- **Total Files Modified:** 26
 - **Main Focus:** ⚙️ Config
