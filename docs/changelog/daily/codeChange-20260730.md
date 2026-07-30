@@ -243,7 +243,68 @@
 
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260730.md [20260730_104806]
+#### 1. docs/changelog/daily/codeChange-20260730.md [20260730_112700]
+**Fungsi:** Implementasi: codeChange-20260730  
+**Perubahan:** Tambah state management; Tambah side effect; Akses localStorage  
+**Lines:** 7-68, 129, 190, 227, 244-249, 252-257, 259-276, 278-302, 307, 368, 492-497, 500, 502-522, 756-758, 761
+
+```javascript
+// Line 4:
+- #### 1. src/scripts/modules/BQO/views/bqo_payment.js [20260730_095820]
++ #### 1. src/scripts/modules/BQO/views/bqo_payment.js [20260730_104806]
++ **Fungsi:** Modul: bqo_payment  
++ **Perubahan:** Import: react; Tambah state management; Tambah side effect; Tambah error handling; Tambah fungsi: buildCurrentPayload; Tambah fungsi: handleTunaiRetry; Tambah fungsi: handleTunaiSaveToLocal; Tambah fungsi: handleXenditRetry; Tambah fungsi: handleXenditSaveToLocal; Tambah fungsi: handleSaveToLocal  
++ **Lines:** 1, 46-56, 60-61, 150-154, 161-183, 187-191, 199-220, 223, 231-232, 234-265, 267-269, 275-278, 346-356, 452-453, 455-483, 489, 571-572, 574-601, 748
++ 
++ ```javascript
++ // Line 1:
++ - import React, { useState, useEffect, useRef, useCallback } from 'react';
++ - import { useNavigate } from 'react-router-dom';
++ + import React, { useState, useEffect, useRef, useCallback } from 'react';import { useNavigate } from 'react-router-dom';
++ // Line 43:
++ -   const _appCfg   = getAppConfig();
++ -   const isLocalServer      = _appCfg.server_mode === 'local';
++ + 
++ +   // ── Load app.cfg — force reload saat komponen mount ─────────────────────
++ +   const [appCfg, setAppCfg] = useState(() => getAppConfig());
++ +   useEffect(() => {
++ +     // Selalu load ulang saat komponen payment mount — pastikan config terbaru
++ +     import('../../../utils/app-config').then(({ loadAppConfig }) => {
++ +       loadAppConfig().then((cfg) => setAppCfg({ ...cfg }));
++ +     });
++ +   }, []);
++ + 
+  // ... (truncated)
++ +         // [trenly pattern] Simpan credential untuk fallback login ke server lokal
++ +         // Hanya aktif jika REACT_APP_API_LOCAL_ENDPOINT di-set
++ +         if (process.env.REACT_APP_API_LOCAL_ENDPOINT) {
++ +           window.localStorage.setItem('auth_local_user', data.cuserid);
++ +           window.localStorage.setItem('auth_local_pass', data.cpassw);
++ +         }
++ // Line 109:
++ +     // Bersihkan credential fallback saat logout
++ +     window.localStorage.removeItem('auth_local_user');
++ +     window.localStorage.removeItem('auth_local_pass');
++ ```
++ 
++ ---
++ 
++ #### 2. rc/scripts/modules/LOGIN/index.js [20260730_112657]
++ **Fungsi:** Entry point / registrasi React  
+// Line 753:
+- - **📖 Documentation:** 2 items
+- - **🎨 UI/UX:** 1 item
+- - **🔐 Auth/Session:** 1 item
++ - **📖 Documentation:** 3 items
++ - **🎨 UI/UX:** 2 items
++ - **🔐 Auth/Session:** 2 items
+- - **Total Files Modified:** 18
++ - **Total Files Modified:** 21
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260730.md [20260730_104806]
 **Fungsi:** Implementasi: codeChange-20260730  
 **Perubahan:** Tambah state management; Tambah side effect; Tambah error handling  
 **Lines:** 7-68, 129, 166, 183, 185-186, 189-195, 197-204, 206-239, 246-307, 370-434, 441-477, 510, 532, 552, 572, 592, 605, 667-668, 670, 673
@@ -304,7 +365,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260730.md [20260730_095820]
+#### 3. docs/changelog/daily/codeChange-20260730.md [20260730_095820]
 **Fungsi:** Implementasi: codeChange-20260730  
 **Perubahan:** Tambah state management; Tambah side effect; Tambah error handling  
 **Lines:** 7-68, 105, 122-249, 256, 259-285, 289, 311, 331, 351, 369-473, 475-480
@@ -365,7 +426,7 @@
 
 ---
 
-#### 3. docs/changelog/daily/codeChange-20260730.md [20260730_090041]
+#### 4. docs/changelog/daily/codeChange-20260730.md [20260730_090041]
 **Fungsi:** Implementasi: codeChange-20260730  
 **Perubahan:** Pembaruan kode  
 **Lines:** 1-159
@@ -428,7 +489,68 @@
 
 ### 🎨 UI/UX
 
-#### 1. src/scripts/modules/BQO/components/BQOXenditChannelView.jsx [20260730_095820]
+#### 1. src/scripts/components/ServerLabel.jsx [20260730_112700]
+**Fungsi:** Komponen UI: ServerLabel  
+**Perubahan:** Import: react; Tambah state management; Tambah side effect; Import: Chip; Import: Storage; Import: app-config; Tambah fungsi: ServerLabel; Tambah fungsi: envLabel; Tambah fungsi: cfgLabel; Ubah render/return JSX  
+**Lines:** 1-53
+
+```javascript
+// Line 1:
++ import React, { useState, useEffect } from 'react';
++ import Chip from '@mui/material/Chip';
++ import StorageIcon from '@mui/icons-material/Storage';
++ import { getAppConfig, loadAppConfig } from '../utils/app-config';
++ 
++ /**
++  * ServerLabel — chip kecil yang tampil di halaman login jika server label di-set.
++  *
++  * Prioritas label:
++  * 1. app.cfg → server_label  (runtime, bisa ubah tanpa rebuild)
++  * 2. .env    → REACT_APP_SERVER_LABEL (build time, fallback — opsional)
++  *
++  * Untuk server cadangan, set di public/app.cfg:
++  *   "server_mode": "local",
++  *   "server_label": "SERVER CADANGAN"
++  *
++  * Tidak render apapun jika semua label kosong.
++  */
++ function ServerLabel() {
++   const [cfg, setCfg] = useState(() => getAppConfig());
++ 
++   useEffect(() => {
++     // Paksa load ulang app.cfg agar dapat nilai terbaru
++     loadAppConfig().then((c) => setCfg({ ...c }));
+  // ... (truncated)
++   const label     = cfgLabel || envLabel;
++ 
++   if (!label) return null;
++ 
++   const isLocal = cfg.server_mode === 'local';
++ 
++   return (
++     <Chip
++       icon={<StorageIcon sx={{ fontSize: '14px !important' }} />}
++       label={label}
++       size="small"
++       color={isLocal ? 'error' : 'warning'}
++       variant="outlined"
++       sx={{
++         fontSize: '0.7rem',
++         fontWeight: 'bold',
++         letterSpacing: '0.5px',
++         height: 22,
++         borderWidth: 1.5,
++       }}
++     />
++   );
++ }
++ 
++ export default ServerLabel;
+```
+
+---
+
+#### 2. src/scripts/modules/BQO/components/BQOXenditChannelView.jsx [20260730_095820]
 **Fungsi:** Komponen UI: BQOXenditChannelView  
 **Perubahan:** Import: react; Tambah state management; Tambah side effect; Import: Box; Import: Typography; Import: List; Import: ListItem; Import: ListItemButton; Import: ListItemText; Import: CircularProgress; Import: Chip; Import: Alert; Import: Divider; Tambah fungsi: PAYMENT_API; Tambah fungsi: groupChannels; Tambah HTTP request; Tambah error handling; Ubah render/return JSX  
 **Lines:** 1-231
@@ -489,15 +611,27 @@
 
 ---
 
-#### 2. src/scripts/components/ServerLabel.jsx [20260730_112657]
-**Fungsi:** Komponen UI: ServerLabel  
-**Perubahan:** Pembaruan kode  
+### 🔐 Auth/Session
+
+#### 1. src/scripts/modules/LOGIN/index.js [20260730_112700]
+**Fungsi:** Entry point / registrasi React  
+**Perubahan:** Import: ServerLabel  
+**Lines:** 16, 70, 73-75
+
+```javascript
+// Line 13:
++ import ServerLabel from '../../components/ServerLabel';
+// Line 67:
+-               <Grid item xs={12} mb={3}>
++               <Grid item xs={12} mb={1}>
++               <Grid item container xs={12} justifyContent="center" mb={2}>
++                 <ServerLabel />
++               </Grid>
+```
 
 ---
 
-### 🔐 Auth/Session
-
-#### 1. src/scripts/contexts/AuthContext.js [20260730_104806]
+#### 2. src/scripts/contexts/AuthContext.js [20260730_104806]
 **Fungsi:** Context autentikasi global  
 **Perubahan:** Akses localStorage  
 **Lines:** 55-60, 112-114
@@ -515,12 +649,6 @@
 +     window.localStorage.removeItem('auth_local_user');
 +     window.localStorage.removeItem('auth_local_pass');
 ```
-
----
-
-#### 2. rc/scripts/modules/LOGIN/index.js [20260730_112657]
-**Fungsi:** Entry point / registrasi React  
-**Perubahan:** Pembaruan kode  
 
 ---
 
@@ -753,10 +881,10 @@
 
 ## 📊 **Summary**
 - **✨ Features:** 5 items
-- **📖 Documentation:** 3 items
+- **📖 Documentation:** 4 items
 - **🎨 UI/UX:** 2 items
 - **🔐 Auth/Session:** 2 items
 - **⚙️ Config:** 7 items
 - **⚙️ Others:** 2 items
-- **Total Files Modified:** 21
+- **Total Files Modified:** 22
 - **Main Focus:** ⚙️ Config
