@@ -4,29 +4,28 @@ import StorageIcon from '@mui/icons-material/Storage';
 import { getAppConfig } from '../utils/app-config';
 
 /**
- * ServerLabel — chip kecil yang tampil di halaman login jika label server di-set.
+ * ServerLabel — chip kecil di halaman login untuk identifikasi server.
  *
- * Prioritas label:
+ * Prioritas label (3 sumber, satu aktif):
  * 1. app.cfg → server_label  (runtime, edit tanpa rebuild)
- * 2. .env    → REACT_APP_SERVER_LABEL (build time, fallback opsional)
+ * 2. .env    → REACT_APP_SERVER_LABEL (build time, paling reliable untuk cadangan)
  *
- * Untuk server cadangan, set di public/app.cfg:
- *   "server_mode": "local",
- *   "server_label": "SERVER CADANGAN"
- *
- * Tidak render apapun jika semua label kosong.
- *
- * Catatan: app.cfg sudah di-load sebelum React render (di src/index.js),
- * sehingga getAppConfig() langsung mengembalikan nilai yang benar.
+ * Tidak render apapun jika semua kosong (server utama normal).
  */
 function ServerLabel() {
-  const cfg      = getAppConfig();
+  const cfg = getAppConfig();
+
+  // Prioritas: app.cfg runtime → env build time
+  const cfgLabel = (cfg.server_label || '').trim();
   const envLabel = (process.env.REACT_APP_SERVER_LABEL || '').trim();
-  const label    = (cfg.server_label || '').trim() || envLabel;
+  const label    = cfgLabel || envLabel;
+
+  // Deteksi server cadangan: dari app.cfg server_mode ATAU env SERVER_MODE
+  const cfgIsLocal  = cfg.server_mode === 'local';
+  const envIsLocal  = (process.env.REACT_APP_SERVER_MODE || '').toLowerCase() === 'cadangan';
+  const isLocal     = cfgIsLocal || envIsLocal;
 
   if (!label) return null;
-
-  const isLocal = cfg.server_mode === 'local';
 
   return (
     <Chip

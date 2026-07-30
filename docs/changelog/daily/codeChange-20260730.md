@@ -243,7 +243,68 @@
 
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260730.md [20260730_141851]
+#### 1. docs/changelog/daily/codeChange-20260730.md [20260730_142926]
+**Fungsi:** Implementasi: codeChange-20260730  
+**Perubahan:** Akses localStorage; Tambah state management; Tambah side effect  
+**Lines:** 246-307, 368, 429, 490, 675-711, 980-1006, 1009-1010, 1013-1014
+
+```javascript
+// Line 243:
+- #### 1. docs/changelog/daily/codeChange-20260730.md [20260730_112700]
++ #### 1. docs/changelog/daily/codeChange-20260730.md [20260730_141851]
++ **Fungsi:** Implementasi: codeChange-20260730  
++ **Perubahan:** Akses localStorage; Tambah state management; Tambah side effect; Ubah render/return JSX  
++ **Lines:** 246-307, 368, 429, 492-553, 614, 616-619, 621-630, 632-634, 884, 889
++ 
++ ```javascript
++ // Line 243:
++ - #### 1. docs/changelog/daily/codeChange-20260730.md [20260730_104806]
++ + #### 1. docs/changelog/daily/codeChange-20260730.md [20260730_112700]
++ + **Fungsi:** Implementasi: codeChange-20260730  
++ + **Perubahan:** Tambah state management; Tambah side effect; Akses localStorage  
++ + **Lines:** 7-68, 129, 190, 227, 244-249, 252-257, 259-276, 278-302, 307, 368, 492-497, 500, 502-522, 756-758, 761
++ + 
++ + ```javascript
++ + // Line 4:
++ + - #### 1. src/scripts/modules/BQO/views/bqo_payment.js [20260730_095820]
++ + + #### 1. src/scripts/modules/BQO/views/bqo_payment.js [20260730_104806]
++ + + **Fungsi:** Modul: bqo_payment  
++ + + **Perubahan:** Import: react; Tambah state management; Tambah side effect; Tambah error handling; Tambah fungsi: buildCurrentPayload; Tambah fungsi: handleTunaiRetry; Tambah fungsi: handleTunaiSaveToLocal; Tambah fungsi: handleXenditRetry; Tambah fungsi: handleXenditSaveToLocal; Tambah fungsi: handleSaveToLocal  
++ + + **Lines:** 1, 46-56, 60-61, 150-154, 161-183, 187-191, 199-220, 223, 231-232, 234-265, 267-269, 275-278, 346-356, 452-453, 455-483, 489, 571-572, 574-601, 748
++ + + 
++ + + ```javascript
++ + + // Line 1:
+  // ... (truncated)
++ 
++ ```javascript
++ // Line 1:
++ - import React, { useRef, lazy, Suspense, useEffect } from 'react';
++ + import React, { useRef, lazy, Suspense } from 'react';
++ // Line 8:
++ - import { loadAppConfig } from './utils/app-config';
++ // Line 15:
++ - 
++ -   // Load runtime config (app.cfg) sekali saat app pertama mount
++ -   useEffect(() => {
++ -     loadAppConfig();
++ -   }, []);
++ ```
++ 
++ ---
++ 
+- - **📖 Documentation:** 4 items
+- - **🎨 UI/UX:** 2 items
++ - **📖 Documentation:** 5 items
++ - **🎨 UI/UX:** 3 items
+- - **⚙️ Others:** 2 items
+- - **Total Files Modified:** 22
++ - **⚙️ Others:** 4 items
++ - **Total Files Modified:** 26
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260730.md [20260730_141851]
 **Fungsi:** Implementasi: codeChange-20260730  
 **Perubahan:** Akses localStorage; Tambah state management; Tambah side effect; Ubah render/return JSX  
 **Lines:** 246-307, 368, 429, 492-553, 614, 616-619, 621-630, 632-634, 884, 889
@@ -304,7 +365,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260730.md [20260730_112700]
+#### 3. docs/changelog/daily/codeChange-20260730.md [20260730_112700]
 **Fungsi:** Implementasi: codeChange-20260730  
 **Perubahan:** Tambah state management; Tambah side effect; Akses localStorage  
 **Lines:** 7-68, 129, 190, 227, 244-249, 252-257, 259-276, 278-302, 307, 368, 492-497, 500, 502-522, 756-758, 761
@@ -365,7 +426,7 @@
 
 ---
 
-#### 3. docs/changelog/daily/codeChange-20260730.md [20260730_104806]
+#### 4. docs/changelog/daily/codeChange-20260730.md [20260730_104806]
 **Fungsi:** Implementasi: codeChange-20260730  
 **Perubahan:** Tambah state management; Tambah side effect; Tambah error handling  
 **Lines:** 7-68, 129, 166, 183, 185-186, 189-195, 197-204, 206-239, 246-307, 370-434, 441-477, 510, 532, 552, 572, 592, 605, 667-668, 670, 673
@@ -426,7 +487,7 @@
 
 ---
 
-#### 4. docs/changelog/daily/codeChange-20260730.md [20260730_095820]
+#### 5. docs/changelog/daily/codeChange-20260730.md [20260730_095820]
 **Fungsi:** Implementasi: codeChange-20260730  
 **Perubahan:** Tambah state management; Tambah side effect; Tambah error handling  
 **Lines:** 7-68, 105, 122-249, 256, 259-285, 289, 311, 331, 351, 369-473, 475-480
@@ -487,7 +548,7 @@
 
 ---
 
-#### 5. docs/changelog/daily/codeChange-20260730.md [20260730_090041]
+#### 6. docs/changelog/daily/codeChange-20260730.md [20260730_090041]
 **Fungsi:** Implementasi: codeChange-20260730  
 **Perubahan:** Pembaruan kode  
 **Lines:** 1-159
@@ -550,7 +611,44 @@
 
 ### 🎨 UI/UX
 
-#### 1. src/scripts/components/ServerLabel.jsx [20260730_112700]
+#### 1. src/scripts/components/ServerLabel.jsx [20260730_142926]
+**Fungsi:** Komponen UI: ServerLabel  
+**Perubahan:** Import: react; Import: app-config; Tambah fungsi: envLabel; Tambah fungsi: label  
+**Lines:** 1, 4, 7, 10-11, 18-20, 23-25
+
+```javascript
+// Line 1:
+- import React, { useState, useEffect } from 'react';
++ import React from 'react';
+- import { getAppConfig, loadAppConfig } from '../utils/app-config';
++ import { getAppConfig } from '../utils/app-config';
+-  * ServerLabel — chip kecil yang tampil di halaman login jika server label di-set.
++  * ServerLabel — chip kecil yang tampil di halaman login jika label server di-set.
+-  * 1. app.cfg → server_label  (runtime, bisa ubah tanpa rebuild)
+-  * 2. .env    → REACT_APP_SERVER_LABEL (build time, fallback — opsional)
++  * 1. app.cfg → server_label  (runtime, edit tanpa rebuild)
++  * 2. .env    → REACT_APP_SERVER_LABEL (build time, fallback opsional)
++  *
++  * Catatan: app.cfg sudah di-load sebelum React render (di src/index.js),
++  * sehingga getAppConfig() langsung mengembalikan nilai yang benar.
+-   const [cfg, setCfg] = useState(() => getAppConfig());
+- 
+-   useEffect(() => {
+-     // Paksa load ulang app.cfg agar dapat nilai terbaru
+-     loadAppConfig().then((c) => setCfg({ ...c }));
+-   }, []);
+- 
+-   const envLabel  = (process.env.REACT_APP_SERVER_LABEL || '').trim();
+-   const cfgLabel  = (cfg.server_label || '').trim();
+-   const label     = cfgLabel || envLabel;
++   const cfg      = getAppConfig();
++   const envLabel = (process.env.REACT_APP_SERVER_LABEL || '').trim();
++   const label    = (cfg.server_label || '').trim() || envLabel;
+```
+
+---
+
+#### 2. src/scripts/components/ServerLabel.jsx [20260730_112700]
 **Fungsi:** Komponen UI: ServerLabel  
 **Perubahan:** Import: react; Tambah state management; Tambah side effect; Import: Chip; Import: Storage; Import: app-config; Tambah fungsi: ServerLabel; Tambah fungsi: envLabel; Tambah fungsi: cfgLabel; Ubah render/return JSX  
 **Lines:** 1-53
@@ -611,7 +709,7 @@
 
 ---
 
-#### 2. src/scripts/modules/BQO/components/BQOXenditChannelView.jsx [20260730_095820]
+#### 3. src/scripts/modules/BQO/components/BQOXenditChannelView.jsx [20260730_095820]
 **Fungsi:** Komponen UI: BQOXenditChannelView  
 **Perubahan:** Import: react; Tambah state management; Tambah side effect; Import: Box; Import: Typography; Import: List; Import: ListItem; Import: ListItemButton; Import: ListItemText; Import: CircularProgress; Import: Chip; Import: Alert; Import: Divider; Tambah fungsi: PAYMENT_API; Tambah fungsi: groupChannels; Tambah HTTP request; Tambah error handling; Ubah render/return JSX  
 **Lines:** 1-231
@@ -672,39 +770,42 @@
 
 ---
 
-#### 3. src/scripts/components/ServerLabel.jsx [20260730_142922]
+#### 4. src/scripts/components/ServerLabel.jsx [20260730_143418]
 **Fungsi:** Komponen UI: ServerLabel  
-**Perubahan:** Import: react; Import: app-config; Tambah fungsi: envLabel; Tambah fungsi: label  
-**Lines:** 1, 4, 7, 10-11, 18-20, 23-25
+**Perubahan:** Tambah fungsi: cfgLabel; Tambah fungsi: envIsLocal  
+**Lines:** 7, 9, 11, 13, 16-19, 21, 23-26, 28
 
 ```javascript
-// Line 1:
-- import React, { useState, useEffect } from 'react';
-+ import React from 'react';
-- import { getAppConfig, loadAppConfig } from '../utils/app-config';
-+ import { getAppConfig } from '../utils/app-config';
--  * ServerLabel — chip kecil yang tampil di halaman login jika server label di-set.
-+  * ServerLabel — chip kecil yang tampil di halaman login jika label server di-set.
--  * 1. app.cfg → server_label  (runtime, bisa ubah tanpa rebuild)
--  * 2. .env    → REACT_APP_SERVER_LABEL (build time, fallback — opsional)
-+  * 1. app.cfg → server_label  (runtime, edit tanpa rebuild)
-+  * 2. .env    → REACT_APP_SERVER_LABEL (build time, fallback opsional)
-+  *
-+  * Catatan: app.cfg sudah di-load sebelum React render (di src/index.js),
-+  * sehingga getAppConfig() langsung mengembalikan nilai yang benar.
--   const [cfg, setCfg] = useState(() => getAppConfig());
-- 
--   useEffect(() => {
--     // Paksa load ulang app.cfg agar dapat nilai terbaru
--     loadAppConfig().then((c) => setCfg({ ...c }));
--   }, []);
-- 
--   const envLabel  = (process.env.REACT_APP_SERVER_LABEL || '').trim();
--   const cfgLabel  = (cfg.server_label || '').trim();
--   const label     = cfgLabel || envLabel;
-+   const cfg      = getAppConfig();
-+   const envLabel = (process.env.REACT_APP_SERVER_LABEL || '').trim();
-+   const label    = (cfg.server_label || '').trim() || envLabel;
+// Line 4:
+-  * ServerLabel — chip kecil yang tampil di halaman login jika label server di-set.
++  * ServerLabel — chip kecil di halaman login untuk identifikasi server.
+-  * Prioritas label:
++  * Prioritas label (3 sumber, satu aktif):
+-  * 2. .env    → REACT_APP_SERVER_LABEL (build time, fallback opsional)
++  * 2. .env    → REACT_APP_SERVER_LABEL (build time, paling reliable untuk cadangan)
+-  * Untuk server cadangan, set di public/app.cfg:
+-  *   "server_mode": "local",
+-  *   "server_label": "SERVER CADANGAN"
+-  *
+-  * Tidak render apapun jika semua label kosong.
+-  *
+-  * Catatan: app.cfg sudah di-load sebelum React render (di src/index.js),
+-  * sehingga getAppConfig() langsung mengembalikan nilai yang benar.
++  * Tidak render apapun jika semua kosong (server utama normal).
+-   const cfg      = getAppConfig();
++   const cfg = getAppConfig();
++ 
++   // Prioritas: app.cfg runtime → env build time
++   const cfgLabel = (cfg.server_label || '').trim();
+-   const label    = (cfg.server_label || '').trim() || envLabel;
++   const label    = cfgLabel || envLabel;
+-   if (!label) return null;
++   // Deteksi server cadangan: dari app.cfg server_mode ATAU env SERVER_MODE
++   const cfgIsLocal  = cfg.server_mode === 'local';
++   const envIsLocal  = (process.env.REACT_APP_SERVER_MODE || '').toLowerCase() === 'cadangan';
++   const isLocal     = cfgIsLocal || envIsLocal;
+-   const isLocal = cfg.server_mode === 'local';
++   if (!label) return null;
 ```
 
 ---
@@ -901,9 +1002,65 @@
 
 ---
 
+#### 8. nv/qorestoweb/.env.prod.cadangan [20260730_143418]
+**Fungsi:** Implementasi: .env.prod  
+**Perubahan:** Ubah konfigurasi environment / API endpoint  
+
+---
+
 ### ⚙️ Others
 
-#### 1. public/app.cfg [20260730_095820]
+#### 1. src/index.js [20260730_142926]
+**Fungsi:** Entry point / registrasi React  
+**Perubahan:** Import: app-config  
+**Lines:** 12, 14-23
+
+```javascript
+// Line 9:
++ import { loadAppConfig } from './scripts/utils/app-config';
+- ReactDOM.render(
+-   <React.StrictMode>
+-     <CssBaseline />
+-     <App />
+-   </React.StrictMode>,
+-   document.getElementById('root')
+- );
++ // Load app.cfg sebelum render — agar ServerLabel & fitur runtime tersedia sejak awal
++ loadAppConfig().finally(() => {
++   ReactDOM.render(
++     <React.StrictMode>
++       <CssBaseline />
++       <App />
++     </React.StrictMode>,
++     document.getElementById('root')
++   );
++ });
+```
+
+---
+
+#### 2. src/scripts/App.js [20260730_142926]
+**Fungsi:** Entry point aplikasi React  
+**Perubahan:** Import: react  
+**Lines:** 1
+
+```javascript
+// Line 1:
+- import React, { useRef, lazy, Suspense, useEffect } from 'react';
++ import React, { useRef, lazy, Suspense } from 'react';
+// Line 8:
+- import { loadAppConfig } from './utils/app-config';
+// Line 15:
+- 
+-   // Load runtime config (app.cfg) sekali saat app pertama mount
+-   useEffect(() => {
+-     loadAppConfig();
+-   }, []);
+```
+
+---
+
+#### 3. public/app.cfg [20260730_095820]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 **Lines:** 8
@@ -916,7 +1073,7 @@
 
 ---
 
-#### 2. yarn.lock [20260730_095820]
+#### 4. yarn.lock [20260730_095820]
 **Fungsi:** Implementasi: yarn  
 **Perubahan:** Pembaruan kode  
 **Lines:** 37, 333-337, 383, 833, 1269, 1299, 1582-1588, 1649-1661, 1770, 1854, 2129, 2330, 2458, 2474-2481, 2527, 2554, 2655, 2726-2730, 2770, 2780, 2831, 2866-2873, 3305, 3333, 3429, 3447, 3551-3555, 3804-3807, 3809, 3812, 3918, 3964, 3971, 3978-3981, 3983, 4064-4068, 4079, 4165-4172, 4182-4185, 4605-4608, 4610, 4669, 4706, 4764-4768, 5118, 5138-5142, 5231, 5532, 5539-5542, 5544, 5607, 5631-5638, 6083-6092, 6192-6201, 6212, 6214-6215, 6217-6219, 6221-6223, 6225-6226, 6258, 6260-6261, 6264, 6280-6284, 6304, 6411-6422, 6526, 6535, 6918-6922, 7009-7013, 7051-7055, 7419, 7424, 7429, 8013-8021, 8040-8049, 8089, 8123-8127, 8222, 8251, 8283-8291, 8381, 8586, 8625, 8650, 8720-8728, 8770, 8867, 8985, 8990-8993, 9181-9194, 9357, 9506, 9589, 9867, 9932, 9960, 10089, 10091-10092, 10103-10109, 10160, 10162-10165, 10172, 10174-10175, 10185, 10187-10188, 10202, 10204-10205, 10207, 10209-10210, 10219, 10221-10222, 10235, 10237-10238, 10249-10255, 10275, 10277-10278, 10289, 10291-10292, 10305-10312, 10391
@@ -977,39 +1134,12 @@
 
 ---
 
-#### 3. rc/index.js [20260730_142922]
-**Fungsi:** Entry point / registrasi React  
-**Perubahan:** Pembaruan kode  
-
----
-
-#### 4. src/scripts/App.js [20260730_142922]
-**Fungsi:** Entry point aplikasi React  
-**Perubahan:** Import: react  
-**Lines:** 1
-
-```javascript
-// Line 1:
-- import React, { useRef, lazy, Suspense, useEffect } from 'react';
-+ import React, { useRef, lazy, Suspense } from 'react';
-// Line 8:
-- import { loadAppConfig } from './utils/app-config';
-// Line 15:
-- 
--   // Load runtime config (app.cfg) sekali saat app pertama mount
--   useEffect(() => {
--     loadAppConfig();
--   }, []);
-```
-
----
-
 ## 📊 **Summary**
 - **✨ Features:** 5 items
-- **📖 Documentation:** 5 items
-- **🎨 UI/UX:** 3 items
+- **📖 Documentation:** 6 items
+- **🎨 UI/UX:** 4 items
 - **🔐 Auth/Session:** 2 items
-- **⚙️ Config:** 7 items
+- **⚙️ Config:** 8 items
 - **⚙️ Others:** 4 items
-- **Total Files Modified:** 26
+- **Total Files Modified:** 29
 - **Main Focus:** ⚙️ Config
