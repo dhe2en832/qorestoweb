@@ -13,6 +13,7 @@ import LockOpen from '@mui/icons-material/LockOpen';
 import { useAuth } from '../../contexts/AuthContext';
 import CompanyName from '../../components/CompanyName';
 import AlertContainer from '../../components/AlertContainer';
+import ServerLabel from '../../components/ServerLabel';
 import { ReactComponent as Logo } from '../../../images/logo.svg';
 
 function Login({ isForm, afterLogin }) {
@@ -66,8 +67,11 @@ function Login({ isForm, afterLogin }) {
               <Grid item container xs={12} justifyContent="center">
                 <Logo height={50} width={50} />
               </Grid>
-              <Grid item xs={12} mb={3}>
+              <Grid item xs={12} mb={1}>
                 <CompanyName />
+              </Grid>
+              <Grid item container xs={12} justifyContent="center" mb={2}>
+                <ServerLabel />
               </Grid>
             </>
           )}

@@ -4,183 +4,7 @@
 
 ### ✨ Features
 
-#### 1. src/scripts/modules/BQO/views/bqo_payment.js [20260730_095820]
-**Fungsi:** Modul: bqo_payment  
-**Perubahan:** Import: payment-api; Import: BQOXenditChannelView; Import: react-qr-code; Tambah state management; Tambah fungsi: handleSelectXenditChannel; Tambah fungsi: handleSimulatePayment; Tambah error handling; Tambah fungsi: ewalletRedirectUrl  
-**Lines:** 30, 33-34, 74-75, 231-238, 243, 248-281, 398-401, 410-450, 454, 456-457, 459, 463-464, 467-468, 474-475, 477-480, 482-483, 485-487, 489-518, 520-540, 543-568, 570-646, 651-652, 654-656, 661-662, 664-666, 671-672, 674-677, 679-683
-
-```javascript
-// Line 11:
-- import List from '@mui/material/List';
-- import ListItem from '@mui/material/ListItem';
-- import ListItemButton from '@mui/material/ListItemButton';
-- import ListItemText from '@mui/material/ListItemText';
-- import PaymentIcon from '@mui/icons-material/Payment';
-// Line 27:
-+ import { fetchPaymentAPI, getPaymentAPIUrl, PRIMARY_BASE_URL, LOCAL_BASE_URL } from '../../../utils/payment-api';
-+ import BQOXenditChannelView from '../components/BQOXenditChannelView';
-+ import QRCode from 'react-qr-code';
-// Line 71:
--   const [bankList,            setBankList]            = useState([]);
--   const [bankListLoading,     setBankListLoading]     = useState(false);
-+   const [isSimulating,        setIsSimulating]        = useState(false);
-+   const [simulationSent,      setSimulationSent]      = useState(false);
-// Line 82:
--   // ── Fetch daftar bank untuk Xendit channel ────────────────────────────────
--   useEffect(() => {
--     if (activeView !== 'xendit-channel') return;
--     let active = true;
--     const fetchBanks = async () => {
--       try {
--         setBankListLoading(true);
--         const { default: bbank_api } = await import('../../BBANK/controllers/bbank_api');
--         const res = await bbank_api.getList({
-  // ... (truncated)
-+           <Box py={2} textAlign="center">
-+             <Alert severity="error" sx={{ mb: 2 }}>Pembayaran gagal atau kedaluwarsa.</Alert>
-+             <Button sx={{ mt: 2 }} onClick={() => { resetXenditPaymentInfo(); setSimulationSent(false); setActiveView('xendit-channel'); }}>
-+ 
-+         {/* Timeout */}
--           <Box py={2}>
--             <Alert severity="warning">Waktu pembayaran habis.</Alert>
--             <Button sx={{ mt: 2 }} onClick={() => { resetXenditPaymentInfo(); setActiveView('xendit-channel'); }}>
-+           <Box py={2} textAlign="center">
-+             <Alert severity="warning" sx={{ mb: 2 }}>Waktu pembayaran habis.</Alert>
-+             <Button onClick={() => { resetXenditPaymentInfo(); setActiveView('xendit-channel'); }}>
-+ 
-+         {/* Menyimpan transaksi setelah Xendit konfirmasi */}
--           <Box py={2}><CircularProgress /><Typography mt={1} variant="body2">Menyimpan transaksi...</Typography></Box>
-+           <Box textAlign="center" py={2}>
-+             <CircularProgress size={24} />
-+             <Typography mt={1} variant="body2">Menyimpan transaksi...</Typography>
-+           </Box>
--         <Box mt={1}>
--           <Button size="small" onClick={() => { resetXenditPaymentInfo(); setActiveView('choose'); }}>← Kembali</Button>
-+ 
-+         <Box mt={2}>
-+           <Button size="small" onClick={() => { resetXenditPaymentInfo(); setActiveView('choose'); }}>
-+             ← Kembali
-+           </Button>
-```
-
----
-
-#### 2. src/scripts/modules/BQO/reports/BQOOrderSlip.jsx [20260730_090041]
-**Fungsi:** Modul: BQOOrderSlip  
-**Perubahan:** Import: react; Import: formatter; Tambah fungsi: pad; Ubah render/return JSX  
-**Lines:** 1-196
-
-```javascript
-// Line 1:
-+ import React, { forwardRef } from 'react';
-+ import { toCurrencyIDR } from '../../../utils/formatter';
-+ 
-+ /**
-+  * BQOOrderSlip — Tanda Terima Pesanan (bukan struk pembayaran).
-+  * Dicetak saat konsumen memilih "Bayar di Kasir".
-+  *
-+  * Fungsi: bukti pesanan sudah masuk ke dapur / kasir.
-+  * Status pembayaran: BELUM DIBAYAR — konsumen membawa ini ke kasir.
-+  *
-+  * Props:
-+  *   datas.orderInfo   - { seatNumber, orderByName, phoneNumber }
-+  *   datas.cart        - array item pesanan { item, qty, note? }
-+  *   datas.subtotal    - number (sebelum pajak)
-+  *   datas.taxAmount   - number
-+  *   datas.total       - number (grand total tagihan)
-+  *   datas.nomorPesanan - string (nomor pesanan dari backend)
-+  */
-+ const BQOOrderSlip = forwardRef(function BQOOrderSlip({ datas = {} }, ref) {
-+   const {
-+     orderInfo   = {},
-+     cart        = [],
-+     subtotal    = 0,
-+     taxAmount   = 0,
-  // ... (truncated)
-+     color: '#555',
-+     fontStyle: 'italic',
-+   },
-+   statusBox: {
-+     border: '2px solid #000',
-+     textAlign: 'center',
-+     fontWeight: 'bold',
-+     fontSize: '11px',
-+     padding: '3px',
-+     margin: '6px 0',
-+     letterSpacing: '2px',
-+   },
-+   footerNote: {
-+     fontSize: '10px',
-+     fontWeight: 'bold',
-+     marginBottom: '2px',
-+   },
-+   footerSmall: {
-+     fontSize: '9px',
-+     color: '#777',
-+     marginTop: '2px',
-+   },
-+ };
-+ 
-+ export default BQOOrderSlip;
-```
-
----
-
-#### 3. src/scripts/modules/BQO/views/bqo_checkout.js [20260730_090041]
-**Fungsi:** Halaman checkout & submit order  
-**Perubahan:** Import: BQOOrderSlip  
-**Lines:** 33, 672, 675, 678-683, 764
-
-```javascript
-// Line 30:
-- import BQOReceipt from '../reports/BQOReceipt';
-+ import BQOOrderSlip from '../reports/BQOOrderSlip';
-// Line 669:
--       {/* Hidden receipt component untuk kasir — rendered tapi tidak terlihat */}
-+       {/* Hidden order slip component untuk kasir — rendered tapi tidak terlihat */}
--           <BQOReceipt
-+           <BQOOrderSlip
--               cart:          kasirResult.cartItems,
--               orderInfo:     info,
--               subtotal:      kasirResult.subtotal,
--               taxAmount:     kasirResult.taxAmount,
--               total:         kasirResult.total,
--               paymentMethod: 'Bayar di Kasir',
--               nomorBon:      kasirResult.nomorBon,
--               isLocalServer: false,
--               showArchiveCopy: false,
--               isUnrecorded:  false,
-+               orderInfo:    info,
-+               cart:         kasirResult.cartItems,
-+               subtotal:     kasirResult.subtotal,
-+               taxAmount:    kasirResult.taxAmount,
-+               total:        kasirResult.total,
-+               nomorPesanan: kasirResult.nomorBon,
-// Line 761:
--             {printCount > 0 ? `Cetak Ulang (${printCount}×)` : 'Cetak Struk'}
-+             {printCount > 0 ? `Cetak Ulang (${printCount}×)` : 'Cetak Tanda Pesanan'}
-```
-
----
-
-#### 4. src/scripts/modules/BQO/views/bqo_payment.js [20260730_090041]
-**Fungsi:** Modul: bqo_payment  
-**Perubahan:** Tambah fungsi: CASH_BANK_CODE; Tambah fungsi: XENDIT_BANK_CODE  
-**Lines:** 39-41
-
-```javascript
-// Line 36:
-- const USE_XENDIT     = process.env.REACT_APP_USE_XENDIT_PAYMENT === 'Y';
-- const CASH_BANK_CODE = (process.env.REACT_APP_CASH_BANK_CODE  || 'TUNAI').trim();
-- const XENDIT_BANK_CODE = (process.env.REACT_APP_XENDIT_BANK_CODE || 'XENDIT').trim();
-+ const USE_XENDIT      = process.env.REACT_APP_USE_XENDIT_PAYMENT === 'Y';
-+ const CASH_BANK_CODE  = (process.env.REACT_APP_CASH_BANK_CODE   || 'T000').trim();
-+ const XENDIT_BANK_CODE = (process.env.REACT_APP_XENDIT_BANK_CODE || 'X000').trim();
-```
-
----
-
-#### 5. src/scripts/modules/BQO/views/bqo_payment.js [20260730_104803]
+#### 1. src/scripts/modules/BQO/views/bqo_payment.js [20260730_104806]
 **Fungsi:** Modul: bqo_payment  
 **Perubahan:** Import: react; Tambah state management; Tambah side effect; Tambah error handling; Tambah fungsi: buildCurrentPayload; Tambah fungsi: handleTunaiRetry; Tambah fungsi: handleTunaiSaveToLocal; Tambah fungsi: handleXenditRetry; Tambah fungsi: handleXenditSaveToLocal; Tambah fungsi: handleSaveToLocal  
 **Lines:** 1, 46-56, 60-61, 150-154, 161-183, 187-191, 199-220, 223, 231-232, 234-265, 267-269, 275-278, 346-356, 452-453, 455-483, 489, 571-572, 574-601, 748
@@ -241,9 +65,246 @@
 
 ---
 
+#### 2. src/scripts/modules/BQO/views/bqo_payment.js [20260730_095820]
+**Fungsi:** Modul: bqo_payment  
+**Perubahan:** Import: payment-api; Import: BQOXenditChannelView; Import: react-qr-code; Tambah state management; Tambah fungsi: handleSelectXenditChannel; Tambah fungsi: handleSimulatePayment; Tambah error handling; Tambah fungsi: ewalletRedirectUrl  
+**Lines:** 30, 33-34, 74-75, 231-238, 243, 248-281, 398-401, 410-450, 454, 456-457, 459, 463-464, 467-468, 474-475, 477-480, 482-483, 485-487, 489-518, 520-540, 543-568, 570-646, 651-652, 654-656, 661-662, 664-666, 671-672, 674-677, 679-683
+
+```javascript
+// Line 11:
+- import List from '@mui/material/List';
+- import ListItem from '@mui/material/ListItem';
+- import ListItemButton from '@mui/material/ListItemButton';
+- import ListItemText from '@mui/material/ListItemText';
+- import PaymentIcon from '@mui/icons-material/Payment';
+// Line 27:
++ import { fetchPaymentAPI, getPaymentAPIUrl, PRIMARY_BASE_URL, LOCAL_BASE_URL } from '../../../utils/payment-api';
++ import BQOXenditChannelView from '../components/BQOXenditChannelView';
++ import QRCode from 'react-qr-code';
+// Line 71:
+-   const [bankList,            setBankList]            = useState([]);
+-   const [bankListLoading,     setBankListLoading]     = useState(false);
++   const [isSimulating,        setIsSimulating]        = useState(false);
++   const [simulationSent,      setSimulationSent]      = useState(false);
+// Line 82:
+-   // ── Fetch daftar bank untuk Xendit channel ────────────────────────────────
+-   useEffect(() => {
+-     if (activeView !== 'xendit-channel') return;
+-     let active = true;
+-     const fetchBanks = async () => {
+-       try {
+-         setBankListLoading(true);
+-         const { default: bbank_api } = await import('../../BBANK/controllers/bbank_api');
+-         const res = await bbank_api.getList({
+  // ... (truncated)
++           <Box py={2} textAlign="center">
++             <Alert severity="error" sx={{ mb: 2 }}>Pembayaran gagal atau kedaluwarsa.</Alert>
++             <Button sx={{ mt: 2 }} onClick={() => { resetXenditPaymentInfo(); setSimulationSent(false); setActiveView('xendit-channel'); }}>
++ 
++         {/* Timeout */}
+-           <Box py={2}>
+-             <Alert severity="warning">Waktu pembayaran habis.</Alert>
+-             <Button sx={{ mt: 2 }} onClick={() => { resetXenditPaymentInfo(); setActiveView('xendit-channel'); }}>
++           <Box py={2} textAlign="center">
++             <Alert severity="warning" sx={{ mb: 2 }}>Waktu pembayaran habis.</Alert>
++             <Button onClick={() => { resetXenditPaymentInfo(); setActiveView('xendit-channel'); }}>
++ 
++         {/* Menyimpan transaksi setelah Xendit konfirmasi */}
+-           <Box py={2}><CircularProgress /><Typography mt={1} variant="body2">Menyimpan transaksi...</Typography></Box>
++           <Box textAlign="center" py={2}>
++             <CircularProgress size={24} />
++             <Typography mt={1} variant="body2">Menyimpan transaksi...</Typography>
++           </Box>
+-         <Box mt={1}>
+-           <Button size="small" onClick={() => { resetXenditPaymentInfo(); setActiveView('choose'); }}>← Kembali</Button>
++ 
++         <Box mt={2}>
++           <Button size="small" onClick={() => { resetXenditPaymentInfo(); setActiveView('choose'); }}>
++             ← Kembali
++           </Button>
+```
+
+---
+
+#### 3. src/scripts/modules/BQO/reports/BQOOrderSlip.jsx [20260730_090041]
+**Fungsi:** Modul: BQOOrderSlip  
+**Perubahan:** Import: react; Import: formatter; Tambah fungsi: pad; Ubah render/return JSX  
+**Lines:** 1-196
+
+```javascript
+// Line 1:
++ import React, { forwardRef } from 'react';
++ import { toCurrencyIDR } from '../../../utils/formatter';
++ 
++ /**
++  * BQOOrderSlip — Tanda Terima Pesanan (bukan struk pembayaran).
++  * Dicetak saat konsumen memilih "Bayar di Kasir".
++  *
++  * Fungsi: bukti pesanan sudah masuk ke dapur / kasir.
++  * Status pembayaran: BELUM DIBAYAR — konsumen membawa ini ke kasir.
++  *
++  * Props:
++  *   datas.orderInfo   - { seatNumber, orderByName, phoneNumber }
++  *   datas.cart        - array item pesanan { item, qty, note? }
++  *   datas.subtotal    - number (sebelum pajak)
++  *   datas.taxAmount   - number
++  *   datas.total       - number (grand total tagihan)
++  *   datas.nomorPesanan - string (nomor pesanan dari backend)
++  */
++ const BQOOrderSlip = forwardRef(function BQOOrderSlip({ datas = {} }, ref) {
++   const {
++     orderInfo   = {},
++     cart        = [],
++     subtotal    = 0,
++     taxAmount   = 0,
+  // ... (truncated)
++     color: '#555',
++     fontStyle: 'italic',
++   },
++   statusBox: {
++     border: '2px solid #000',
++     textAlign: 'center',
++     fontWeight: 'bold',
++     fontSize: '11px',
++     padding: '3px',
++     margin: '6px 0',
++     letterSpacing: '2px',
++   },
++   footerNote: {
++     fontSize: '10px',
++     fontWeight: 'bold',
++     marginBottom: '2px',
++   },
++   footerSmall: {
++     fontSize: '9px',
++     color: '#777',
++     marginTop: '2px',
++   },
++ };
++ 
++ export default BQOOrderSlip;
+```
+
+---
+
+#### 4. src/scripts/modules/BQO/views/bqo_checkout.js [20260730_090041]
+**Fungsi:** Halaman checkout & submit order  
+**Perubahan:** Import: BQOOrderSlip  
+**Lines:** 33, 672, 675, 678-683, 764
+
+```javascript
+// Line 30:
+- import BQOReceipt from '../reports/BQOReceipt';
++ import BQOOrderSlip from '../reports/BQOOrderSlip';
+// Line 669:
+-       {/* Hidden receipt component untuk kasir — rendered tapi tidak terlihat */}
++       {/* Hidden order slip component untuk kasir — rendered tapi tidak terlihat */}
+-           <BQOReceipt
++           <BQOOrderSlip
+-               cart:          kasirResult.cartItems,
+-               orderInfo:     info,
+-               subtotal:      kasirResult.subtotal,
+-               taxAmount:     kasirResult.taxAmount,
+-               total:         kasirResult.total,
+-               paymentMethod: 'Bayar di Kasir',
+-               nomorBon:      kasirResult.nomorBon,
+-               isLocalServer: false,
+-               showArchiveCopy: false,
+-               isUnrecorded:  false,
++               orderInfo:    info,
++               cart:         kasirResult.cartItems,
++               subtotal:     kasirResult.subtotal,
++               taxAmount:    kasirResult.taxAmount,
++               total:        kasirResult.total,
++               nomorPesanan: kasirResult.nomorBon,
+// Line 761:
+-             {printCount > 0 ? `Cetak Ulang (${printCount}×)` : 'Cetak Struk'}
++             {printCount > 0 ? `Cetak Ulang (${printCount}×)` : 'Cetak Tanda Pesanan'}
+```
+
+---
+
+#### 5. src/scripts/modules/BQO/views/bqo_payment.js [20260730_090041]
+**Fungsi:** Modul: bqo_payment  
+**Perubahan:** Tambah fungsi: CASH_BANK_CODE; Tambah fungsi: XENDIT_BANK_CODE  
+**Lines:** 39-41
+
+```javascript
+// Line 36:
+- const USE_XENDIT     = process.env.REACT_APP_USE_XENDIT_PAYMENT === 'Y';
+- const CASH_BANK_CODE = (process.env.REACT_APP_CASH_BANK_CODE  || 'TUNAI').trim();
+- const XENDIT_BANK_CODE = (process.env.REACT_APP_XENDIT_BANK_CODE || 'XENDIT').trim();
++ const USE_XENDIT      = process.env.REACT_APP_USE_XENDIT_PAYMENT === 'Y';
++ const CASH_BANK_CODE  = (process.env.REACT_APP_CASH_BANK_CODE   || 'T000').trim();
++ const XENDIT_BANK_CODE = (process.env.REACT_APP_XENDIT_BANK_CODE || 'X000').trim();
+```
+
+---
+
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260730.md [20260730_095820]
+#### 1. docs/changelog/daily/codeChange-20260730.md [20260730_104806]
+**Fungsi:** Implementasi: codeChange-20260730  
+**Perubahan:** Tambah state management; Tambah side effect; Tambah error handling  
+**Lines:** 7-68, 129, 166, 183, 185-186, 189-195, 197-204, 206-239, 246-307, 370-434, 441-477, 510, 532, 552, 572, 592, 605, 667-668, 670, 673
+
+```javascript
+// Line 4:
+- #### 1. src/scripts/modules/BQO/reports/BQOOrderSlip.jsx [20260730_090041]
++ #### 1. src/scripts/modules/BQO/views/bqo_payment.js [20260730_095820]
++ **Fungsi:** Modul: bqo_payment  
++ **Perubahan:** Import: payment-api; Import: BQOXenditChannelView; Import: react-qr-code; Tambah state management; Tambah fungsi: handleSelectXenditChannel; Tambah fungsi: handleSimulatePayment; Tambah error handling; Tambah fungsi: ewalletRedirectUrl  
++ **Lines:** 30, 33-34, 74-75, 231-238, 243, 248-281, 398-401, 410-450, 454, 456-457, 459, 463-464, 467-468, 474-475, 477-480, 482-483, 485-487, 489-518, 520-540, 543-568, 570-646, 651-652, 654-656, 661-662, 664-666, 671-672, 674-677, 679-683
++ 
++ ```javascript
++ // Line 11:
++ - import List from '@mui/material/List';
++ - import ListItem from '@mui/material/ListItem';
++ - import ListItemButton from '@mui/material/ListItemButton';
++ - import ListItemText from '@mui/material/ListItemText';
++ - import PaymentIcon from '@mui/icons-material/Payment';
++ // Line 27:
++ + import { fetchPaymentAPI, getPaymentAPIUrl, PRIMARY_BASE_URL, LOCAL_BASE_URL } from '../../../utils/payment-api';
++ + import BQOXenditChannelView from '../components/BQOXenditChannelView';
++ + import QRCode from 'react-qr-code';
++ // Line 71:
++ -   const [bankList,            setBankList]            = useState([]);
++ -   const [bankListLoading,     setBankListLoading]     = useState(false);
++ +   const [isSimulating,        setIsSimulating]        = useState(false);
++ +   const [simulationSent,      setSimulationSent]      = useState(false);
++ // Line 82:
++ -   // ── Fetch daftar bank untuk Xendit channel ────────────────────────────────
+  // ... (truncated)
+- -     "qa:qorestoweb":           "env-cmd -f ./env/qorestoweb/.env env-cmd -f ./env/qorestoweb/.env.qa yarn start",
+- -     "prod:qorestoweb":         "env-cmd -f ./env/qorestoweb/.env env-cmd -f ./env/qorestoweb/.env.prod node build-deploy.cjs --mode=primary",
+- -     "prod:qorestoweb-cadangan":"env-cmd -f ./env/qorestoweb/.env env-cmd -f ./env/qorestoweb/.env.prod.cadangan node build-deploy.cjs --mode=cadangan",
+- -     "prod:qorestoweb-all":     "yarn prod:qorestoweb && yarn prod:qorestoweb-cadangan",
+- +     "dev:qorestoweb": "env-cmd -f ./env/qorestoweb/.env env-cmd -f ./env/qorestoweb/.env.dev yarn start",
+- +     "qa:qorestoweb": "env-cmd -f ./env/qorestoweb/.env env-cmd -f ./env/qorestoweb/.env.qa yarn start",
+- +     "prod:qorestoweb": "env-cmd -f ./env/qorestoweb/.env env-cmd -f ./env/qorestoweb/.env.prod node build-deploy.cjs --mode=primary",
+- +     "prod:qorestoweb-cadangan": "env-cmd -f ./env/qorestoweb/.env env-cmd -f ./env/qorestoweb/.env.prod.cadangan node build-deploy.cjs --mode=cadangan",
+- +     "prod:qorestoweb-all": "yarn prod:qorestoweb && yarn prod:qorestoweb-cadangan",
+- ```
+- 
+- 
+- #### 1. public/app.cfg [20260730_095818]
++ #### 1. public/app.cfg [20260730_095820]
+// Line 602:
+- #### 2. yarn.lock [20260730_095818]
++ #### 2. yarn.lock [20260730_095820]
+// Line 664:
+- - **✨ Features:** 4 items
+- - **📖 Documentation:** 1 item
++ - **✨ Features:** 5 items
++ - **📖 Documentation:** 2 items
++ - **🔐 Auth/Session:** 1 item
+- - **Total Files Modified:** 15
++ - **Total Files Modified:** 18
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260730.md [20260730_095820]
 **Fungsi:** Implementasi: codeChange-20260730  
 **Perubahan:** Tambah state management; Tambah side effect; Tambah error handling  
 **Lines:** 7-68, 105, 122-249, 256, 259-285, 289, 311, 331, 351, 369-473, 475-480
@@ -304,7 +365,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260730.md [20260730_090041]
+#### 3. docs/changelog/daily/codeChange-20260730.md [20260730_090041]
 **Fungsi:** Implementasi: codeChange-20260730  
 **Perubahan:** Pembaruan kode  
 **Lines:** 1-159
@@ -428,10 +489,37 @@
 
 ---
 
+#### 2. src/scripts/components/ServerLabel.jsx [20260730_112657]
+**Fungsi:** Komponen UI: ServerLabel  
+**Perubahan:** Pembaruan kode  
+
+---
+
 ### 🔐 Auth/Session
 
-#### 1. rc/scripts/contexts/AuthContext.js [20260730_104803]
+#### 1. src/scripts/contexts/AuthContext.js [20260730_104806]
 **Fungsi:** Context autentikasi global  
+**Perubahan:** Akses localStorage  
+**Lines:** 55-60, 112-114
+
+```javascript
+// Line 52:
++         // [trenly pattern] Simpan credential untuk fallback login ke server lokal
++         // Hanya aktif jika REACT_APP_API_LOCAL_ENDPOINT di-set
++         if (process.env.REACT_APP_API_LOCAL_ENDPOINT) {
++           window.localStorage.setItem('auth_local_user', data.cuserid);
++           window.localStorage.setItem('auth_local_pass', data.cpassw);
++         }
+// Line 109:
++     // Bersihkan credential fallback saat logout
++     window.localStorage.removeItem('auth_local_user');
++     window.localStorage.removeItem('auth_local_pass');
+```
+
+---
+
+#### 2. rc/scripts/modules/LOGIN/index.js [20260730_112657]
+**Fungsi:** Entry point / registrasi React  
 **Perubahan:** Pembaruan kode  
 
 ---
@@ -665,10 +753,10 @@
 
 ## 📊 **Summary**
 - **✨ Features:** 5 items
-- **📖 Documentation:** 2 items
-- **🎨 UI/UX:** 1 item
-- **🔐 Auth/Session:** 1 item
+- **📖 Documentation:** 3 items
+- **🎨 UI/UX:** 2 items
+- **🔐 Auth/Session:** 2 items
 - **⚙️ Config:** 7 items
 - **⚙️ Others:** 2 items
-- **Total Files Modified:** 18
+- **Total Files Modified:** 21
 - **Main Focus:** ⚙️ Config
