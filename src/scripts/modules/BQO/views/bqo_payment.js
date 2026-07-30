@@ -11,14 +11,9 @@ import IconButton from '@mui/material/IconButton';
 import Divider from '@mui/material/Divider';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
 import BackIcon from '@mui/icons-material/ArrowBackIos';
 import PrintIcon from '@mui/icons-material/Print';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import PaymentIcon from '@mui/icons-material/Payment';
 import MoneyIcon from '@mui/icons-material/Money';
 import QrCodeIcon from '@mui/icons-material/QrCode';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -32,8 +27,11 @@ import useXenditPayment from '../hooks/useXenditPayment';
 import usePrintReceipt from '../hooks/usePrintReceipt';
 import useFailedTrxDownload from '../../../utils/failed-trx-download';
 import { getAppConfig, isFeatureEnabled } from '../../../utils/app-config';
+import { fetchPaymentAPI, getPaymentAPIUrl, PRIMARY_BASE_URL, LOCAL_BASE_URL } from '../../../utils/payment-api';
 import { toCurrencyIDR } from '../../../utils/formatter';
 import BQOReceipt from '../reports/BQOReceipt';
+import BQOXenditChannelView from '../components/BQOXenditChannelView';
+import QRCode from 'react-qr-code';
 
 // Env flags
 const USE_XENDIT      = process.env.REACT_APP_USE_XENDIT_PAYMENT === 'Y';
@@ -73,8 +71,8 @@ export default function BQOPayment() {
   const [xenditSaveError,     setXenditSaveError]     = useState(null);
   const [tunaiSaveError,      setTunaiSaveError]      = useState(null);
   const [activeView,          setActiveView]          = useState('choose'); // 'choose'|'tunai'|'xendit-channel'|'xendit-waiting'
-  const [bankList,            setBankList]            = useState([]);
-  const [bankListLoading,     setBankListLoading]     = useState(false);
+  const [isSimulating,        setIsSimulating]        = useState(false);
+  const [simulationSent,      setSimulationSent]      = useState(false);
   const prevUserRef = useRef(null);
 
   const isPaid = paymentStatus === STATUS.PAID;
@@ -83,27 +81,6 @@ export default function BQOPayment() {
   useEffect(() => {
     if (cartItems.length === 0) navigate('/menu');
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // ── Fetch daftar bank untuk Xendit channel ────────────────────────────────
-  useEffect(() => {
-    if (activeView !== 'xendit-channel') return;
-    let active = true;
-    const fetchBanks = async () => {
-      try {
-        setBankListLoading(true);
-        const { default: bbank_api } = await import('../../BBANK/controllers/bbank_api');
-        const res = await bbank_api.getList({
-          offset: 0, limit: 99, usebrwdef: false,
-          listfields: ['cbnkid', 'cinitial', 'cbnkname'],
-          query: { keysearch: { index: 1, search: '' }, textfilter: { search: '' } },
-        });
-        if (active && res.result) setBankList(res.data || []);
-      } catch (_) { /* diam */ }
-      finally { setBankListLoading(false); }
-    };
-    fetchBanks();
-    return () => { active = false; };
-  }, [activeView]);
 
   // ── Print receipt ─────────────────────────────────────────────────────────
   const checkMainServerAfterPrint = useCallback(async () => {
@@ -251,16 +228,55 @@ export default function BQOPayment() {
     onPaymentSuccess: handleXenditSuccess,
   });
 
-  // ── Pilih channel Xendit ──────────────────────────────────────────────────
-  const handleSelectXenditChannel = (bankItem) => {
+  // ── Pilih channel Xendit — channel: { code, name, category } ─────────────
+  const handleSelectXenditChannel = (channel) => {
+    // Buat bankItem format yang kompatibel dengan useXenditPayment
+    const bankItem = {
+      cbnkid:   channel.code,
+      cinitial: channel.code,
+      cbnkname: channel.name,
+    };
     if (!handleCheckIsXenditPayment(bankItem)) {
       ToastBar('error', 'Channel ini tidak didukung Xendit.', 3000);
       return;
     }
-    const label = bankItem.cbnkid || bankItem.cinitial || 'Xendit';
-    setPaymentMethod(label);
+    setPaymentMethod(channel.name || channel.code);
     setActiveView('xendit-waiting');
     handleFetchXenditPayment(bankItem);
+  };
+
+  // ── Simulasi pembayaran (test mode) ───────────────────────────────────────
+  // Dikontrol oleh xendit_show_simulate di public/app.cfg
+  const handleSimulatePayment = async (paymentMethodId) => {
+    if (!paymentMethodId) {
+      ToastBar('error', 'Payment method ID tidak tersedia.', 3000);
+      return;
+    }
+    setSimulationSent(true);
+    setIsSimulating(true);
+    try {
+      const res = await fetchPaymentAPI('/simulate-payment-request.php', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+          payment_method_id: paymentMethodId,
+          amount:            total,
+        }),
+      });
+      const data = await res.json();
+      if (data.status === 'SUCCEEDED' || data.status === 'PAID') {
+        ToastBar('success', 'Simulasi pembayaran berhasil!', 3000);
+        // SSE/polling akan pick up status ini secara otomatis
+      } else {
+        ToastBar('error', 'Simulasi gagal: ' + (data.message || JSON.stringify(data)), 4000);
+        setSimulationSent(false);
+      }
+    } catch (err) {
+      ToastBar('error', 'Gagal menghubungi server simulasi.', 3000);
+      setSimulationSent(false);
+    } finally {
+      setIsSimulating(false);
+    }
   };
 
   // ── Reset & New Order ─────────────────────────────────────────────────────
@@ -379,31 +395,10 @@ export default function BQOPayment() {
   const renderXenditChannelView = () => (
     <Container maxWidth="sm" sx={{ mt: 1 }}>
       {renderSummary()}
-      <Typography variant="body2" fontWeight={600} mb={1}>Pilih Channel Pembayaran:</Typography>
-      {bankListLoading
-        ? <Box textAlign="center"><CircularProgress size={24} /></Box>
-        : bankList.length > 0
-          ? (
-            <List dense>
-              {bankList.map((item, i) => (
-                <ListItem key={i} disablePadding sx={{ bgcolor: i % 2 === 0 ? '#f5f5f5' : '#fff' }}>
-                  <ListItemButton onClick={() => handleSelectXenditChannel(item)}>
-                    <PaymentIcon fontSize="small" sx={{ mr: 1, color: '#3f50b5' }} />
-                    <ListItemText
-                      primary={item.cbnkid || item.cinitial}
-                      secondary={item.cbnkname}
-                    />
-                  </ListItemButton>
-                </ListItem>
-              ))}
-            </List>
-          )
-          : (
-            <Typography variant="body2" color="text.secondary" textAlign="center" py={2}>
-              Tidak ada channel tersedia. Gunakan Tunai.
-            </Typography>
-          )
-      }
+      <BQOXenditChannelView
+        selectedChannel={null}
+        onSelect={handleSelectXenditChannel}
+      />
       <Box mt={1}>
         <Button size="small" onClick={() => setActiveView('choose')}>← Kembali</Button>
       </Box>
@@ -412,76 +407,280 @@ export default function BQOPayment() {
 
   const renderXenditWaitingView = () => {
     const { status, xenditType, paymentResponse } = xenditPaymentInfo;
-    const qrUrl    = paymentResponse?.actions?.find?.(a => a.action === 'generate_qr_code')?.url
-                  || paymentResponse?.qr_string
-                  || null;
+
+    // ── Ekstrak data per tipe pembayaran (mengikuti struktur response Xendit) ──
+    // QRIS — qr_string dari payment_method
+    const qrString =
+      paymentResponse?.payment_method?.qr_code?.channel_properties?.qr_string ||
+      paymentResponse?.qr_string ||
+      null;
+
+    // Virtual Account
+    const vaNumber =
+      paymentResponse?.payment_method?.virtual_account?.channel_properties?.virtual_account_number ||
+      null;
+    const vaExpiry =
+      paymentResponse?.payment_method?.virtual_account?.channel_properties?.expires_at ||
+      null;
+    const vaBank =
+      paymentResponse?.payment_method?.virtual_account?.channel_code ||
+      paymentMethod || '';
+
+    // E-Wallet — ambil URL redirect
+    const ewalletRedirectUrl = (() => {
+      const actions = paymentResponse?.actions || [];
+      const webAction =
+        actions.find((a) => a.action === 'AUTH' && a.url_type === 'WEB') ||
+        actions.find((a) => a.action === 'AUTH') ||
+        actions.find((a) => a.type === 'REDIRECT_CUSTOMER');
+      return webAction?.url ||
+        webAction?.value ||
+        paymentResponse?.payment_method?.ewallet?.channel_properties?.mobile_web_checkout_url ||
+        null;
+    })();
+
+    // Retail Outlet (Alfamart/Indomaret)
+    const otcCode =
+      paymentResponse?.payment_method?.over_the_counter?.channel_properties?.payment_code ||
+      null;
+    const otcExpiry =
+      paymentResponse?.payment_method?.over_the_counter?.channel_properties?.expires_at ||
+      null;
+
+    // Invoice URL (mode invoice)
     const invoiceUrl = paymentResponse?.invoice_url || null;
 
     return (
-      <Container maxWidth="sm" sx={{ mt: 1, textAlign: 'center' }}>
+      <Container maxWidth="sm" sx={{ mt: 1 }}>
         {renderSummary()}
+
+        {/* Error simpan ke backend */}
         {xenditSaveError && (
-          <Alert severity="error" sx={{ mb: 1, textAlign: 'left' }}>
+          <Alert severity="error" sx={{ mb: 1 }}>
             <strong>Gagal menyimpan ke backend.</strong><br />
             {xenditSaveError.message}
             <Box mt={1}>
-              <Button size="small" variant="outlined" onClick={() => executeSave({ payload: failedPayload, isXenditMode: true })}>
+              <Button size="small" variant="outlined"
+                onClick={() => executeSave({ payload: failedPayload, isXenditMode: true })}>
                 Coba Lagi ke {labelPusat}
               </Button>
-              <Button size="small" color="warning" sx={{ ml: 1 }} onClick={() => handleSaveToLocal(failedPayload, true)}>
+              <Button size="small" color="warning" sx={{ ml: 1 }}
+                onClick={() => handleSaveToLocal(failedPayload, true)}>
                 Simpan ke {labelLokal}
               </Button>
             </Box>
           </Alert>
         )}
+
+        {/* Loading saat membuat tagihan */}
         {isLoadingXenditPayment && (
-          <Box py={3}><CircularProgress /><Typography mt={1} variant="body2">Membuat tagihan...</Typography></Box>
+          <Box textAlign="center" py={3}>
+            <CircularProgress />
+            <Typography mt={1} variant="body2">Membuat tagihan...</Typography>
+          </Box>
         )}
+
+        {/* Pending — tampilkan instruksi bayar */}
         {status === 'pending' && !isLoadingXenditPayment && (
-          <Box py={2}>
-            <Typography variant="body1" fontWeight={600} mb={1}>
-              Menunggu pembayaran via {paymentMethod}...
+          <Box>
+            <Typography variant="body1" fontWeight={600} textAlign="center" mb={2}>
+              Menunggu pembayaran via <b>{paymentMethod}</b>
             </Typography>
-            {invoiceUrl && (
+
+            {/* QRIS — render QR code dari string */}
+            {xenditType === 'qris' && (
+              <Box textAlign="center" mb={2}>
+                {qrString ? (
+                  <>
+                    <Typography variant="body2" color="text.secondary" mb={1}>
+                      Scan QR Code di bawah untuk membayar
+                    </Typography>
+                    <Box
+                      display="inline-block"
+                      p={2}
+                      sx={{ border: '2px solid #1976d2', borderRadius: 2, bgcolor: '#fff' }}
+                    >
+                      <QRCode value={qrString} size={180} />
+                    </Box>
+                    <Typography variant="caption" color="text.secondary" display="block" mt={1}>
+                      Gunakan aplikasi mobile banking atau e-wallet apapun yang mendukung QRIS
+                    </Typography>
+                  </>
+                ) : (
+                  <Alert severity="info">
+                    QR string tidak tersedia di test mode. Klik <b>CEK STATUS</b> untuk simulasi.
+                  </Alert>
+                )}
+              </Box>
+            )}
+
+            {/* Virtual Account — tampilkan nomor VA */}
+            {xenditType === 'va' && (
               <Box mb={2}>
-                <Typography variant="body2" mb={1}>Buka link berikut untuk membayar:</Typography>
-                <Button variant="outlined" href={invoiceUrl} target="_blank" rel="noreferrer">
-                  Buka Halaman Pembayaran
+                <Typography variant="body2" color="text.secondary" mb={0.5}>
+                  Transfer ke nomor Virtual Account:
+                </Typography>
+                <Box
+                  sx={{
+                    background: '#e8f5e9', borderRadius: 2, p: 2,
+                    textAlign: 'center', mb: 1,
+                  }}
+                >
+                  <Typography variant="caption" color="text.secondary" display="block">
+                    {vaBank}
+                  </Typography>
+                  <Typography variant="h5" fontWeight="bold" letterSpacing={3} color="success.main">
+                    {vaNumber || '(tidak tersedia di test mode)'}
+                  </Typography>
+                </Box>
+                {vaExpiry && (
+                  <Typography variant="caption" color="text.secondary" display="block">
+                    Berlaku hingga: {new Date(vaExpiry).toLocaleString('id-ID')}
+                  </Typography>
+                )}
+              </Box>
+            )}
+
+            {/* E-Wallet — tombol redirect */}
+            {xenditType === 'ewallet' && (
+              <Box textAlign="center" mb={2}>
+                {ewalletRedirectUrl ? (
+                  <>
+                    <Typography variant="body2" color="text.secondary" mb={1}>
+                      Klik tombol untuk lanjut bayar via {paymentMethod}
+                    </Typography>
+                    <Button
+                      variant="contained" color="success" fullWidth
+                      href={ewalletRedirectUrl} target="_blank" rel="noopener noreferrer"
+                    >
+                      Bayar via {paymentMethod}
+                    </Button>
+                  </>
+                ) : (
+                  <Alert severity="info">
+                    URL redirect tidak tersedia di test mode.
+                  </Alert>
+                )}
+              </Box>
+            )}
+
+            {/* Retail Outlet (Alfamart/Indomaret) */}
+            {xenditType === 'otc' && (
+              <Box mb={2}>
+                <Typography variant="body2" color="text.secondary" mb={0.5}>
+                  Tunjukkan kode ini ke kasir {paymentMethod}:
+                </Typography>
+                <Box
+                  sx={{
+                    background: '#f3e5f5', borderRadius: 2, p: 2,
+                    textAlign: 'center', mb: 1,
+                  }}
+                >
+                  <Typography variant="h4" fontWeight="bold" letterSpacing={4} color="purple">
+                    {otcCode || '(tidak tersedia di test mode)'}
+                  </Typography>
+                </Box>
+                {otcExpiry && (
+                  <Typography variant="caption" color="text.secondary">
+                    Berlaku hingga: {new Date(otcExpiry).toLocaleString('id-ID')}
+                  </Typography>
+                )}
+              </Box>
+            )}
+
+            {/* Invoice URL */}
+            {xenditType === 'invoice' && invoiceUrl && (
+              <Box textAlign="center" mb={2}>
+                <Typography variant="body2" color="text.secondary" mb={1}>
+                  Buka link Xendit untuk memilih metode dan membayar
+                </Typography>
+                <Button
+                  variant="contained" color="primary" fullWidth
+                  href={invoiceUrl} target="_blank" rel="noopener noreferrer"
+                >
+                  Buka Xendit Checkout
                 </Button>
               </Box>
             )}
-            {qrUrl && xenditType === 'qris' && (
-              <Box mb={2}>
-                <Typography variant="body2" mb={1}>Scan QR Code:</Typography>
-                <img src={qrUrl} alt="QR Code" style={{ width: 200, height: 200 }} />
+
+            {/* Cek Status + indikator */}
+            <Box display="flex" alignItems="center" justifyContent="space-between" mt={1}>
+              <Typography variant="caption" color="text.secondary">
+                <span style={{ color: '#4caf50' }}>● Menunggu konfirmasi...</span>
+              </Typography>
+              <Button size="small" startIcon={<RefreshIcon />} onClick={handleCheckXenditStatus}>
+                Cek Status
+              </Button>
+            </Box>
+
+            {/* Tombol Simulasi — hanya tampil jika xendit_show_simulate: true di app.cfg */}
+            {getAppConfig().xendit_show_simulate === true && (
+              <Box mt={2} pt={2} sx={{ borderTop: '1px dashed #e0e0e0' }}>
+                <Typography variant="caption" color="text.secondary" display="block" mb={1}>
+                  🧪 <b>Test Mode</b> — simulasi konfirmasi pembayaran berhasil
+                </Typography>
+                <Button
+                  variant="contained"
+                  color="warning"
+                  size="small"
+                  fullWidth
+                  onClick={() => {
+                    const pmId =
+                      xenditPaymentInfo.paymentResponse?.payment_method?.id ||
+                      xenditPaymentInfo.paymentResponse?.id ||
+                      xenditPaymentInfo.paymentRequestId;
+                    handleSimulatePayment(pmId);
+                  }}
+                  disabled={isSimulating || simulationSent}
+                  startIcon={
+                    (isSimulating || simulationSent)
+                      ? <CircularProgress size={14} color="inherit" />
+                      : null
+                  }
+                >
+                  {isSimulating
+                    ? 'Mengirim simulasi...'
+                    : simulationSent
+                    ? 'Menunggu konfirmasi SSE...'
+                    : '⚡ SIMULASI BAYAR'}
+                </Button>
               </Box>
             )}
-            <Button size="small" startIcon={<RefreshIcon />} onClick={handleCheckXenditStatus} sx={{ mt: 1 }}>
-              Cek Status
-            </Button>
           </Box>
         )}
+
+        {/* Gagal / expired */}
         {status === 'failed' && (
-          <Box py={2}>
-            <Alert severity="error">Pembayaran gagal atau kedaluwarsa.</Alert>
-            <Button sx={{ mt: 2 }} onClick={() => { resetXenditPaymentInfo(); setActiveView('xendit-channel'); }}>
+          <Box py={2} textAlign="center">
+            <Alert severity="error" sx={{ mb: 2 }}>Pembayaran gagal atau kedaluwarsa.</Alert>
+            <Button sx={{ mt: 2 }} onClick={() => { resetXenditPaymentInfo(); setSimulationSent(false); setActiveView('xendit-channel'); }}>
               Pilih Channel Lain
             </Button>
           </Box>
         )}
+
+        {/* Timeout */}
         {status === 'timeout' && (
-          <Box py={2}>
-            <Alert severity="warning">Waktu pembayaran habis.</Alert>
-            <Button sx={{ mt: 2 }} onClick={() => { resetXenditPaymentInfo(); setActiveView('xendit-channel'); }}>
+          <Box py={2} textAlign="center">
+            <Alert severity="warning" sx={{ mb: 2 }}>Waktu pembayaran habis.</Alert>
+            <Button onClick={() => { resetXenditPaymentInfo(); setActiveView('xendit-channel'); }}>
               Coba Lagi
             </Button>
           </Box>
         )}
+
+        {/* Menyimpan transaksi setelah Xendit konfirmasi */}
         {isValidating && (
-          <Box py={2}><CircularProgress /><Typography mt={1} variant="body2">Menyimpan transaksi...</Typography></Box>
+          <Box textAlign="center" py={2}>
+            <CircularProgress size={24} />
+            <Typography mt={1} variant="body2">Menyimpan transaksi...</Typography>
+          </Box>
         )}
-        <Box mt={1}>
-          <Button size="small" onClick={() => { resetXenditPaymentInfo(); setActiveView('choose'); }}>← Kembali</Button>
+
+        <Box mt={2}>
+          <Button size="small" onClick={() => { resetXenditPaymentInfo(); setActiveView('choose'); }}>
+            ← Kembali
+          </Button>
         </Box>
       </Container>
     );
