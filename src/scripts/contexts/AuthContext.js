@@ -52,6 +52,12 @@ function useProvideAuth() {
       const resSessionID = await res.headers.get('sessionid');
       const resJson = await res.json();
       if (resJson.result === true) {
+        // [trenly pattern] Simpan credential untuk fallback login ke server lokal
+        // Hanya aktif jika REACT_APP_API_LOCAL_ENDPOINT di-set
+        if (process.env.REACT_APP_API_LOCAL_ENDPOINT) {
+          window.localStorage.setItem('auth_local_user', data.cuserid);
+          window.localStorage.setItem('auth_local_pass', data.cpassw);
+        }
         if (isForm) {
           window.localStorage.setItem('sessionKey', JSON.stringify(resSessionKey));
           window.localStorage.setItem('sessionID', JSON.stringify(resSessionID));
@@ -103,6 +109,9 @@ function useProvideAuth() {
     setUserID(null);
     setSessionKey(null);
     setSessionID(null);
+    // Bersihkan credential fallback saat logout
+    window.localStorage.removeItem('auth_local_user');
+    window.localStorage.removeItem('auth_local_pass');
     if (typeof cb === 'function') cb();
   };
 

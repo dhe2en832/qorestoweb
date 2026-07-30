@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef, useCallback } from 'react';import { useNavigate } from 'react-router-dom';
 import Container from '@mui/material/Container';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -44,11 +43,22 @@ const STATUS = { PENDING: 'pending', PAID: 'paid' };
 
 export default function BQOPayment() {
   const navigate  = useNavigate();
-  const _appCfg   = getAppConfig();
-  const isLocalServer      = _appCfg.server_mode === 'local';
+
+  // ── Load app.cfg — force reload saat komponen mount ─────────────────────
+  const [appCfg, setAppCfg] = useState(() => getAppConfig());
+  useEffect(() => {
+    // Selalu load ulang saat komponen payment mount — pastikan config terbaru
+    import('../../../utils/app-config').then(({ loadAppConfig }) => {
+      loadAppConfig().then((cfg) => setAppCfg({ ...cfg }));
+    });
+  }, []);
+
+  const isLocalServer      = appCfg.server_mode === 'local';
   const labelPusat         = isLocalServer ? 'Server Ini'   : 'Server Utama';
   const labelLokal         = isLocalServer ? 'Server Utama' : 'Server Lokal';
   const enableFailDownload = isFeatureEnabled('enable_fail_download');
+  const showSimulate = appCfg.xendit_show_simulate === true
+    || process.env.REACT_APP_STATUS === 'development'; // selalu tampil di dev mode
 
   // ── Baca data dari localStorage ──────────────────────────────────────────
   const cart      = JSON.parse(window.localStorage.getItem('QoCart')      || '{}');
@@ -137,26 +147,48 @@ export default function BQOPayment() {
         ToastBar('success', `Pesanan berhasil disimpan: ${bon}`, 3000);
         setPaymentStatus(STATUS.PAID);
       } else if (result.result === false) {
-        const errMsg = result.onfail?.cerror || 'Backend menolak transaksi.';
-        if (isXenditMode) setXenditSaveError({ type: 'backend_reject', message: errMsg });
-        else              setTunaiSaveError({ type: 'backend_reject', message: errMsg });
+        const errMsg    = result.onfail?.cerror || 'Backend menolak transaksi.';
+        const errDetail = result.moreinfo?.Error || '';
+        const fullMsg   = errDetail ? `${errMsg.trim()}\n\n${errDetail.trim()}` : errMsg.trim();
+        if (isXenditMode) setXenditSaveError({ type: 'backend_reject', message: fullMsg });
+        else              setTunaiSaveError({ type: 'backend_reject', message: fullMsg });
       } else {
         throw new Error(result.message || 'Unknown error');
       }
     } catch (err) {
-      // Network error — tawarkan retry atau simpan ke server lokal
       const _isXenditMode = isXenditMode;
-      if (_isXenditMode) setXenditSaveError({ type: 'network_error', message: `${labelPusat} tidak dapat dijangkau.` });
-      else               setTunaiSaveError({ type: 'network_error', message: `${labelPusat} tidak dapat dijangkau.` });
 
+      // [trenly pattern] Auto-retry 1x untuk Xendit — pembayaran sudah terjadi,
+      // kemungkinan gagal karena network hiccup sesaat setelah SSE konfirmasi.
+      if (isXenditMode) {
+        try {
+          await new Promise((r) => setTimeout(r, 2000));
+          const retryResult = await bqo_api.add(payload);
+          if (retryResult.result === true) {
+            const bon = retryResult.onsuccess?.cordernum || retryResult.onsuccess?.csonum || externalId;
+            setNomorBon(bon);
+            ToastBar('success', `Pesanan berhasil disimpan: ${bon}`, 3000);
+            setPaymentStatus(STATUS.PAID);
+            return;
+          }
+          // Auto-retry juga gagal — lanjut ke RETRY UI
+        } catch (_) { /* lanjut ke RETRY UI */ }
+      }
+
+      // Set error state untuk RETRY UI
+      const errMsg = `${labelPusat} tidak dapat dijangkau.`;
+      if (_isXenditMode) setXenditSaveError({ type: 'network_error', message: errMsg });
+      else               setTunaiSaveError({ type: 'network_error', message: errMsg });
+
+      // Tawaran: coba lagi ke pusat atau simpan ke lokal
       setTimeout(() => {
         ConfirmDialog(
           `Gagal Simpan ke ${labelPusat}`,
-          `${labelPusat} tidak dapat dijangkau.\n\nCoba simpan ke ${labelLokal}?`,
-          `Simpan ke ${labelLokal}`,
-          () => handleSaveToLocal(payload, _isXenditMode),
-          'Coba Lagi',
-          () => executeSave({ payload, isXenditMode: _isXenditMode }),
+          `${labelPusat} tidak dapat dijangkau.\n\nApakah Anda ingin mencoba lagi?`,
+          `YA, COBA LAGI KE ${labelPusat.toUpperCase()}`,
+          () => _isXenditMode ? handleXenditRetry() : handleTunaiRetry(),
+          `TIDAK, SIMPAN KE ${labelLokal.toUpperCase()}`,
+          () => _isXenditMode ? handleXenditSaveToLocal() : handleTunaiSaveToLocal(),
         );
       }, 0);
     } finally {
@@ -164,12 +196,31 @@ export default function BQOPayment() {
     }
   };
 
-  // ── Simpan ke server lokal ────────────────────────────────────────────────
-  const handleSaveToLocal = async (payload, isXenditMode = false) => {
+  // ── Rebuild payload dari state saat ini ───────────────────────────────────
+  const buildCurrentPayload = (cbnkid) => ({
+    info: orderInfo,
+    cart: cartItems,
+    paymentInfo: { cbnkid, namount: total },
+    taxAmount,
+    subtotal,
+    total,
+  });
+
+  // ── Tunai: retry ke pusat ─────────────────────────────────────────────────
+  const handleTunaiRetry = async () => {
+    if (isValidating) return;
+    setTunaiSaveError(null);
+    await executeSave({ payload: failedPayload || buildCurrentPayload(CASH_BANK_CODE), isXenditMode: false });
+  };
+
+  // ── Tunai: simpan ke server lokal ─────────────────────────────────────────
+  const handleTunaiSaveToLocal = async () => {
+    if (isValidating) return;
+    const payload = { ...(failedPayload || buildCurrentPayload(CASH_BANK_CODE)), _remark: '[LOCAL-FALLBACK] Gagal rekam ke Pusat' };
+    setTunaiSaveError(null);
     try {
       setIsValidating(true);
-      const localPayload = { ...payload, _remark: '[LOCAL-FALLBACK] Gagal rekam ke Pusat' };
-      const result = await bqo_api.addToLocal(localPayload);
+      const result = await bqo_api.addToLocal(payload);
       if (result.result === true) {
         const bon = result.onsuccess?.cordernum || externalId;
         setNomorBon(bon);
@@ -177,25 +228,53 @@ export default function BQOPayment() {
         setPaymentStatus(STATUS.PAID);
         ToastBar('warning', `Tersimpan di ${labelLokal}: ${bon}. Sync ke ${labelPusat} diperlukan.`, 4000);
       } else {
-        const errMsg = result.onfail?.cerror || 'Gagal ke server lokal juga.';
-        if (isXenditMode) setXenditSaveError({ type: 'backend_reject', message: errMsg });
-        else              setTunaiSaveError({ type: 'backend_reject', message: errMsg });
-        if (enableFailDownload) {
-          AlertDialog('error', 'Kedua Server Gagal',
-            'Unduh data transaksi untuk rekonsiliasi manual?',
-            () => handleDownloadAndComplete('both_servers_failed'));
-        }
+        const errMsg = result.onfail?.cerror || `${labelLokal} menolak transaksi.`;
+        setTunaiSaveError({ type: 'local_reject', message: errMsg });
       }
-    } catch (err) {
-      if (enableFailDownload) {
-        AlertDialog('error', 'Kedua Server Tidak Bisa Dijangkau',
-          'Unduh data transaksi untuk rekonsiliasi manual?',
-          () => handleDownloadAndComplete('network_error'));
-      }
+    } catch (_) {
+      setTunaiSaveError({ type: 'local_unreachable', message: `${labelLokal} juga tidak bisa dijangkau. Catat transaksi secara manual.` });
+      if (enableFailDownload) handleDownloadAndComplete('both_servers_failed');
     } finally {
       setIsValidating(false);
     }
   };
+
+  // ── Xendit: retry ke pusat ────────────────────────────────────────────────
+  const handleXenditRetry = async () => {
+    if (isValidating) return;
+    setXenditSaveError(null);
+    await executeSave({ payload: failedPayload || buildCurrentPayload(XENDIT_BANK_CODE), isXenditMode: true });
+  };
+
+  // ── Xendit: simpan ke server lokal ────────────────────────────────────────
+  const handleXenditSaveToLocal = async () => {
+    if (isValidating) return;
+    const payload = { ...(failedPayload || buildCurrentPayload(XENDIT_BANK_CODE)), _remark: '[LOCAL-FALLBACK] Gagal rekam ke Pusat' };
+    setXenditSaveError(null);
+    try {
+      setIsValidating(true);
+      const result = await bqo_api.addToLocal(payload);
+      if (result.result === true) {
+        const bon = result.onsuccess?.cordernum || externalId;
+        setNomorBon(bon);
+        setIsSavedToLocal(true);
+        setPaymentStatus(STATUS.PAID);
+        ToastBar('warning', `Tersimpan di ${labelLokal}: ${bon}. Sync ke ${labelPusat} diperlukan.`, 4000);
+      } else {
+        const errMsg = result.onfail?.cerror || `${labelLokal} menolak transaksi.`;
+        setXenditSaveError({ type: 'local_reject', message: errMsg });
+      }
+    } catch (_) {
+      setXenditSaveError({ type: 'local_unreachable', message: `${labelLokal} juga tidak bisa dijangkau. Catat transaksi secara manual.` });
+      if (enableFailDownload) handleDownloadAndComplete('both_servers_failed');
+    } finally {
+      setIsValidating(false);
+    }
+  };
+
+  // ── handleSaveToLocal (legacy — tidak lagi dipakai langsung) ─────────────
+  const handleSaveToLocal = (payload, isXenditMode = false) =>
+    isXenditMode ? handleXenditSaveToLocal() : handleTunaiSaveToLocal();
 
   // ── Pembayaran TUNAI ──────────────────────────────────────────────────────
   const handlePayTunai = () => {
@@ -264,9 +343,17 @@ export default function BQOPayment() {
         }),
       });
       const data = await res.json();
-      if (data.status === 'SUCCEEDED' || data.status === 'PAID') {
-        ToastBar('success', 'Simulasi pembayaran berhasil!', 3000);
-        // SSE/polling akan pick up status ini secara otomatis
+      // simulate-payment-request.php mengembalikan berbagai format sukses:
+      // { status: 'SUCCEEDED' } atau { message: '...berhasil...' } atau { success: true }
+      const isSuccess =
+        data.status === 'SUCCEEDED' ||
+        data.status === 'PAID' ||
+        data.success === true ||
+        (typeof data.message === 'string' && data.message.toLowerCase().includes('berhasil'));
+
+      if (isSuccess) {
+        ToastBar('success', 'Simulasi dikirim! Menunggu konfirmasi SSE...', 3000);
+        // SSE/polling akan pick up status SUCCEEDED secara otomatis
       } else {
         ToastBar('error', 'Simulasi gagal: ' + (data.message || JSON.stringify(data)), 4000);
         setSimulationSent(false);
@@ -362,19 +449,44 @@ export default function BQOPayment() {
     <Container maxWidth="sm" sx={{ mt: 1 }}>
       {renderSummary()}
       {tunaiSaveError && (
-        <Alert severity="error" sx={{ mb: 1 }}>
+        <Alert severity={tunaiSaveError.type === 'backend_reject' ? 'error' : 'warning'} sx={{ mb: 1 }}>
+          <strong>Gagal menyimpan pesanan.</strong><br />
           {tunaiSaveError.message}
-          {tunaiSaveError.type === 'backend_reject' && (
-            <Button size="small" onClick={() => executeSave({ payload: failedPayload })} sx={{ ml: 1 }}>
-              Coba Lagi
-            </Button>
-          )}
+          <Box mt={1} display="flex" gap={1} flexWrap="wrap">
+            {tunaiSaveError.type !== 'local_unreachable' && (
+              <Button size="small" variant="outlined" color="warning"
+                onClick={() => ConfirmDialog(
+                  'Coba Lagi Simpan',
+                  `Apakah Anda ingin mencoba lagi ke ${labelPusat}?`,
+                  `YA, COBA LAGI KE ${labelPusat.toUpperCase()}`,
+                  handleTunaiRetry,
+                  `TIDAK, SIMPAN KE ${labelLokal.toUpperCase()}`,
+                  handleTunaiSaveToLocal,
+                )}
+                disabled={isValidating}
+              >
+                {isValidating ? <CircularProgress size={14} /> : `⟳ Coba Lagi ke ${labelPusat}`}
+              </Button>
+            )}
+            {tunaiSaveError.type === 'network_error' && (
+              <Button size="small" variant="outlined" color="secondary"
+                onClick={handleTunaiSaveToLocal} disabled={isValidating}>
+                Simpan ke {labelLokal}
+              </Button>
+            )}
+            {enableFailDownload && ['network_error', 'local_unreachable'].includes(tunaiSaveError.type) && (
+              <Button size="small" variant="outlined" color="error"
+                onClick={() => handleDownloadAndComplete(tunaiSaveError.type)}>
+                ⬇ Unduh Data
+              </Button>
+            )}
+          </Box>
         </Alert>
       )}
       <Box textAlign="center" mt={2}>
         {isValidating
           ? <CircularProgress />
-          : (
+          : !tunaiSaveError && (
             <Button
               variant="contained" color="success" size="large"
               startIcon={<MoneyIcon />}
@@ -456,18 +568,37 @@ export default function BQOPayment() {
 
         {/* Error simpan ke backend */}
         {xenditSaveError && (
-          <Alert severity="error" sx={{ mb: 1 }}>
-            <strong>Gagal menyimpan ke backend.</strong><br />
+          <Alert severity={xenditSaveError.type === 'backend_reject' ? 'error' : 'warning'} sx={{ mb: 1 }}>
+            <strong>Gagal menyimpan pesanan. Pembayaran sudah diterima Xendit.</strong><br />
             {xenditSaveError.message}
-            <Box mt={1}>
-              <Button size="small" variant="outlined"
-                onClick={() => executeSave({ payload: failedPayload, isXenditMode: true })}>
-                Coba Lagi ke {labelPusat}
-              </Button>
-              <Button size="small" color="warning" sx={{ ml: 1 }}
-                onClick={() => handleSaveToLocal(failedPayload, true)}>
-                Simpan ke {labelLokal}
-              </Button>
+            <Box mt={1} display="flex" gap={1} flexWrap="wrap">
+              {xenditSaveError.type !== 'local_unreachable' && (
+                <Button size="small" variant="outlined" color="warning"
+                  onClick={() => ConfirmDialog(
+                    'Coba Lagi Simpan',
+                    `Pembayaran Xendit sudah berhasil. Apakah Anda ingin mencoba simpan ke ${labelPusat}?`,
+                    `YA, COBA LAGI KE ${labelPusat.toUpperCase()}`,
+                    handleXenditRetry,
+                    `TIDAK, SIMPAN KE ${labelLokal.toUpperCase()}`,
+                    handleXenditSaveToLocal,
+                  )}
+                  disabled={isValidating}
+                >
+                  {isValidating ? <CircularProgress size={14} /> : `⟳ Coba Lagi ke ${labelPusat}`}
+                </Button>
+              )}
+              {xenditSaveError.type === 'network_error' && (
+                <Button size="small" variant="outlined" color="secondary"
+                  onClick={handleXenditSaveToLocal} disabled={isValidating}>
+                  Simpan ke {labelLokal}
+                </Button>
+              )}
+              {enableFailDownload && ['network_error', 'local_unreachable'].includes(xenditSaveError.type) && (
+                <Button size="small" variant="outlined" color="error"
+                  onClick={() => handleDownloadAndComplete(xenditSaveError.type)}>
+                  ⬇ Unduh Data
+                </Button>
+              )}
             </Box>
           </Alert>
         )}
@@ -614,7 +745,7 @@ export default function BQOPayment() {
             </Box>
 
             {/* Tombol Simulasi — hanya tampil jika xendit_show_simulate: true di app.cfg */}
-            {getAppConfig().xendit_show_simulate === true && (
+            {showSimulate && (
               <Box mt={2} pt={2} sx={{ borderTop: '1px dashed #e0e0e0' }}>
                 <Typography variant="caption" color="text.secondary" display="block" mb={1}>
                   🧪 <b>Test Mode</b> — simulasi konfirmasi pembayaran berhasil
