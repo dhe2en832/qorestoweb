@@ -30,7 +30,7 @@ import { toCurrencyIDR } from '../../../utils/formatter';
 import ToastBar from '../../../components/ToastBar';
 import bqo_api from '../controllers/bqo_api';
 import usePrintReceipt from '../hooks/usePrintReceipt';
-import BQOReceipt from '../reports/BQOReceipt';
+import BQOOrderSlip from '../reports/BQOOrderSlip';
 
 const TAX_PERCENT = 11;
 export default function BQOCheckout() {
@@ -669,22 +669,18 @@ export default function BQOCheckout() {
         </DialogActions>
       </Dialog>
 
-      {/* Hidden receipt component untuk kasir — rendered tapi tidak terlihat */}
+      {/* Hidden order slip component untuk kasir — rendered tapi tidak terlihat */}
       {kasirResult && (
         <div style={{ display: 'none' }}>
-          <BQOReceipt
+          <BQOOrderSlip
             ref={printComponentRef}
             datas={{
-              cart:          kasirResult.cartItems,
-              orderInfo:     info,
-              subtotal:      kasirResult.subtotal,
-              taxAmount:     kasirResult.taxAmount,
-              total:         kasirResult.total,
-              paymentMethod: 'Bayar di Kasir',
-              nomorBon:      kasirResult.nomorBon,
-              isLocalServer: false,
-              showArchiveCopy: false,
-              isUnrecorded:  false,
+              orderInfo:    info,
+              cart:         kasirResult.cartItems,
+              subtotal:     kasirResult.subtotal,
+              taxAmount:    kasirResult.taxAmount,
+              total:        kasirResult.total,
+              nomorPesanan: kasirResult.nomorBon,
             }}
           />
         </div>
@@ -765,7 +761,7 @@ export default function BQOCheckout() {
             onClick={handlePrint}
             color={printCount > 0 ? 'success' : 'primary'}
           >
-            {printCount > 0 ? `Cetak Ulang (${printCount}×)` : 'Cetak Struk'}
+            {printCount > 0 ? `Cetak Ulang (${printCount}×)` : 'Cetak Tanda Pesanan'}
           </Button>
           <Button
             fullWidth

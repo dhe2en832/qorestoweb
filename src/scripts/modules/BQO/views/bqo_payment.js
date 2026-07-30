@@ -36,9 +36,9 @@ import { toCurrencyIDR } from '../../../utils/formatter';
 import BQOReceipt from '../reports/BQOReceipt';
 
 // Env flags
-const USE_XENDIT     = process.env.REACT_APP_USE_XENDIT_PAYMENT === 'Y';
-const CASH_BANK_CODE = (process.env.REACT_APP_CASH_BANK_CODE  || 'TUNAI').trim();
-const XENDIT_BANK_CODE = (process.env.REACT_APP_XENDIT_BANK_CODE || 'XENDIT').trim();
+const USE_XENDIT      = process.env.REACT_APP_USE_XENDIT_PAYMENT === 'Y';
+const CASH_BANK_CODE  = (process.env.REACT_APP_CASH_BANK_CODE   || 'T000').trim();
+const XENDIT_BANK_CODE = (process.env.REACT_APP_XENDIT_BANK_CODE || 'X000').trim();
 
 const TAX_PERCENT = 11;
 
