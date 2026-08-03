@@ -4,7 +4,68 @@
 
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260803.md [20260803_101418]
+#### 1. docs/changelog/daily/codeChange-20260803.md [20260803_102027]
+**Fungsi:** Implementasi: codeChange-20260803  
+**Perubahan:** Pembaruan kode  
+**Lines:** 7-68, 131, 133-148, 228-240, 254, 268, 275, 278-279
+
+```javascript
+// Line 4:
+- #### 1. docs/changelog/daily/codeChange-20260803.md [20260803_100852]
++ #### 1. docs/changelog/daily/codeChange-20260803.md [20260803_101418]
++ **Fungsi:** Implementasi: codeChange-20260803  
++ **Perubahan:** Pembaruan kode  
++ **Lines:** 5-75, 78, 81-90, 180-191, 193-194, 196-197
++ 
++ ```javascript
++ // Line 2:
++ + ### 📖 Documentation
++ + 
++ + #### 1. docs/changelog/daily/codeChange-20260803.md [20260803_100852]
++ + **Fungsi:** Implementasi: codeChange-20260803  
++ + **Perubahan:** Pembaruan kode  
++ + **Lines:** 1-103
++ + 
++ + ```javascript
++ + // Line 1:
++ + + # Code Changes Summary
++ + + 
++ + + ## 3 Agustus 2026
++ + + 
++ + + ### ⚙️ Config
++ + + 
++ + + #### 1. nv/qorestoweb/.env [20260803_100852]
+  // ... (truncated)
++ // Line 20:
++ +   use_mock_bqo:                  false, // true = pakai data mock (tanpa backend)
++ ```
++ 
++ ---
++ 
++ #### 2. public/app.cfg [20260803_100852]
+// Line 251:
+- #### 2. public/app.cfg.cadangan [20260803_100852]
++ #### 3. public/app.cfg.cadangan [20260803_100852]
+// Line 265:
+- #### 3. src/scripts/utils/app-config.js [20260803_101418]
++ #### 4. rc/scripts/App.js [20260803_102026]
+- **Lines:** 23
+- 
+- ```javascript
+- // Line 20:
+- +   use_mock_bqo:                  false, // true = pakai data mock (tanpa backend)
+- ```
+- - **📖 Documentation:** 1 item
++ - **📖 Documentation:** 2 items
+- - **⚙️ Others:** 3 items
+- - **Total Files Modified:** 10
++ - **⚙️ Others:** 4 items
++ - **Total Files Modified:** 12
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260803.md [20260803_101418]
 **Fungsi:** Implementasi: codeChange-20260803  
 **Perubahan:** Pembaruan kode  
 **Lines:** 5-75, 78, 81-90, 180-191, 193-194, 196-197
@@ -65,7 +126,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260803.md [20260803_100852]
+#### 3. docs/changelog/daily/codeChange-20260803.md [20260803_100852]
 **Fungsi:** Implementasi: codeChange-20260803  
 **Perubahan:** Pembaruan kode  
 **Lines:** 1-103
@@ -225,7 +286,32 @@
 
 ### ⚙️ Others
 
-#### 1. src/scripts/utils/app-config.js [20260803_101418]
+#### 1. src/scripts/App.js [20260803_102027]
+**Fungsi:** Entry point aplikasi React  
+**Perubahan:** Import: react; Tambah state management; Tambah side effect; Import: app-config  
+**Lines:** 1, 11, 19-27
+
+```javascript
+// Line 1:
+- import React, { useRef, lazy, Suspense } from 'react';
++ import React, { useRef, lazy, Suspense, useState, useEffect } from 'react';
+// Line 8:
++ import { loadAppConfig } from './utils/app-config';
+// Line 16:
++   const [configReady, setConfigReady] = useState(false);
++ 
++   // Load app.cfg sekali saat app pertama mount — blok render sampai selesai
++   useEffect(() => {
++     loadAppConfig().finally(() => setConfigReady(true));
++   }, []);
++ 
++   if (!configReady) return <ProgressLoader />;
++ 
+```
+
+---
+
+#### 2. src/scripts/utils/app-config.js [20260803_101418]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 **Lines:** 23
@@ -237,7 +323,7 @@
 
 ---
 
-#### 2. public/app.cfg [20260803_100852]
+#### 3. public/app.cfg [20260803_100852]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 **Lines:** 8-9
@@ -251,7 +337,7 @@
 
 ---
 
-#### 3. public/app.cfg.cadangan [20260803_100852]
+#### 4. public/app.cfg.cadangan [20260803_100852]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 **Lines:** 8-9
@@ -265,16 +351,16 @@
 
 ---
 
-#### 4. rc/scripts/App.js [20260803_102026]
+#### 5. rc/scripts/utils/app-config.js [20260803_103422]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 
 ---
 
 ## 📊 **Summary**
-- **📖 Documentation:** 2 items
+- **📖 Documentation:** 3 items
 - **🔌 API:** 1 item
 - **⚙️ Config:** 5 items
-- **⚙️ Others:** 4 items
-- **Total Files Modified:** 12
+- **⚙️ Others:** 5 items
+- **Total Files Modified:** 14
 - **Main Focus:** ⚙️ Config

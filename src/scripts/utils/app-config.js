@@ -9,8 +9,9 @@
 
 const APP_CONFIG_KEY      = 'qoAppConfig';
 const APP_CONFIG_FILENAME = 'app.cfg';
+const _publicUrl = (process.env.PUBLIC_URL || '/').replace(/\/?$/, '/');
 const APP_CONFIG_ENDPOINT =
-  window.location.origin + (process.env.PUBLIC_URL || '/') + APP_CONFIG_FILENAME;
+  window.location.origin + _publicUrl + APP_CONFIG_FILENAME;
 
 const DEFAULT_CONFIG = {
   enable_fail_download:          false,
