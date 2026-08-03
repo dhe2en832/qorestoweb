@@ -1,21 +1,19 @@
 import Config from '../../../Config';
 import ApiRoute from '../../../routes/ApiRoute';
 import bqo_mock from './bqo_mock';
+import { getAppConfig } from '../../../utils/app-config';
 
 // URL server lokal sebagai fallback. Kosong = fitur lokal tidak aktif.
 const LOCAL_BASE_URL = (process.env.REACT_APP_API_LOCAL_ENDPOINT || '').trim();
 
-// Aktifkan mock hanya saat REACT_APP_USE_MOCK_BQO=Y (development only)
-const USE_MOCK = process.env.REACT_APP_USE_MOCK_BQO === 'Y';
-
 class bqo_api {
   static async fetching(action, data) {
-    // ── MOCK MODE ───────────────────────────────────────────────────────────
-    if (USE_MOCK) {
+    // ── MOCK MODE — dibaca dari app.cfg (runtime, tanpa rebuild) ────────────
+    const useMock = getAppConfig().use_mock_bqo === true;
+    if (useMock) {
       try {
         return await bqo_mock.handle(action, data);
       } catch (error) {
-        // Teruskan error agar perilaku network-error tetap bisa diuji
         return error;
       }
     }

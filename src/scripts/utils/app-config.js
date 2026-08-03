@@ -20,6 +20,7 @@ const DEFAULT_CONFIG = {
   server_label:                  '',
   xendit_payment_timeout_minutes: 5,
   xendit_show_simulate:          false,
+  use_mock_bqo:                  false, // true = pakai data mock (tanpa backend)
 };
 
 let _cachedConfig = null;
