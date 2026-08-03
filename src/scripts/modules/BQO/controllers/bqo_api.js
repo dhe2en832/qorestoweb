@@ -10,6 +10,7 @@ class bqo_api {
   static async fetching(action, data) {
     // ── MOCK MODE — dibaca dari app.cfg (runtime, tanpa rebuild) ────────────
     const useMock = getAppConfig().use_mock_bqo === true;
+    console.log('[bqo_api] useMock:', useMock, '| config:', getAppConfig());
     if (useMock) {
       try {
         return await bqo_mock.handle(action, data);

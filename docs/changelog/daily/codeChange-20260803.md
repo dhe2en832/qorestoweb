@@ -4,7 +4,68 @@
 
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260803.md [20260803_102027]
+#### 1. docs/changelog/daily/codeChange-20260803.md [20260803_103423]
+**Fungsi:** Implementasi: codeChange-20260803  
+**Perubahan:** Tambah state management; Tambah side effect  
+**Lines:** 7-68, 129, 289-314, 326, 340, 354, 361, 364-365
+
+```javascript
+// Line 4:
+- #### 1. docs/changelog/daily/codeChange-20260803.md [20260803_101418]
++ #### 1. docs/changelog/daily/codeChange-20260803.md [20260803_102027]
++ **Fungsi:** Implementasi: codeChange-20260803  
++ **Perubahan:** Pembaruan kode  
++ **Lines:** 7-68, 131, 133-148, 228-240, 254, 268, 275, 278-279
++ 
++ ```javascript
++ // Line 4:
++ - #### 1. docs/changelog/daily/codeChange-20260803.md [20260803_100852]
++ + #### 1. docs/changelog/daily/codeChange-20260803.md [20260803_101418]
++ + **Fungsi:** Implementasi: codeChange-20260803  
++ + **Perubahan:** Pembaruan kode  
++ + **Lines:** 5-75, 78, 81-90, 180-191, 193-194, 196-197
++ + 
++ + ```javascript
++ + // Line 2:
++ + + ### 📖 Documentation
++ + + 
++ + + #### 1. docs/changelog/daily/codeChange-20260803.md [20260803_100852]
++ + + **Fungsi:** Implementasi: codeChange-20260803  
++ + + **Perubahan:** Pembaruan kode  
++ + + **Lines:** 1-103
++ + + 
++ + + ```javascript
+  // ... (truncated)
++ +     loadAppConfig().finally(() => setConfigReady(true));
++ +   }, []);
++ + 
++ +   if (!configReady) return <ProgressLoader />;
++ + 
++ ```
++ 
++ ---
++ 
++ #### 2. src/scripts/utils/app-config.js [20260803_101418]
+// Line 323:
+- #### 2. public/app.cfg [20260803_100852]
++ #### 3. public/app.cfg [20260803_100852]
+// Line 337:
+- #### 3. public/app.cfg.cadangan [20260803_100852]
++ #### 4. public/app.cfg.cadangan [20260803_100852]
+// Line 351:
+- #### 4. rc/scripts/App.js [20260803_102026]
++ #### 5. rc/scripts/utils/app-config.js [20260803_103422]
+- - **📖 Documentation:** 2 items
++ - **📖 Documentation:** 3 items
+- - **⚙️ Others:** 4 items
+- - **Total Files Modified:** 12
++ - **⚙️ Others:** 5 items
++ - **Total Files Modified:** 14
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260803.md [20260803_102027]
 **Fungsi:** Implementasi: codeChange-20260803  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-68, 131, 133-148, 228-240, 254, 268, 275, 278-279
@@ -65,7 +126,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260803.md [20260803_101418]
+#### 3. docs/changelog/daily/codeChange-20260803.md [20260803_101418]
 **Fungsi:** Implementasi: codeChange-20260803  
 **Perubahan:** Pembaruan kode  
 **Lines:** 5-75, 78, 81-90, 180-191, 193-194, 196-197
@@ -126,7 +187,7 @@
 
 ---
 
-#### 3. docs/changelog/daily/codeChange-20260803.md [20260803_100852]
+#### 4. docs/changelog/daily/codeChange-20260803.md [20260803_100852]
 **Fungsi:** Implementasi: codeChange-20260803  
 **Perubahan:** Pembaruan kode  
 **Lines:** 1-103
@@ -210,6 +271,12 @@
 
 ---
 
+#### 2. rc/scripts/modules/BQO/controllers/bqo_api.js [20260803_104119]
+**Fungsi:** Modul: bqo_api  
+**Perubahan:** Pembaruan kode  
+
+---
+
 ### ⚙️ Config
 
 #### 1. env/qorestoweb/.env [20260803_100852]
@@ -286,7 +353,21 @@
 
 ### ⚙️ Others
 
-#### 1. src/scripts/App.js [20260803_102027]
+#### 1. src/scripts/utils/app-config.js [20260803_103423]
+**Fungsi:** Entry point aplikasi React  
+**Perubahan:** Tambah fungsi: _publicUrl  
+**Lines:** 12, 14
+
+```javascript
+// Line 9:
++ const _publicUrl = (process.env.PUBLIC_URL || '/').replace(/\/?$/, '/');
+-   window.location.origin + (process.env.PUBLIC_URL || '/') + APP_CONFIG_FILENAME;
++   window.location.origin + _publicUrl + APP_CONFIG_FILENAME;
+```
+
+---
+
+#### 2. src/scripts/App.js [20260803_102027]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Import: react; Tambah state management; Tambah side effect; Import: app-config  
 **Lines:** 1, 11, 19-27
@@ -311,7 +392,7 @@
 
 ---
 
-#### 2. src/scripts/utils/app-config.js [20260803_101418]
+#### 3. src/scripts/utils/app-config.js [20260803_101418]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 **Lines:** 23
@@ -323,7 +404,7 @@
 
 ---
 
-#### 3. public/app.cfg [20260803_100852]
+#### 4. public/app.cfg [20260803_100852]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 **Lines:** 8-9
@@ -337,7 +418,7 @@
 
 ---
 
-#### 4. public/app.cfg.cadangan [20260803_100852]
+#### 5. public/app.cfg.cadangan [20260803_100852]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 **Lines:** 8-9
@@ -351,16 +432,10 @@
 
 ---
 
-#### 5. rc/scripts/utils/app-config.js [20260803_103422]
-**Fungsi:** Entry point aplikasi React  
-**Perubahan:** Pembaruan kode  
-
----
-
 ## 📊 **Summary**
-- **📖 Documentation:** 3 items
-- **🔌 API:** 1 item
+- **📖 Documentation:** 4 items
+- **🔌 API:** 2 items
 - **⚙️ Config:** 5 items
 - **⚙️ Others:** 5 items
-- **Total Files Modified:** 14
+- **Total Files Modified:** 16
 - **Main Focus:** ⚙️ Config
