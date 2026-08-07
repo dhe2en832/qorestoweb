@@ -94,56 +94,68 @@ export default function BQOHome() {
 
   /**
    * getDatas — ambil menu dari bstock_x.
-   * Coba usebrwdef:true dulu (mengikuti pola trenly).
-   * Jika response punya columns → data berformat array, map pakai index kolom.
-   * Jika tidak punya columns → data berformat object {key:value}, map langsung.
+   * Coba usebrwdef:true dulu — data berformat array of arrays sesuai columns brwdef.
+   * Fallback ke usebrwdef:false jika brwdef gagal.
    */
   async function getDatas() {
-    const useBrwRef = { current: true };
-
-    // Pertama coba dengan usebrwdef: true
+    // Coba brwdef dulu
     let res = await bqo_api.getListBrwdef({});
+    let useBrwDef = !!(res?.result && res?.columns?.length > 0 && Array.isArray(res?.data?.[0]));
 
-    // Jika brwdef gagal atau tidak return columns, fallback ke usebrwdef: false
-    if (!res || !res.result || !res.data || res.data.length === 0) {
+    if (!useBrwDef) {
+      // Fallback ke non-brwdef
       res = await bqo_api.getList({});
-      useBrwRef.current = false;
     }
 
     if (!res || !res.result || !res.data) return null;
 
     let datas;
 
-    if (useBrwRef.current && res.columns && res.columns.length > 0) {
-      // ── Format brwdef: data adalah array of arrays ────────────────────────
-      // Buat map dari title kolom → index
-      const colMap = {};
-      res.columns.forEach((col, idx) => {
-        const key = (col.field || col.title || '').toLowerCase().trim();
-        colMap[key] = idx;
-      });
-
-      const get = (row, field) => {
-        const idx = colMap[field.toLowerCase()];
-        return idx !== undefined ? row[idx] : undefined;
+    if (useBrwDef) {
+      // ── Format brwdef: array of arrays ───────────────────────────────────
+      // Mapping berdasarkan title kolom dari response
+      const cols = res.columns; // [{ title, alignment, width }]
+      const findIdx = (keywords) => {
+        const idx = cols.findIndex((c) =>
+          keywords.some((k) => (c.title || '').toLowerCase().includes(k))
+        );
+        return idx >= 0 ? idx : -1;
       };
 
-      datas = res.data.map((row) => ({
-        id:        String(get(row, 'cstocode') || '').trim(),
-        name:      String(get(row, 'cstoname') || '').trim(),
-        desc:      String(get(row, 'cstoname2') || get(row, 'cnotes1') || '').trim(),
-        price:     String(parseFloat(get(row, 'nhrgjua') || 0)),
-        sellPrice: String(parseFloat(get(row, 'nhrgjua') || 0)),
-        category:  String(get(row, 'cfamcode') || 'UMUM').trim(),
-        picture:   null,
-        cstocode:  String(get(row, 'cstocode') || '').trim(),
-        cstoname:  String(get(row, 'cstoname') || '').trim(),
-        nhrgjua:   parseFloat(get(row, 'nhrgjua') || 0),
-        csatuan:   String(get(row, 'csatuan') || 'PCS').trim(),
-        ndisc:     parseFloat(get(row, 'ndisc') || 0),
-      }));
+      const idxKey      = 0; // key selalu index 0
+      const idxName     = findIdx(['nama item', 'nama', 'cstoname']);
+      const idxSatuan   = findIdx(['sat', 'satuan', 'uom']);
+      const idxHarga    = findIdx(['harga jual', 'harga', 'price']);
+      const idxKodeItem = findIdx(['kode item', 'kode', 'cstocode']);
+
+      const parseHarga = (val) => {
+        if (!val) return 0;
+        // Format bisa "37,500" atau "37500" atau number
+        return parseFloat(String(val).replace(/,/g, ''));
+      };
+
+      datas = res.data.map((row) => {
+        const cstocode = String(row[idxKodeItem >= 0 ? idxKodeItem : idxKey] || '').trim();
+        const cstoname = String(row[idxName >= 0 ? idxName : 1] || '').trim();
+        const nhrgjua  = parseHarga(row[idxHarga >= 0 ? idxHarga : 4]);
+        const csatuan  = String(row[idxSatuan >= 0 ? idxSatuan : 3] || 'PCS').trim();
+        return {
+          id:        cstocode,
+          name:      cstoname,
+          desc:      '',
+          price:     String(nhrgjua),
+          sellPrice: String(nhrgjua),
+          category:  'UMUM', // brwdef tidak sertakan cfamcode — pakai default
+          picture:   null,
+          cstocode,
+          cstoname,
+          nhrgjua,
+          csatuan,
+          ndisc: 0,
+        };
+      });
     } else {
-      // ── Format non-brwdef: data adalah array of objects ───────────────────
+      // ── Format non-brwdef: array of objects ───────────────────────────────
       datas = res.data.map((item) => ({
         id:        (item.cstocode || '').trim(),
         name:      (item.cstoname || '').trim(),
@@ -160,7 +172,6 @@ export default function BQOHome() {
       }));
     }
 
-    // Bangun kategori unik dari cfamcode
     const catMap = {};
     catMap['all']    = { id: 'all',    label: 'Semua' };
     catMap['promos'] = { id: 'promos', label: '🏷️ Promo' };

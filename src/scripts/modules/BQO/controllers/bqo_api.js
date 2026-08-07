@@ -61,8 +61,8 @@ class bqo_api {
   }
 
   /**
-   * getList — ambil katalog menu dari bstock_x.
-   * Coba brwdef dulu, fallback ke listfields jika brwdef tidak tersedia.
+   * getList — ambil katalog menu dari bstock_x dengan usebrwdef:false.
+   * Response: array of objects {cstocode, cstoname, nhrgjua, ...}
    */
   static getList(data) {
     return this.fetchStock('getlist', {
@@ -81,8 +81,8 @@ class bqo_api {
 
   /**
    * getListBrwdef — ambil katalog menu dengan usebrwdef:true.
-   * Response: { result, columns:[...], data:[[...]] } — format array
-   * Dipakai di bqo_home.js sebagai fallback ke tampilan kolom dinamis.
+   * Response: { columns:[{title,...}], data:[[...]] } — format array of arrays
+   * Dipakai sebagai primary fetch di bqo_home.js, fallback ke getList jika gagal.
    */
   static getListBrwdef(data) {
     return this.fetchStock('getlist', {
