@@ -4,7 +4,22 @@
 
 ### ✨ Features
 
-#### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260807_152307]
+#### 1. src/scripts/modules/BQO/views/bqo_payment.js [20260807_152704]
+**Fungsi:** Modul: bqo_payment  
+**Perubahan:** Import: Config  
+**Lines:** 23
+
+```javascript
+// Line 20:
++ import Config from '../../../Config';
+// Line 41:
+- import Config from '../../../Config';
+- 
+```
+
+---
+
+#### 2. src/scripts/modules/BQO/views/bqo_checkout.js [20260807_152307]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Tambah fungsi: BQO_DEFAULT_CUSTOMER; Tambah fungsi: CASH_BANK_CODE  
 **Lines:** 44-49, 362-365, 368-370, 373
@@ -37,7 +52,7 @@
 
 ---
 
-#### 2. src/scripts/modules/BQO/views/bqo_payment.js [20260807_152307]
+#### 3. src/scripts/modules/BQO/views/bqo_payment.js [20260807_152307]
 **Fungsi:** Modul: bqo_payment  
 **Perubahan:** Tambah fungsi: BQO_DEFAULT_CUSTOMER; Import: Config  
 **Lines:** 40-46, 164
@@ -58,7 +73,7 @@
 
 ---
 
-#### 3. src/scripts/modules/BQO/views/bqo_home.js [20260807_150216]
+#### 4. src/scripts/modules/BQO/views/bqo_home.js [20260807_150216]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Import: LinearProgress; Import: Skeleton; Tambah state management  
 **Lines:** 19-20, 96, 198, 205, 215, 217, 237, 239, 430-435, 461-480
@@ -111,7 +126,7 @@
 
 ---
 
-#### 4. src/scripts/modules/BQO/views/bqo_checkout.js [20260807_145524]
+#### 5. src/scripts/modules/BQO/views/bqo_checkout.js [20260807_145524]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Import: MenuItem; Import: Config; Tambah state management; Tambah fungsi: fetchOccupiedTables; Tambah error handling; Tambah fungsi: status; Tambah side effect  
 **Lines:** 16, 35, 37-43, 134-175, 300-303, 540, 543, 547-570, 618, 854
@@ -172,7 +187,7 @@
 
 ---
 
-#### 5. src/scripts/modules/BQO/views/bqo_home.js [20260807_143952]
+#### 6. src/scripts/modules/BQO/views/bqo_home.js [20260807_143952]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Pembaruan kode  
 **Lines:** 461-466, 611, 613
@@ -194,7 +209,7 @@
 
 ---
 
-#### 6. src/scripts/modules/BQO/views/bqo_home.js [20260807_143143]
+#### 7. src/scripts/modules/BQO/views/bqo_home.js [20260807_143143]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Tambah fungsi: findIdx; Tambah fungsi: parseNum  
 **Lines:** 96-100, 103, 107, 109-179
@@ -255,7 +270,7 @@
 
 ---
 
-#### 7. src/scripts/modules/BQO/views/bqo_home.js [20260807_142211]
+#### 8. src/scripts/modules/BQO/views/bqo_home.js [20260807_142211]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Pembaruan kode  
 **Lines:** 96-98, 101, 104-117
@@ -316,7 +331,7 @@
 
 ---
 
-#### 8. src/scripts/modules/BQO/views/bqo_home.js [20260807_140514]
+#### 9. src/scripts/modules/BQO/views/bqo_home.js [20260807_140514]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Tambah fungsi: findIdx; Tambah fungsi: parseHarga  
 **Lines:** 97-98, 101, 103, 105-106, 114-129, 131-134, 137-156, 158
@@ -377,7 +392,7 @@
 
 ---
 
-#### 9. src/scripts/modules/BQO/views/bqo_home.js [20260807_135032]
+#### 10. src/scripts/modules/BQO/views/bqo_home.js [20260807_135032]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Tambah fungsi: key; Tambah fungsi: get  
 **Lines:** 96-99, 102-112, 115-161
@@ -438,7 +453,7 @@
 
 ---
 
-#### 10. src/scripts/modules/BQO/views/bqo_home.js [20260807_133241]
+#### 11. src/scripts/modules/BQO/views/bqo_home.js [20260807_133241]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Pembaruan kode  
 **Lines:** 112, 122, 125, 161
@@ -463,7 +478,7 @@
 
 ---
 
-#### 11. src/scripts/modules/BQO/views/bqo_home.js [20260807_131834]
+#### 12. src/scripts/modules/BQO/views/bqo_home.js [20260807_131834]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Pembaruan kode  
 **Lines:** 112-114, 124, 126-129, 132, 165
@@ -492,7 +507,7 @@
 
 ---
 
-#### 12. src/scripts/modules/BQO/controllers/bqo_mock.js [20260807_114122]
+#### 13. src/scripts/modules/BQO/controllers/bqo_mock.js [20260807_114122]
 **Fungsi:** Modul: bqo_mock  
 **Perubahan:** Hapus debug log  
 **Lines:** 130, 133-143, 146-147, 154-160, 164-166
@@ -543,7 +558,7 @@
 
 ---
 
-#### 13. src/scripts/modules/BQO/views/bqo_checkout.js [20260807_114122]
+#### 14. src/scripts/modules/BQO/views/bqo_checkout.js [20260807_114122]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Tambah fungsi: pad  
 **Lines:** 273-315
@@ -600,7 +615,7 @@
 
 ---
 
-#### 14. src/scripts/modules/BQO/views/bqo_home.js [20260807_114122]
+#### 15. src/scripts/modules/BQO/views/bqo_home.js [20260807_114122]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Pembaruan kode  
 **Lines:** 95-99, 101-132
@@ -652,7 +667,7 @@
 
 ---
 
-#### 15. src/scripts/modules/BQO/views/bqo_payment.js [20260807_114122]
+#### 16. src/scripts/modules/BQO/views/bqo_payment.js [20260807_114122]
 **Fungsi:** Modul: bqo_payment  
 **Perubahan:** Tambah fungsi: buildPayload; Tambah fungsi: pad; Tambah fungsi: buildCurrentPayload  
 **Lines:** 125-170, 237-238
@@ -713,15 +728,182 @@
 
 ---
 
-#### 16. rc/scripts/modules/BQO/views/bqo_payment.js [20260807_152701]
+#### 17. src/scripts/modules/BQO/views/bqo_checkout.js [20260807_160437]
+**Fungsi:** Halaman checkout & submit order  
+**Perubahan:** Tambah fungsi: TAX_RATE_STR; Tambah fungsi: BQO_DEFAULT_WHSE  
+**Lines:** 36-43, 48, 50, 363, 366-370, 373-374, 378
+
+```javascript
+// Line 32:
+- import Config from '../../../Config';
+- // Pajak — mengikuti pola webcsa-v2 (trenly):
+- //   BASE_TAX_PERCENTAGE × EFFECTIVE_TAX_RATE = pajak efektif yang dibebankan
+- //   Default: 12% × (11/12) = 11%  (PMK 131 Tahun 2024)
+- const TAX_PERCENT = Config.BASE_TAX_PERCENTAGE * Config.EFFECTIVE_TAX_RATE;
++ // Pajak — BASE_TAX × EFFECTIVE_RATE dari env (pola webcsa-v2)
++ // Contoh: 12 × (11/12) = 11%
++ const TAX_BASE = parseFloat(process.env.REACT_APP_TAX_BASE || '12');
++ const TAX_RATE_STR = (process.env.REACT_APP_TAX_EFFECTIVE_RATE || '11/12').trim();
++ const TAX_RATE = TAX_RATE_STR.includes('/')
++   ? eval(TAX_RATE_STR) // "11/12" → 0.9166...
++   : parseFloat(TAX_RATE_STR);
++ const TAX_PERCENT = TAX_BASE * TAX_RATE; // 12 * (11/12) = 11
+- // Customer ID default untuk walk-in / self-order BQO (wajib ada di backend)
++ // Customer ID dan Warehouse ID default — baca langsung dari env
++ const BQO_DEFAULT_WHSE     = (process.env.REACT_APP_BQO_DEFAULT_WHSE     || '').trim();
+// Line 360:
+-         headerInfo: {
++         qoHeaderInfo: {
+-           ccusid:   BQO_DEFAULT_CUSTOMER,          // Customer ID dari env (walk-in/umum)
+-           ctabid:   info.seatNumber  || '',         // Nomor Meja
+-           cremark:  info.orderByName || '',         // Nama pemesan
+-           cnotelp:  info.phoneNumber || '',         // No telepon
++           ccusid:   BQO_DEFAULT_CUSTOMER,          // dari env REACT_APP_BQO_DEFAULT_CUSTOMER
++           cwhseid:  BQO_DEFAULT_WHSE,              // dari env REACT_APP_BQO_DEFAULT_WHSE
++           ctabid:   info.seatNumber  || '',        // Nomor Meja
++           cremark:  info.orderByName || '',        // Nama pemesan
++           cnotelp:  info.phoneNumber || '',        // No telepon
+-           namount:  subtotal,                       // Total sebelum pajak
+-           cbnkid:   CASH_BANK_CODE,                 // Kode bank tunai dari env
++           namount:  subtotal,                      // Total sebelum pajak
++           cbnkid:   CASH_BANK_CODE,                // dari env REACT_APP_CASH_BANK_CODE
+-         paymentInfo: { cbnkid: CASH_BANK_CODE, namount: total }, // bayar di kasir = total
++         paymentInfo: { cbnkid: CASH_BANK_CODE, namount: total },
+```
+
+---
+
+#### 18. src/scripts/modules/BQO/views/bqo_home.js [20260807_160437]
+**Fungsi:** Halaman utama / dashboard  
+**Perubahan:** Import: Config  
+**Lines:** 35, 101-104, 107
+
+```javascript
+// Line 32:
++ import Config from '../../../Config';
+// Line 98:
+-    * Mode dikontrol via env:
+-    *   REACT_APP_MENU_USE_BRWDEF=Y → usebrwdef:true, response array of arrays
+-    *   REACT_APP_MENU_USE_BRWDEF=N → usebrwdef:false, response array of objects (cfamcode tersedia)
+-    *   REACT_APP_MENU_GETIMAGE=Y   → request gambar dari server
++    * Mode dikontrol via Config.USE_BRWDEF (true/false di Config.js):
++    *   true  → usebrwdef:true, response array of arrays
++    *   false → usebrwdef:false, response array of objects (cfamcode tersedia)
++    *   REACT_APP_MENU_GETIMAGE=Y → request gambar dari server
+-     const useBrwDef = process.env.REACT_APP_MENU_USE_BRWDEF === 'Y';
++     const useBrwDef = Config.USE_BRWDEF;
+```
+
+---
+
+#### 19. src/scripts/modules/BQO/views/bqo_payment.js [20260807_160437]
 **Fungsi:** Modul: bqo_payment  
-**Perubahan:** Pembaruan kode  
+**Perubahan:** Tambah fungsi: BQO_DEFAULT_WHSE; Tambah fungsi: TAX_RATE_STR  
+**Lines:** 40, 42, 44-51, 137-139, 167, 170-171, 173-174, 177
+
+```javascript
+// Line 20:
+- import Config from '../../../Config';
+// Line 37:
+- // Customer ID default untuk walk-in / self-order BQO (wajib ada di backend)
++ // Customer ID dan Warehouse ID default — baca langsung dari env
++ const BQO_DEFAULT_WHSE     = (process.env.REACT_APP_BQO_DEFAULT_WHSE     || '').trim();
+- // Pajak — mengikuti pola webcsa-v2 (trenly): BASE_TAX_PERCENTAGE × EFFECTIVE_TAX_RATE
+- const TAX_PERCENT = Config.BASE_TAX_PERCENTAGE * Config.EFFECTIVE_TAX_RATE;
++ // Pajak — BASE_TAX × EFFECTIVE_RATE dari env (pola webcsa-v2)
++ // Contoh: 12 × (11/12) = 11%
++ const TAX_BASE = parseFloat(process.env.REACT_APP_TAX_BASE || '12');
++ const TAX_RATE_STR = (process.env.REACT_APP_TAX_EFFECTIVE_RATE || '11/12').trim();
++ const TAX_RATE = TAX_RATE_STR.includes('/')
++   ? eval(TAX_RATE_STR) // "11/12" → 0.9166...
++   : parseFloat(TAX_RATE_STR);
++ const TAX_PERCENT = TAX_BASE * TAX_RATE; // 12 * (11/12) = 11
+// Line 134:
+-   //   Header: DQODATE, CTABID, CWHSEID, CREMARK, NPCTPPN, NAMOUNT, CBNKID
+-   //   Item:   NLINE, CSTOCODE, CSTONAME, NQQO, CUOM, NHRGJUA, NDISC, NRPDISC
++   //   qoHeaderInfo: DQODATE, CCUSID, CWHSEID, CTABID, CREMARK, NPCTPPN, NAMOUNT, CBNKID
++   //   lineItemsInfo: NLINE, CSTOCODE, CSTONAME, NQQO, CUOM, NHRGJUA, NDISC, NRPDISC
++   //   paymentInfo: CBNKID, NAMOUNT
+// Line 164:
+-       headerInfo: {
++       qoHeaderInfo: {
+-         ccusid:   BQO_DEFAULT_CUSTOMER,          // Customer ID dari env (walk-in/umum)
++         ccusid:   BQO_DEFAULT_CUSTOMER,          // dari env REACT_APP_BQO_DEFAULT_CUSTOMER
++         cwhseid:  BQO_DEFAULT_WHSE,              // dari env REACT_APP_BQO_DEFAULT_WHSE
+-         cremark:  orderInfo.orderByName || '',   // Nama pemesan sebagai keterangan
+-         cnotelp:  orderInfo.phoneNumber || '',   // No telepon (jika backend support)
++         cremark:  orderInfo.orderByName || '',   // Nama pemesan
++         cnotelp:  orderInfo.phoneNumber || '',   // No telepon
+-         namount:  subtotal,                       // Total sebelum pajak
++         namount:  subtotal,                      // Total sebelum pajak
+```
 
 ---
 
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260807.md [20260807_152307]
+#### 1. docs/changelog/daily/codeChange-20260807.md [20260807_152704]
+**Fungsi:** Implementasi: codeChange-20260807  
+**Perubahan:** Tambah state management  
+**Lines:** 7-61, 114, 175, 197, 258, 319, 380, 441, 466, 495, 546, 603, 655, 716-718, 722-727, 730-735, 737-768, 770-780, 785, 846, 907, 968, 1029, 1090, 1151, 1212, 1273, 1334, 1395, 1456, 1517, 1839-1854, 1869, 1925-1926, 1930
+
+```javascript
+// Line 4:
+- #### 1. src/scripts/modules/BQO/views/bqo_home.js [20260807_150216]
++ #### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260807_152307]
++ **Fungsi:** Halaman checkout & submit order  
++ **Perubahan:** Tambah fungsi: BQO_DEFAULT_CUSTOMER; Tambah fungsi: CASH_BANK_CODE  
++ **Lines:** 44-49, 362-365, 368-370, 373
++ 
++ ```javascript
++ // Line 41:
++ + 
++ + // Customer ID default untuk walk-in / self-order BQO (wajib ada di backend)
++ + const BQO_DEFAULT_CUSTOMER = (process.env.REACT_APP_BQO_DEFAULT_CUSTOMER || 'UMUM').trim();
++ + 
++ + // Kode bank per metode pembayaran — harus sama dengan yang dikonfigurasi di master BBANK
++ + const CASH_BANK_CODE = (process.env.REACT_APP_CASH_BANK_CODE || 'T000').trim();
++ // Line 359:
++ -           ctabid:   info.seatNumber  || '',   // Nomor Meja
++ -           cremark:  info.orderByName || '',   // Nama pemesan
++ -           cnotelp:  info.phoneNumber || '',   // No telepon
++ +           ccusid:   BQO_DEFAULT_CUSTOMER,          // Customer ID dari env (walk-in/umum)
++ +           ctabid:   info.seatNumber  || '',         // Nomor Meja
++ +           cremark:  info.orderByName || '',         // Nama pemesan
++ +           cnotelp:  info.phoneNumber || '',         // No telepon
++ -           namount:  subtotal,                  // Total sebelum pajak
++ -           cbnkid:   '',                        // Kosong = bayar di kasir
+  // ... (truncated)
++ + # ── Customer Default BQO ─────────────────────────────────────────────────────
++ + # Customer ID untuk transaksi walk-in / self-order (field ccusid wajib di backend)
++ + REACT_APP_BQO_DEFAULT_CUSTOMER=UMUM
++ + 
++ ```
++ 
++ ---
++ 
++ #### 2. env/qorestoweb/.env [20260807_145524]
+// Line 1866:
+- #### 2. env/qorestoweb/.env [20260807_142211]
++ #### 3. env/qorestoweb/.env [20260807_142211]
+// Line 1888:
+- #### 3. nv/qorestoweb/.env [20260807_152303]
+- **Fungsi:** Implementasi: .env  
+- **Perubahan:** Ubah konfigurasi environment / API endpoint  
+- 
+- 
+// Line 1922:
+- - **✨ Features:** 15 items
+- - **📖 Documentation:** 13 items
++ - **✨ Features:** 16 items
++ - **📖 Documentation:** 14 items
+- - **Total Files Modified:** 42
++ - **Total Files Modified:** 44
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260807.md [20260807_152307]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Tambah state management  
 **Lines:** 7-60, 121, 143, 204, 265, 326, 387, 412, 441, 492, 549, 601, 662-712, 718-779, 840, 901, 962, 1023, 1084, 1145, 1206, 1267, 1328, 1389, 1450, 1809-1814, 1849-1850, 1852, 1854
@@ -782,7 +964,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260807.md [20260807_150216]
+#### 3. docs/changelog/daily/codeChange-20260807.md [20260807_150216]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Tambah state management; Tambah error handling  
 **Lines:** 7-68, 90, 151, 212, 273, 334, 359, 388, 439, 496, 548, 609-620, 623-628, 630-643, 645-647, 649-673, 678, 739, 800, 861, 922, 983, 1044, 1105, 1166, 1227, 1288, 1331-1360, 1394, 1414, 1467, 1508, 1523, 1584, 1597, 1608-1613, 1616-1619, 1625, 1649, 1667-1679, 1681-1682, 1686
@@ -843,7 +1025,7 @@
 
 ---
 
-#### 3. docs/changelog/daily/codeChange-20260807.md [20260807_145524]
+#### 4. docs/changelog/daily/codeChange-20260807.md [20260807_145524]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Tambah state management; Tambah error handling  
 **Lines:** 7-29, 90, 151, 212, 273, 298, 327, 378, 435, 487, 548-605, 611-672, 733, 794, 855, 916, 977, 1038, 1099, 1160, 1221, 1512-1540, 1565-1570, 1586-1603, 1605-1610
@@ -904,7 +1086,7 @@
 
 ---
 
-#### 4. docs/changelog/daily/codeChange-20260807.md [20260807_143952]
+#### 5. docs/changelog/daily/codeChange-20260807.md [20260807_143952]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-68, 129, 190, 251, 276, 305, 356, 413, 465, 526, 534-595, 656, 717, 778, 839, 900, 961, 1022, 1083, 1414-1415, 1419
@@ -965,7 +1147,7 @@
 
 ---
 
-#### 5. docs/changelog/daily/codeChange-20260807.md [20260807_143143]
+#### 6. docs/changelog/daily/codeChange-20260807.md [20260807_143143]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-68, 129, 190, 215, 244, 295, 352, 404, 465, 468-476, 479-503, 505-529, 534, 595, 656, 717, 778, 839, 900, 961, 1004-1038, 1058, 1111, 1152, 1167, 1228, 1241, 1254, 1257-1272, 1292-1293, 1297
@@ -1026,7 +1208,7 @@
 
 ---
 
-#### 6. docs/changelog/daily/codeChange-20260807.md [20260807_142211]
+#### 7. docs/changelog/daily/codeChange-20260807.md [20260807_142211]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-68, 129, 154, 183, 234, 291, 343, 404, 406-407, 410-419, 421-434, 436-444, 446-460, 467-528, 589, 650, 711, 772, 833, 894, 937-957, 1010, 1051, 1066, 1127, 1140, 1151, 1154-1189, 1209-1212, 1214
@@ -1087,7 +1269,7 @@
 
 ---
 
-#### 7. docs/changelog/daily/codeChange-20260807.md [20260807_140514]
+#### 8. docs/changelog/daily/codeChange-20260807.md [20260807_140514]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-68, 93, 122, 173, 230, 282, 343, 345-346, 349-373, 375-399, 406-467, 528, 589, 650, 711, 772, 815-868, 909, 924, 985, 998, 1009, 1031-1033, 1035
@@ -1148,7 +1330,7 @@
 
 ---
 
-#### 8. docs/changelog/daily/codeChange-20260807.md [20260807_135032]
+#### 9. docs/changelog/daily/codeChange-20260807.md [20260807_135032]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-32, 61, 112, 169, 221, 282, 284-285, 288-338, 345-406, 467, 528, 589, 650, 693-734, 749, 810, 823, 834, 856-858, 860
@@ -1209,7 +1391,7 @@
 
 ---
 
-#### 9. docs/changelog/daily/codeChange-20260807.md [20260807_133241]
+#### 10. docs/changelog/daily/codeChange-20260807.md [20260807_133241]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-36, 87, 144, 196, 257, 260, 264-277, 284-345, 406, 467, 528, 571-586, 647, 660, 671, 693-695, 697
@@ -1270,7 +1452,7 @@
 
 ---
 
-#### 10. docs/changelog/daily/codeChange-20260807.md [20260807_131834]
+#### 11. docs/changelog/daily/codeChange-20260807.md [20260807_131834]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 228-256, 259-320, 381, 442, 570-575, 592-594, 596
@@ -1331,7 +1513,7 @@
 
 ---
 
-#### 11. docs/changelog/daily/codeChange-20260807.md [20260807_130318]
+#### 12. docs/changelog/daily/codeChange-20260807.md [20260807_130318]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Tambah error handling  
 **Lines:** 7, 58, 115, 167, 230-291, 352, 395-456, 469, 497, 500
@@ -1392,7 +1574,7 @@
 
 ---
 
-#### 12. docs/changelog/daily/codeChange-20260807.md [20260807_114122]
+#### 13. docs/changelog/daily/codeChange-20260807.md [20260807_114122]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 5-227, 230-291, 334-347, 358, 380-382, 384-385
@@ -1453,7 +1635,7 @@
 
 ---
 
-#### 13. docs/changelog/daily/codeChange-20260807.md [20260807_084349]
+#### 14. docs/changelog/daily/codeChange-20260807.md [20260807_084349]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 5-47, 50, 61-66, 69, 72-78, 83-84, 86
@@ -1514,7 +1696,7 @@
 
 ---
 
-#### 14. docs/changelog/daily/codeChange-20260807.md [20260807_083315]
+#### 15. docs/changelog/daily/codeChange-20260807.md [20260807_083315]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 1-30
@@ -1834,6 +2016,62 @@
 
 ---
 
+#### 10. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_160437]
+**Fungsi:** Modul: bqo_api  
+**Perubahan:** Pembaruan kode  
+**Lines:** 15-17, 69-70, 76, 88-89, 106
+
+```javascript
+// Line 12:
+- // Kontrol dari env — bisa di-set per environment tanpa rebuild bqo_api
+- const MENU_USE_BRWDEF = process.env.REACT_APP_MENU_USE_BRWDEF === 'Y';
+- const MENU_GETIMAGE   = process.env.REACT_APP_MENU_GETIMAGE   === 'Y';
++ // usebrwdef dikontrol via Config.USE_BRWDEF (bukan env — konsisten dengan webcsa-v2)
++ // getimage dikontrol via env REACT_APP_MENU_GETIMAGE
++ const MENU_GETIMAGE = process.env.REACT_APP_MENU_GETIMAGE === 'Y';
+// Line 66:
+-    * usebrwdef dan getimage dikontrol via env:
+-    *   REACT_APP_MENU_USE_BRWDEF: Y/N
+-    *   REACT_APP_MENU_GETIMAGE:   Y/N
++    * usebrwdef : Config.USE_BRWDEF (true/false di Config.js)
++    * getimage  : REACT_APP_MENU_GETIMAGE env (Y/N)
+-       usebrwdef:  MENU_USE_BRWDEF,
++       usebrwdef:  Config.USE_BRWDEF,
+// Line 85:
+-    * getListBrwdef — alias dengan usebrwdef:true paksa.
+-    * Dipakai jika ingin eksplisit pakai brwdef terlepas dari env.
+-    */
+-   static getListBrwdef(data) {
+-     return this.fetchStock('getlist', {
+-       offset:     0,
+-       limit:      999,
+-       usebrwdef:  true,
+-       listfields: MENU_LISTFIELDS,
+-       query: {
+-         freefilter: { search: '!LDISCONT' },
+-         textfilter: { search: '' },
+-       },
+-       getimage: MENU_GETIMAGE,
+-       ...data,
+-     });
+-   }
+- 
+-   /**
+-    * getActiveOrders — ambil list pesanan aktif dari bqo_x.
+-    * Dipakai untuk cek meja mana yang sudah terisi (ctabid occupied).
+-    * Hanya ambil field minimal: cqonum, ctabid, cstatus.
++    * add — simpan pesanan ke bqo_x.
++    * Payload: { qoHeaderInfo, lineItemsInfo, paymentInfo }
+// Line 103:
+-    * Payload mengikuti pola trenly bjual_x add:
+-    *   headerInfo: info pesanan (meja, nama, telepon, tanggal, dll)
+-    *   lineItemsInfo: detail item (cstocode, cstoname, cuom, nqjual, nhrgjua, namtjua, ndisc, nrpdisc)
+-    *   paymentInfo: { cbnkid, namount }
++    * Payload: { qoHeaderInfo, lineItemsInfo, paymentInfo }
+```
+
+---
+
 ### ⚙️ Config
 
 #### 1. env/qorestoweb/.env [20260807_152307]
@@ -1888,6 +2126,12 @@
 
 ---
 
+#### 4. nv/qorestoweb/.env [20260807_160437]
+**Fungsi:** Implementasi: .env  
+**Perubahan:** Ubah konfigurasi environment / API endpoint  
+
+---
+
 ### ⚙️ Others
 
 #### 1. src/scripts/Config.js [20260807_145524]
@@ -1921,11 +2165,28 @@
 
 ---
 
+#### 3. src/scripts/Config.js [20260807_160437]
+**Fungsi:** Konfigurasi aplikasi (base URL, konstanta)  
+**Perubahan:** Pembaruan kode  
+
+```javascript
+// Line 13:
+- 
+-   // Pajak/PPN — mengikuti pola webcsa-v2 (trenly):
+-   //   BASE_TAX_PERCENTAGE: rate dasar (12% sesuai UU HPP)
+-   //   EFFECTIVE_TAX_RATE : DPP Nilai Lain per PMK 131/2024 (11/12)
+-   //   Pajak efektif yang dibebankan ke pelanggan = 12 * (11/12) = 11%
+-   BASE_TAX_PERCENTAGE: 12,
+-   EFFECTIVE_TAX_RATE: 11 / 12,   // PMK 131 Tahun 2024
+```
+
+---
+
 ## 📊 **Summary**
-- **✨ Features:** 16 items
-- **📖 Documentation:** 14 items
-- **🔌 API:** 9 items
-- **⚙️ Config:** 3 items
-- **⚙️ Others:** 2 items
-- **Total Files Modified:** 44
+- **✨ Features:** 19 items
+- **📖 Documentation:** 15 items
+- **🔌 API:** 10 items
+- **⚙️ Config:** 4 items
+- **⚙️ Others:** 3 items
+- **Total Files Modified:** 51
 - **Main Focus:** Features

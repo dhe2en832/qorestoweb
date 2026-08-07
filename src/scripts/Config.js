@@ -13,13 +13,6 @@ const Config = {
   TIME_POST_FORMAT: 'HH:mm:ss',
   IDLE_TIMEOUT: 86400000,
   USE_BRWDEF: true,
-
-  // Pajak/PPN — mengikuti pola webcsa-v2 (trenly):
-  //   BASE_TAX_PERCENTAGE: rate dasar (12% sesuai UU HPP)
-  //   EFFECTIVE_TAX_RATE : DPP Nilai Lain per PMK 131/2024 (11/12)
-  //   Pajak efektif yang dibebankan ke pelanggan = 12 * (11/12) = 11%
-  BASE_TAX_PERCENTAGE: 12,
-  EFFECTIVE_TAX_RATE: 11 / 12,   // PMK 131 Tahun 2024
 };
 
 export default Config;

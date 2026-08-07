@@ -20,7 +20,6 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import ToastBar from '../../../components/ToastBar';
 import AlertDialog from '../../../components/AlertDialog';
 import ConfirmDialog from '../../../components/ConfirmDialog';
-import Config from '../../../Config';
 
 import bqo_api from '../controllers/bqo_api';
 import useXenditPayment from '../hooks/useXenditPayment';
@@ -38,11 +37,18 @@ const USE_XENDIT      = process.env.REACT_APP_USE_XENDIT_PAYMENT === 'Y';
 const CASH_BANK_CODE  = (process.env.REACT_APP_CASH_BANK_CODE   || 'T000').trim();
 const XENDIT_BANK_CODE = (process.env.REACT_APP_XENDIT_BANK_CODE || 'X000').trim();
 
-// Customer ID default untuk walk-in / self-order BQO (wajib ada di backend)
+// Customer ID dan Warehouse ID default — baca langsung dari env
 const BQO_DEFAULT_CUSTOMER = (process.env.REACT_APP_BQO_DEFAULT_CUSTOMER || 'UMUM').trim();
+const BQO_DEFAULT_WHSE     = (process.env.REACT_APP_BQO_DEFAULT_WHSE     || '').trim();
 
-// Pajak — mengikuti pola webcsa-v2 (trenly): BASE_TAX_PERCENTAGE × EFFECTIVE_TAX_RATE
-const TAX_PERCENT = Config.BASE_TAX_PERCENTAGE * Config.EFFECTIVE_TAX_RATE;
+// Pajak — BASE_TAX × EFFECTIVE_RATE dari env (pola webcsa-v2)
+// Contoh: 12 × (11/12) = 11%
+const TAX_BASE = parseFloat(process.env.REACT_APP_TAX_BASE || '12');
+const TAX_RATE_STR = (process.env.REACT_APP_TAX_EFFECTIVE_RATE || '11/12').trim();
+const TAX_RATE = TAX_RATE_STR.includes('/')
+  ? eval(TAX_RATE_STR) // "11/12" → 0.9166...
+  : parseFloat(TAX_RATE_STR);
+const TAX_PERCENT = TAX_BASE * TAX_RATE; // 12 * (11/12) = 11
 
 const STATUS = { PENDING: 'pending', PAID: 'paid' };
 
@@ -128,8 +134,9 @@ export default function BQOPayment() {
 
   // ── Build payload ─────────────────────────────────────────────────────────
   // Field sesuai dokumentasi BQO:
-  //   Header: DQODATE, CTABID, CWHSEID, CREMARK, NPCTPPN, NAMOUNT, CBNKID
-  //   Item:   NLINE, CSTOCODE, CSTONAME, NQQO, CUOM, NHRGJUA, NDISC, NRPDISC
+  //   qoHeaderInfo: DQODATE, CCUSID, CWHSEID, CTABID, CREMARK, NPCTPPN, NAMOUNT, CBNKID
+  //   lineItemsInfo: NLINE, CSTOCODE, CSTONAME, NQQO, CUOM, NHRGJUA, NDISC, NRPDISC
+  //   paymentInfo: CBNKID, NAMOUNT
   const buildPayload = (cbnkid) => {
     const today   = new Date();
     const pad     = (n) => String(n).padStart(2, '0');
@@ -157,16 +164,17 @@ export default function BQOPayment() {
 
     // NAMOUNT = total nilai order sebelum pajak (sesuai deskripsi field)
     return {
-      headerInfo: {
+      qoHeaderInfo: {
         dqodate,
         ctime,
-        ccusid:   BQO_DEFAULT_CUSTOMER,          // Customer ID dari env (walk-in/umum)
+        ccusid:   BQO_DEFAULT_CUSTOMER,          // dari env REACT_APP_BQO_DEFAULT_CUSTOMER
+        cwhseid:  BQO_DEFAULT_WHSE,              // dari env REACT_APP_BQO_DEFAULT_WHSE
         ctabid:   orderInfo.seatNumber  || '',   // Nomor Meja
-        cremark:  orderInfo.orderByName || '',   // Nama pemesan sebagai keterangan
-        cnotelp:  orderInfo.phoneNumber || '',   // No telepon (jika backend support)
+        cremark:  orderInfo.orderByName || '',   // Nama pemesan
+        cnotelp:  orderInfo.phoneNumber || '',   // No telepon
         npctdisc: 0,
         npctppn:  TAX_PERCENT,
-        namount:  subtotal,                       // Total sebelum pajak
+        namount:  subtotal,                      // Total sebelum pajak
         cbnkid,
         cpaytype: cbnkid ? '' : '',              // kosong = Cash
       },

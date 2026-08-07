@@ -12,9 +12,9 @@ const MENU_LISTFIELDS = [
   'cfamcode', 'cprocod', 'csatuan', 'cnotes1',
 ];
 
-// Kontrol dari env — bisa di-set per environment tanpa rebuild bqo_api
-const MENU_USE_BRWDEF = process.env.REACT_APP_MENU_USE_BRWDEF === 'Y';
-const MENU_GETIMAGE   = process.env.REACT_APP_MENU_GETIMAGE   === 'Y';
+// usebrwdef dikontrol via Config.USE_BRWDEF (bukan env — konsisten dengan webcsa-v2)
+// getimage dikontrol via env REACT_APP_MENU_GETIMAGE
+const MENU_GETIMAGE = process.env.REACT_APP_MENU_GETIMAGE === 'Y';
 
 class bqo_api {
   // ── Mock mode check ──────────────────────────────────────────────────────
@@ -66,15 +66,14 @@ class bqo_api {
 
   /**
    * getList — ambil katalog menu dari bstock_x.
-   * usebrwdef dan getimage dikontrol via env:
-   *   REACT_APP_MENU_USE_BRWDEF: Y/N
-   *   REACT_APP_MENU_GETIMAGE:   Y/N
+   * usebrwdef : Config.USE_BRWDEF (true/false di Config.js)
+   * getimage  : REACT_APP_MENU_GETIMAGE env (Y/N)
    */
   static getList(data) {
     return this.fetchStock('getlist', {
       offset:     0,
       limit:      999,
-      usebrwdef:  MENU_USE_BRWDEF,
+      usebrwdef:  Config.USE_BRWDEF,
       listfields: MENU_LISTFIELDS,
       query: {
         freefilter: { search: '!LDISCONT' },
@@ -86,28 +85,8 @@ class bqo_api {
   }
 
   /**
-   * getListBrwdef — alias dengan usebrwdef:true paksa.
-   * Dipakai jika ingin eksplisit pakai brwdef terlepas dari env.
-   */
-  static getListBrwdef(data) {
-    return this.fetchStock('getlist', {
-      offset:     0,
-      limit:      999,
-      usebrwdef:  true,
-      listfields: MENU_LISTFIELDS,
-      query: {
-        freefilter: { search: '!LDISCONT' },
-        textfilter: { search: '' },
-      },
-      getimage: MENU_GETIMAGE,
-      ...data,
-    });
-  }
-
-  /**
-   * getActiveOrders — ambil list pesanan aktif dari bqo_x.
-   * Dipakai untuk cek meja mana yang sudah terisi (ctabid occupied).
-   * Hanya ambil field minimal: cqonum, ctabid, cstatus.
+   * add — simpan pesanan ke bqo_x.
+   * Payload: { qoHeaderInfo, lineItemsInfo, paymentInfo }
    */
   static getActiveOrders() {
     return this.fetching('getlist', {
@@ -124,10 +103,7 @@ class bqo_api {
 
   /**
    * add — simpan pesanan ke bqo_x.
-   * Payload mengikuti pola trenly bjual_x add:
-   *   headerInfo: info pesanan (meja, nama, telepon, tanggal, dll)
-   *   lineItemsInfo: detail item (cstocode, cstoname, cuom, nqjual, nhrgjua, namtjua, ndisc, nrpdisc)
-   *   paymentInfo: { cbnkid, namount }
+   * Payload: { qoHeaderInfo, lineItemsInfo, paymentInfo }
    */
   static add(data) {
     return this.fetching('add', data);

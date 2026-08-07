@@ -32,18 +32,22 @@ import ToastBar from '../../../components/ToastBar';
 import bqo_api from '../controllers/bqo_api';
 import usePrintReceipt from '../hooks/usePrintReceipt';
 import BQOOrderSlip from '../reports/BQOOrderSlip';
-import Config from '../../../Config';
 
-// Pajak — mengikuti pola webcsa-v2 (trenly):
-//   BASE_TAX_PERCENTAGE × EFFECTIVE_TAX_RATE = pajak efektif yang dibebankan
-//   Default: 12% × (11/12) = 11%  (PMK 131 Tahun 2024)
-const TAX_PERCENT = Config.BASE_TAX_PERCENTAGE * Config.EFFECTIVE_TAX_RATE;
+// Pajak — BASE_TAX × EFFECTIVE_RATE dari env (pola webcsa-v2)
+// Contoh: 12 × (11/12) = 11%
+const TAX_BASE = parseFloat(process.env.REACT_APP_TAX_BASE || '12');
+const TAX_RATE_STR = (process.env.REACT_APP_TAX_EFFECTIVE_RATE || '11/12').trim();
+const TAX_RATE = TAX_RATE_STR.includes('/')
+  ? eval(TAX_RATE_STR) // "11/12" → 0.9166...
+  : parseFloat(TAX_RATE_STR);
+const TAX_PERCENT = TAX_BASE * TAX_RATE; // 12 * (11/12) = 11
 
 // Jumlah meja dari env
 const TABLE_COUNT = parseInt(process.env.REACT_APP_TABLE_COUNT || '10', 10);
 
-// Customer ID default untuk walk-in / self-order BQO (wajib ada di backend)
+// Customer ID dan Warehouse ID default — baca langsung dari env
 const BQO_DEFAULT_CUSTOMER = (process.env.REACT_APP_BQO_DEFAULT_CUSTOMER || 'UMUM').trim();
+const BQO_DEFAULT_WHSE     = (process.env.REACT_APP_BQO_DEFAULT_WHSE     || '').trim();
 
 // Kode bank per metode pembayaran — harus sama dengan yang dikonfigurasi di master BBANK
 const CASH_BANK_CODE = (process.env.REACT_APP_CASH_BANK_CODE || 'T000').trim();
@@ -356,21 +360,22 @@ export default function BQOCheckout() {
       });
 
       const payload = {
-        headerInfo: {
+        qoHeaderInfo: {
           dqodate,
           ctime,
-          ccusid:   BQO_DEFAULT_CUSTOMER,          // Customer ID dari env (walk-in/umum)
-          ctabid:   info.seatNumber  || '',         // Nomor Meja
-          cremark:  info.orderByName || '',         // Nama pemesan
-          cnotelp:  info.phoneNumber || '',         // No telepon
+          ccusid:   BQO_DEFAULT_CUSTOMER,          // dari env REACT_APP_BQO_DEFAULT_CUSTOMER
+          cwhseid:  BQO_DEFAULT_WHSE,              // dari env REACT_APP_BQO_DEFAULT_WHSE
+          ctabid:   info.seatNumber  || '',        // Nomor Meja
+          cremark:  info.orderByName || '',        // Nama pemesan
+          cnotelp:  info.phoneNumber || '',        // No telepon
           npctdisc: 0,
           npctppn:  TAX_PERCENT,
-          namount:  subtotal,                       // Total sebelum pajak
-          cbnkid:   CASH_BANK_CODE,                 // Kode bank tunai dari env
+          namount:  subtotal,                      // Total sebelum pajak
+          cbnkid:   CASH_BANK_CODE,                // dari env REACT_APP_CASH_BANK_CODE
           cpaytype: '',
         },
         lineItemsInfo,
-        paymentInfo: { cbnkid: CASH_BANK_CODE, namount: total }, // bayar di kasir = total
+        paymentInfo: { cbnkid: CASH_BANK_CODE, namount: total },
       };
 
       const result = await bqo_api.add(payload);

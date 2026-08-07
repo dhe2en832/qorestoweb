@@ -32,6 +32,7 @@ import Placeholder from '../../../../images/placeholder.png';
 import useResponsive from '../../../hooks/useResponsive';
 import { toCurrencyIDR } from '../../../utils/formatter';
 import bqo_api from '../controllers/bqo_api';
+import Config from '../../../Config';
 
 export default function BQOHome() {
   const { smUp } = useResponsive();
@@ -97,13 +98,13 @@ export default function BQOHome() {
 
   /**
    * getDatas — ambil menu dari bstock_x.
-   * Mode dikontrol via env:
-   *   REACT_APP_MENU_USE_BRWDEF=Y → usebrwdef:true, response array of arrays
-   *   REACT_APP_MENU_USE_BRWDEF=N → usebrwdef:false, response array of objects (cfamcode tersedia)
-   *   REACT_APP_MENU_GETIMAGE=Y   → request gambar dari server
+   * Mode dikontrol via Config.USE_BRWDEF (true/false di Config.js):
+   *   true  → usebrwdef:true, response array of arrays
+   *   false → usebrwdef:false, response array of objects (cfamcode tersedia)
+   *   REACT_APP_MENU_GETIMAGE=Y → request gambar dari server
    */
   async function getDatas() {
-    const useBrwDef = process.env.REACT_APP_MENU_USE_BRWDEF === 'Y';
+    const useBrwDef = Config.USE_BRWDEF;
     const res = await bqo_api.getList({});
     if (!res || !res.result || !res.data) return null;
 
