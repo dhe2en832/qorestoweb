@@ -13,6 +13,7 @@ import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
+import MenuItem from '@mui/material/MenuItem';
 import CircularProgress from '@mui/material/CircularProgress';
 import NoteIcon from '@mui/icons-material/NoteAltOutlined';
 import EditIcon from '@mui/icons-material/Edit';
@@ -31,8 +32,15 @@ import ToastBar from '../../../components/ToastBar';
 import bqo_api from '../controllers/bqo_api';
 import usePrintReceipt from '../hooks/usePrintReceipt';
 import BQOOrderSlip from '../reports/BQOOrderSlip';
+import Config from '../../../Config';
 
-const TAX_PERCENT = 11;
+// Pajak — mengikuti pola webcsa-v2 (trenly):
+//   BASE_TAX_PERCENTAGE × EFFECTIVE_TAX_RATE = pajak efektif yang dibebankan
+//   Default: 12% × (11/12) = 11%  (PMK 131 Tahun 2024)
+const TAX_PERCENT = Config.BASE_TAX_PERCENTAGE * Config.EFFECTIVE_TAX_RATE;
+
+// Jumlah meja dari env
+const TABLE_COUNT = parseInt(process.env.REACT_APP_TABLE_COUNT || '10', 10);
 export default function BQOCheckout() {
   const { smUp } = useResponsive();
   const navigate = useNavigate();
@@ -122,6 +130,48 @@ export default function BQOCheckout() {
       [event.target.name]: event.target.value,
     });
   };
+
+  // Daftar meja: status tersedia / terisi
+  // occupiedTables: Set dari ctabid yang sedang ada pesanan aktif
+  const [occupiedTables, setOccupiedTables] = useState(new Set());
+  const [loadingTables, setLoadingTables] = useState(false);
+
+  const fetchOccupiedTables = async () => {
+    setLoadingTables(true);
+    try {
+      const res = await bqo_api.getActiveOrders();
+      if (res && res.result && Array.isArray(res.data)) {
+        // Status pesanan yang dianggap "masih aktif" (meja masih terisi)
+        // Sesuaikan dengan status yang dipakai di backend BQO
+        const ACTIVE_STATUSES = ['O', 'P', 'open', 'pending', 'OPEN', 'PENDING'];
+        const occupied = new Set(
+          res.data
+            .filter((order) => {
+              const status = (order.cstatus || '').trim().toUpperCase();
+              return ACTIVE_STATUSES.some((s) => s.toUpperCase() === status) || status === '';
+            })
+            .map((order) => String(order.ctabid || '').trim())
+            .filter(Boolean)
+        );
+        setOccupiedTables(occupied);
+      }
+    } catch (_) {
+      // Gagal fetch — semua meja dianggap tersedia, tidak blokir
+    } finally {
+      setLoadingTables(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOccupiedTables();
+  }, []);
+
+  // Generate daftar nomor meja 1..TABLE_COUNT
+  const tableOptions = Array.from({ length: TABLE_COUNT }, (_, i) => {
+    const num = String(i + 1);
+    const isOccupied = occupiedTables.has(num);
+    return { value: num, label: `Meja ${num}`, occupied: isOccupied };
+  });
 
   // Cart
   const [cart, setCart] = useState(JSON.parse(window.localStorage.getItem('QoCart')) || {});
@@ -245,6 +295,10 @@ export default function BQOCheckout() {
   const handleOnCheckout = () => {
     if (info.seatNumber === '') {
       showValidation('Nomor Meja');
+      return;
+    }
+    if (occupiedTables.has(info.seatNumber)) {
+      ToastBar('error', `Meja ${info.seatNumber} sedang terisi. Pilih meja lain.`, 4000);
       return;
     }
     if (info.orderByName === '') {
@@ -483,13 +537,37 @@ export default function BQOCheckout() {
           <Grid container spacing={1} px={1} pb={3} borderTop="1px solid #ddd">
             <Grid item xs={12}>
               <TextField
+                select
                 size="small"
                 variant="standard"
-                label="No. Meja"
+                label={loadingTables ? 'Memuat meja...' : 'No. Meja'}
                 name="seatNumber"
                 value={info.seatNumber}
                 onChange={handleChangeInfo}
-              />
+                disabled={loadingTables}
+                helperText={
+                  info.seatNumber && occupiedTables.has(info.seatNumber)
+                    ? '⚠️ Meja ini sedang terisi. Pilih meja lain.'
+                    : ''
+                }
+                FormHelperTextProps={{ sx: { color: 'warning.main' } }}
+                sx={{ minWidth: 160 }}
+              >
+                <MenuItem value="" disabled>
+                  <em>— Pilih Nomor Meja —</em>
+                </MenuItem>
+                {tableOptions.map((opt) => (
+                  <MenuItem
+                    key={opt.value}
+                    value={opt.value}
+                    disabled={opt.occupied}
+                    sx={opt.occupied ? { color: '#aaa' } : {}}
+                  >
+                    {opt.label}
+                    {opt.occupied ? ' (Terisi)' : ''}
+                  </MenuItem>
+                ))}
+              </TextField>
             </Grid>
             <Grid item xs={12}>
               <TextField
@@ -537,7 +615,7 @@ export default function BQOCheckout() {
           <Grid container justifyContent="space-between" borderTop="1px solid #ddd">
             <Grid item>
               <Typography variant="body2" component="h2" py={2}>
-                Pajak
+                Pajak ({TAX_PERCENT}%)
               </Typography>
             </Grid>
             <Grid item>
@@ -773,7 +851,7 @@ export default function BQOCheckout() {
             <Typography variant="caption">Rp {toCurrencyIDR(kasirResult?.subtotal || 0)}</Typography>
           </Grid>
           <Grid container justifyContent="space-between">
-            <Typography variant="caption" color="text.secondary">Pajak (11%)</Typography>
+            <Typography variant="caption" color="text.secondary">Pajak ({TAX_PERCENT}%)</Typography>
             <Typography variant="caption">Rp {toCurrencyIDR(kasirResult?.taxAmount || 0)}</Typography>
           </Grid>
           <Grid container justifyContent="space-between" mt={0.3}>

@@ -105,6 +105,24 @@ class bqo_api {
   }
 
   /**
+   * getActiveOrders — ambil list pesanan aktif dari bqo_x.
+   * Dipakai untuk cek meja mana yang sudah terisi (ctabid occupied).
+   * Hanya ambil field minimal: cqonum, ctabid, cstatus.
+   */
+  static getActiveOrders() {
+    return this.fetching('getlist', {
+      offset:     0,
+      limit:      999,
+      usebrwdef:  false,
+      listfields: ['cqonum', 'ctabid', 'cstatus', 'cremark'],
+      query: {
+        freefilter: { search: '' },
+        textfilter: { search: '' },
+      },
+    });
+  }
+
+  /**
    * add — simpan pesanan ke bqo_x.
    * Payload mengikuti pola trenly bjual_x add:
    *   headerInfo: info pesanan (meja, nama, telepon, tanggal, dll)
