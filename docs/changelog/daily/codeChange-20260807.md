@@ -964,7 +964,68 @@
 
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260807.md [20260807_161320]
+#### 1. docs/changelog/daily/codeChange-20260807.md [20260807_162431]
+**Fungsi:** Implementasi: codeChange-20260807  
+**Perubahan:** Pembaruan kode  
+**Lines:** 7-129, 174, 197, 241, 256, 289, 310, 363, 424, 446, 507, 568, 629, 690, 715, 744, 795, 852, 904, 965, 967-968, 970, 973-997, 999-1023, 1028, 1089, 1150, 1211, 1272, 1333, 1394, 1455, 1516, 1577, 1638, 1699, 1760, 1821, 1882, 1943, 2400-2405, 2458, 2460, 2462
+
+```javascript
+// Line 4:
+- #### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260807_160440]
++ #### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260807_161320]
++ **Fungsi:** Halaman checkout & submit order  
++ **Perubahan:** Pembaruan kode  
++ **Lines:** 341, 343, 351-353, 356-358, 360-366, 375, 377, 379-403
++ 
++ ```javascript
++ // Line 338:
++ +       const externalId = String(+today).substring(0, 10); // timestamp 10 char untuk referensi
++ -       // Field sesuai dokumentasi BQO (Header + BITMQO)
++ +       // Field sesuai dokumentasi BQO draft.4
++ // Line 348:
++ +           cgroup:   '',
++ +           ctime:    '',
++ +           crefnote: 'ONLINE',
++ -           csize:    '-',
++ +           csize:    '',
++ +           cloc:     '',
++ +           ncqo:     '',
++ -           cuom:     (d.item?.csatuan || d.item?.cuom || 'PCS').trim(),
++ -           nhrgjua,
++ -           ndisc:    discPct,
++ -           nrpdisc,
++ +           cuom:     (d.item?.csatuan || d.item?.cuom || '').trim(),
+  // ... (truncated)
+- #### 13. docs/changelog/daily/codeChange-20260807.md [20260807_130318]
++ #### 14. docs/changelog/daily/codeChange-20260807.md [20260807_130318]
+// Line 1818:
+- #### 14. docs/changelog/daily/codeChange-20260807.md [20260807_114122]
++ #### 15. docs/changelog/daily/codeChange-20260807.md [20260807_114122]
+// Line 1879:
+- #### 15. docs/changelog/daily/codeChange-20260807.md [20260807_084349]
++ #### 16. docs/changelog/daily/codeChange-20260807.md [20260807_084349]
+// Line 1940:
+- #### 16. docs/changelog/daily/codeChange-20260807.md [20260807_083315]
++ #### 17. docs/changelog/daily/codeChange-20260807.md [20260807_083315]
+// Line 2397:
++ #### 5. nv/qorestoweb/.env [20260807_162427]
++ **Fungsi:** Implementasi: .env  
++ **Perubahan:** Ubah konfigurasi environment / API endpoint  
++ 
++ ---
++ 
+// Line 2455:
+- - **📖 Documentation:** 16 items
++ - **📖 Documentation:** 17 items
+- - **⚙️ Config:** 4 items
++ - **⚙️ Config:** 5 items
+- - **Total Files Modified:** 54
++ - **Total Files Modified:** 56
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260807.md [20260807_161320]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-119, 134, 167, 188, 241, 302, 324, 385, 446, 507, 568, 593, 622, 673, 730, 782, 843, 845, 849-852, 855-905, 910-915, 918-968, 973, 1034, 1095, 1156, 1217, 1278, 1339, 1400, 1461, 1522, 1583, 1644, 1705, 1766, 1827, 1870-1926, 1955, 1989, 2009, 2062, 2103, 2118, 2179, 2192, 2203-2208, 2211-2227, 2232, 2247, 2262, 2284, 2286-2288, 2290-2301, 2303, 2321, 2335-2336, 2340
@@ -1025,7 +1086,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260807.md [20260807_160440]
+#### 3. docs/changelog/daily/codeChange-20260807.md [20260807_160440]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-22, 55, 76, 129, 190, 212, 273, 334, 395, 456, 481, 510, 561, 618, 670, 731-799, 801-839, 845-906, 967, 1028, 1089, 1150, 1211, 1272, 1333, 1394, 1455, 1516, 1577, 1638, 1699, 2019-2074, 2129-2134, 2168-2184, 2186-2191
@@ -1086,7 +1147,7 @@
 
 ---
 
-#### 3. docs/changelog/daily/codeChange-20260807.md [20260807_152704]
+#### 4. docs/changelog/daily/codeChange-20260807.md [20260807_152704]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Tambah state management  
 **Lines:** 7-61, 114, 175, 197, 258, 319, 380, 441, 466, 495, 546, 603, 655, 716-718, 722-727, 730-735, 737-768, 770-780, 785, 846, 907, 968, 1029, 1090, 1151, 1212, 1273, 1334, 1395, 1456, 1517, 1839-1854, 1869, 1925-1926, 1930
@@ -1147,7 +1208,7 @@
 
 ---
 
-#### 4. docs/changelog/daily/codeChange-20260807.md [20260807_152307]
+#### 5. docs/changelog/daily/codeChange-20260807.md [20260807_152307]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Tambah state management  
 **Lines:** 7-60, 121, 143, 204, 265, 326, 387, 412, 441, 492, 549, 601, 662-712, 718-779, 840, 901, 962, 1023, 1084, 1145, 1206, 1267, 1328, 1389, 1450, 1809-1814, 1849-1850, 1852, 1854
@@ -1208,7 +1269,7 @@
 
 ---
 
-#### 5. docs/changelog/daily/codeChange-20260807.md [20260807_150216]
+#### 6. docs/changelog/daily/codeChange-20260807.md [20260807_150216]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Tambah state management; Tambah error handling  
 **Lines:** 7-68, 90, 151, 212, 273, 334, 359, 388, 439, 496, 548, 609-620, 623-628, 630-643, 645-647, 649-673, 678, 739, 800, 861, 922, 983, 1044, 1105, 1166, 1227, 1288, 1331-1360, 1394, 1414, 1467, 1508, 1523, 1584, 1597, 1608-1613, 1616-1619, 1625, 1649, 1667-1679, 1681-1682, 1686
@@ -1269,7 +1330,7 @@
 
 ---
 
-#### 6. docs/changelog/daily/codeChange-20260807.md [20260807_145524]
+#### 7. docs/changelog/daily/codeChange-20260807.md [20260807_145524]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Tambah state management; Tambah error handling  
 **Lines:** 7-29, 90, 151, 212, 273, 298, 327, 378, 435, 487, 548-605, 611-672, 733, 794, 855, 916, 977, 1038, 1099, 1160, 1221, 1512-1540, 1565-1570, 1586-1603, 1605-1610
@@ -1330,7 +1391,7 @@
 
 ---
 
-#### 7. docs/changelog/daily/codeChange-20260807.md [20260807_143952]
+#### 8. docs/changelog/daily/codeChange-20260807.md [20260807_143952]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-68, 129, 190, 251, 276, 305, 356, 413, 465, 526, 534-595, 656, 717, 778, 839, 900, 961, 1022, 1083, 1414-1415, 1419
@@ -1391,7 +1452,7 @@
 
 ---
 
-#### 8. docs/changelog/daily/codeChange-20260807.md [20260807_143143]
+#### 9. docs/changelog/daily/codeChange-20260807.md [20260807_143143]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-68, 129, 190, 215, 244, 295, 352, 404, 465, 468-476, 479-503, 505-529, 534, 595, 656, 717, 778, 839, 900, 961, 1004-1038, 1058, 1111, 1152, 1167, 1228, 1241, 1254, 1257-1272, 1292-1293, 1297
@@ -1452,7 +1513,7 @@
 
 ---
 
-#### 9. docs/changelog/daily/codeChange-20260807.md [20260807_142211]
+#### 10. docs/changelog/daily/codeChange-20260807.md [20260807_142211]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-68, 129, 154, 183, 234, 291, 343, 404, 406-407, 410-419, 421-434, 436-444, 446-460, 467-528, 589, 650, 711, 772, 833, 894, 937-957, 1010, 1051, 1066, 1127, 1140, 1151, 1154-1189, 1209-1212, 1214
@@ -1513,7 +1574,7 @@
 
 ---
 
-#### 10. docs/changelog/daily/codeChange-20260807.md [20260807_140514]
+#### 11. docs/changelog/daily/codeChange-20260807.md [20260807_140514]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-68, 93, 122, 173, 230, 282, 343, 345-346, 349-373, 375-399, 406-467, 528, 589, 650, 711, 772, 815-868, 909, 924, 985, 998, 1009, 1031-1033, 1035
@@ -1574,7 +1635,7 @@
 
 ---
 
-#### 11. docs/changelog/daily/codeChange-20260807.md [20260807_135032]
+#### 12. docs/changelog/daily/codeChange-20260807.md [20260807_135032]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-32, 61, 112, 169, 221, 282, 284-285, 288-338, 345-406, 467, 528, 589, 650, 693-734, 749, 810, 823, 834, 856-858, 860
@@ -1635,7 +1696,7 @@
 
 ---
 
-#### 12. docs/changelog/daily/codeChange-20260807.md [20260807_133241]
+#### 13. docs/changelog/daily/codeChange-20260807.md [20260807_133241]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-36, 87, 144, 196, 257, 260, 264-277, 284-345, 406, 467, 528, 571-586, 647, 660, 671, 693-695, 697
@@ -1696,7 +1757,7 @@
 
 ---
 
-#### 13. docs/changelog/daily/codeChange-20260807.md [20260807_131834]
+#### 14. docs/changelog/daily/codeChange-20260807.md [20260807_131834]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 228-256, 259-320, 381, 442, 570-575, 592-594, 596
@@ -1757,7 +1818,7 @@
 
 ---
 
-#### 14. docs/changelog/daily/codeChange-20260807.md [20260807_130318]
+#### 15. docs/changelog/daily/codeChange-20260807.md [20260807_130318]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Tambah error handling  
 **Lines:** 7, 58, 115, 167, 230-291, 352, 395-456, 469, 497, 500
@@ -1818,7 +1879,7 @@
 
 ---
 
-#### 15. docs/changelog/daily/codeChange-20260807.md [20260807_114122]
+#### 16. docs/changelog/daily/codeChange-20260807.md [20260807_114122]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 5-227, 230-291, 334-347, 358, 380-382, 384-385
@@ -1879,7 +1940,7 @@
 
 ---
 
-#### 16. docs/changelog/daily/codeChange-20260807.md [20260807_084349]
+#### 17. docs/changelog/daily/codeChange-20260807.md [20260807_084349]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 5-47, 50, 61-66, 69, 72-78, 83-84, 86
@@ -1940,7 +2001,7 @@
 
 ---
 
-#### 17. docs/changelog/daily/codeChange-20260807.md [20260807_083315]
+#### 18. docs/changelog/daily/codeChange-20260807.md [20260807_083315]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 1-30
@@ -2318,7 +2379,20 @@
 
 ### ⚙️ Config
 
-#### 1. env/qorestoweb/.env [20260807_160440]
+#### 1. env/qorestoweb/.env [20260807_162431]
+**Fungsi:** Implementasi: .env  
+**Perubahan:** Ubah konfigurasi environment / API endpoint  
+**Lines:** 40
+
+```javascript
+// Line 37:
+- REACT_APP_BQO_DEFAULT_WHSE=GDG-01
++ REACT_APP_BQO_DEFAULT_WHSE=CINTA01
+```
+
+---
+
+#### 2. env/qorestoweb/.env [20260807_160440]
 **Fungsi:** Implementasi: .env  
 **Perubahan:** Ubah konfigurasi environment / API endpoint  
 **Lines:** 24-30, 39-41, 43
@@ -2345,7 +2419,7 @@
 
 ---
 
-#### 2. env/qorestoweb/.env [20260807_152307]
+#### 3. env/qorestoweb/.env [20260807_152307]
 **Fungsi:** Implementasi: .env  
 **Perubahan:** Ubah konfigurasi environment / API endpoint  
 **Lines:** 28-31
@@ -2360,7 +2434,7 @@
 
 ---
 
-#### 3. env/qorestoweb/.env [20260807_145524]
+#### 4. env/qorestoweb/.env [20260807_145524]
 **Fungsi:** Implementasi: .env  
 **Perubahan:** Ubah konfigurasi environment / API endpoint  
 **Lines:** 24-27
@@ -2375,7 +2449,7 @@
 
 ---
 
-#### 4. env/qorestoweb/.env [20260807_142211]
+#### 5. env/qorestoweb/.env [20260807_142211]
 **Fungsi:** Implementasi: .env  
 **Perubahan:** Ubah konfigurasi environment / API endpoint  
 **Lines:** 23-33
@@ -2397,7 +2471,7 @@
 
 ---
 
-#### 5. nv/qorestoweb/.env [20260807_162427]
+#### 6. nv/qorestoweb/.env [20260807_162847]
 **Fungsi:** Implementasi: .env  
 **Perubahan:** Ubah konfigurasi environment / API endpoint  
 
@@ -2455,9 +2529,9 @@
 
 ## 📊 **Summary**
 - **✨ Features:** 21 items
-- **📖 Documentation:** 17 items
+- **📖 Documentation:** 18 items
 - **🔌 API:** 10 items
-- **⚙️ Config:** 5 items
+- **⚙️ Config:** 6 items
 - **⚙️ Others:** 3 items
-- **Total Files Modified:** 56
+- **Total Files Modified:** 58
 - **Main Focus:** Features
