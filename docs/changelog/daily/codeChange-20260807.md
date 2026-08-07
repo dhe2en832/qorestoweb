@@ -4,7 +4,68 @@
 
 ### ✨ Features
 
-#### 1. src/scripts/modules/BQO/views/bqo_home.js [20260807_142211]
+#### 1. src/scripts/modules/BQO/views/bqo_home.js [20260807_143143]
+**Fungsi:** Halaman utama / dashboard  
+**Perubahan:** Tambah fungsi: findIdx; Tambah fungsi: parseNum  
+**Lines:** 96-100, 103, 107, 109-179
+
+```javascript
+// Line 93:
+-    * getDatas — ambil menu dari bstock_x dengan usebrwdef:false.
+-    * Menggunakan getList() agar response berupa object dengan cfamcode
+-    * (untuk kategori) dan getimage sesuai konfigurasi bqo_api.
++    * getDatas — ambil menu dari bstock_x.
++    * Mode dikontrol via env:
++    *   REACT_APP_MENU_USE_BRWDEF=Y → usebrwdef:true, response array of arrays
++    *   REACT_APP_MENU_USE_BRWDEF=N → usebrwdef:false, response array of objects (cfamcode tersedia)
++    *   REACT_APP_MENU_GETIMAGE=Y   → request gambar dari server
++     const useBrwDef = process.env.REACT_APP_MENU_USE_BRWDEF === 'Y';
+-     const datas = res.data.map((item) => ({
+-       id:        (item.cstocode || '').trim(),
+-       name:      (item.cstoname || '').trim(),
+-       desc:      (item.cstoname2 || item.cnotes1 || '').trim(),
+-       price:     String(parseFloat(item.nhrgjua || 0)),
+-       sellPrice: String(parseFloat(item.nhrgjua || 0)),
+-       category:  (item.cfamcode || 'UMUM').trim(),
+-       picture:   item.picture || null,
+-       cstocode:  (item.cstocode || '').trim(),
+-       cstoname:  (item.cstoname || '').trim(),
+-       nhrgjua:   parseFloat(item.nhrgjua || 0),
+-       csatuan:   (item.csatuan || 'PCS').trim(),
+-       ndisc:     parseFloat(item.ndisc || 0),
+-     }));
++     let datas;
+  // ... (truncated)
++           cstoname,
++           nhrgjua,
++           csatuan,
++           ndisc,
++         };
++       });
++     } else {
++       // ── Format non-brwdef: data berupa array of objects dengan cfamcode ──
++       datas = res.data.map((item) => ({
++         id:        (item.cstocode || '').trim(),
++         name:      (item.cstoname || '').trim(),
++         desc:      (item.cstoname2 || item.cnotes1 || '').trim(),
++         price:     String(parseFloat(item.nhrgjua || 0)),
++         sellPrice: String(parseFloat(item.nhrgjua || 0)),
++         category:  (item.cfamcode || 'UMUM').trim(),
++         picture:   item.picture || null,
++         cstocode:  (item.cstocode || '').trim(),
++         cstoname:  (item.cstoname || '').trim(),
++         nhrgjua:   parseFloat(item.nhrgjua || 0),
++         csatuan:   (item.csatuan || 'PCS').trim(),
++         ndisc:     parseFloat(item.ndisc || 0),
++       }));
++     }
++ 
++     // Bangun daftar kategori dari data yang ada
+```
+
+---
+
+#### 2. src/scripts/modules/BQO/views/bqo_home.js [20260807_142211]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Pembaruan kode  
 **Lines:** 96-98, 101, 104-117
@@ -65,7 +126,7 @@
 
 ---
 
-#### 2. src/scripts/modules/BQO/views/bqo_home.js [20260807_140514]
+#### 3. src/scripts/modules/BQO/views/bqo_home.js [20260807_140514]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Tambah fungsi: findIdx; Tambah fungsi: parseHarga  
 **Lines:** 97-98, 101, 103, 105-106, 114-129, 131-134, 137-156, 158
@@ -126,7 +187,7 @@
 
 ---
 
-#### 3. src/scripts/modules/BQO/views/bqo_home.js [20260807_135032]
+#### 4. src/scripts/modules/BQO/views/bqo_home.js [20260807_135032]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Tambah fungsi: key; Tambah fungsi: get  
 **Lines:** 96-99, 102-112, 115-161
@@ -187,7 +248,7 @@
 
 ---
 
-#### 4. src/scripts/modules/BQO/views/bqo_home.js [20260807_133241]
+#### 5. src/scripts/modules/BQO/views/bqo_home.js [20260807_133241]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Pembaruan kode  
 **Lines:** 112, 122, 125, 161
@@ -212,7 +273,7 @@
 
 ---
 
-#### 5. src/scripts/modules/BQO/views/bqo_home.js [20260807_131834]
+#### 6. src/scripts/modules/BQO/views/bqo_home.js [20260807_131834]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Pembaruan kode  
 **Lines:** 112-114, 124, 126-129, 132, 165
@@ -241,7 +302,7 @@
 
 ---
 
-#### 6. src/scripts/modules/BQO/controllers/bqo_mock.js [20260807_114122]
+#### 7. src/scripts/modules/BQO/controllers/bqo_mock.js [20260807_114122]
 **Fungsi:** Modul: bqo_mock  
 **Perubahan:** Hapus debug log  
 **Lines:** 130, 133-143, 146-147, 154-160, 164-166
@@ -292,7 +353,7 @@
 
 ---
 
-#### 7. src/scripts/modules/BQO/views/bqo_checkout.js [20260807_114122]
+#### 8. src/scripts/modules/BQO/views/bqo_checkout.js [20260807_114122]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Tambah fungsi: pad  
 **Lines:** 273-315
@@ -349,7 +410,7 @@
 
 ---
 
-#### 8. src/scripts/modules/BQO/views/bqo_home.js [20260807_114122]
+#### 9. src/scripts/modules/BQO/views/bqo_home.js [20260807_114122]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Pembaruan kode  
 **Lines:** 95-99, 101-132
@@ -401,7 +462,7 @@
 
 ---
 
-#### 9. src/scripts/modules/BQO/views/bqo_payment.js [20260807_114122]
+#### 10. src/scripts/modules/BQO/views/bqo_payment.js [20260807_114122]
 **Fungsi:** Modul: bqo_payment  
 **Perubahan:** Tambah fungsi: buildPayload; Tambah fungsi: pad; Tambah fungsi: buildCurrentPayload  
 **Lines:** 125-170, 237-238
@@ -462,7 +523,7 @@
 
 ---
 
-#### 10. rc/scripts/modules/BQO/views/bqo_home.js [20260807_143140]
+#### 11. rc/scripts/modules/BQO/views/bqo_home.js [20260807_143949]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Pembaruan kode  
 
@@ -470,7 +531,68 @@
 
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260807.md [20260807_142211]
+#### 1. docs/changelog/daily/codeChange-20260807.md [20260807_143143]
+**Fungsi:** Implementasi: codeChange-20260807  
+**Perubahan:** Pembaruan kode  
+**Lines:** 7-68, 129, 190, 215, 244, 295, 352, 404, 465, 468-476, 479-503, 505-529, 534, 595, 656, 717, 778, 839, 900, 961, 1004-1038, 1058, 1111, 1152, 1167, 1228, 1241, 1254, 1257-1272, 1292-1293, 1297
+
+```javascript
+// Line 4:
+- #### 1. src/scripts/modules/BQO/views/bqo_home.js [20260807_140514]
++ #### 1. src/scripts/modules/BQO/views/bqo_home.js [20260807_142211]
++ **Fungsi:** Halaman utama / dashboard  
++ **Perubahan:** Pembaruan kode  
++ **Lines:** 96-98, 101, 104-117
++ 
++ ```javascript
++ // Line 93:
++ -    * getDatas — ambil menu dari bstock_x.
++ -    * Coba usebrwdef:true dulu — data berformat array of arrays sesuai columns brwdef.
++ -    * Fallback ke usebrwdef:false jika brwdef gagal.
++ +    * getDatas — ambil menu dari bstock_x dengan usebrwdef:false.
++ +    * Menggunakan getList() agar response berupa object dengan cfamcode
++ +    * (untuk kategori) dan getimage sesuai konfigurasi bqo_api.
++ -     // Coba brwdef dulu
++ -     let res = await bqo_api.getListBrwdef({});
++ -     let useBrwDef = !!(res?.result && res?.columns?.length > 0 && Array.isArray(res?.data?.[0]));
++ - 
++ -     if (!useBrwDef) {
++ -       // Fallback ke non-brwdef
++ -       res = await bqo_api.getList({});
++ -     }
++ - 
++ +     const res = await bqo_api.getList({});
+  // ... (truncated)
+- #### 1. nv/qorestoweb/.env [20260807_142208]
++ #### 1. env/qorestoweb/.env [20260807_142211]
++ **Lines:** 23-33
++ 
++ ```javascript
++ // Line 20:
++ + 
++ + # ── Katalog Menu (bstock_x) ──────────────────────────────────────────────────
++ + # REACT_APP_MENU_USE_BRWDEF:
++ + #   Y = usebrwdef true  → kolom dinamis dari brwdef server (data berformat array)
++ + #   N = usebrwdef false → object statis dengan cfamcode sebagai kategori (RECOMMENDED)
++ + REACT_APP_MENU_USE_BRWDEF=Y
++ + 
++ + # REACT_APP_MENU_GETIMAGE:
++ + #   Y = aktifkan getimage (butuh ShowImageAPI dikonfigurasi di apicsa.cfg server)
++ + #   N = nonaktif, gunakan placeholder
++ + REACT_APP_MENU_GETIMAGE=Y
++ ```
+// Line 1289:
+- - **✨ Features:** 9 items
+- - **📖 Documentation:** 8 items
++ - **✨ Features:** 10 items
++ - **📖 Documentation:** 9 items
+- - **Total Files Modified:** 27
++ - **Total Files Modified:** 29
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260807.md [20260807_142211]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-68, 129, 154, 183, 234, 291, 343, 404, 406-407, 410-419, 421-434, 436-444, 446-460, 467-528, 589, 650, 711, 772, 833, 894, 937-957, 1010, 1051, 1066, 1127, 1140, 1151, 1154-1189, 1209-1212, 1214
@@ -531,7 +653,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260807.md [20260807_140514]
+#### 3. docs/changelog/daily/codeChange-20260807.md [20260807_140514]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-68, 93, 122, 173, 230, 282, 343, 345-346, 349-373, 375-399, 406-467, 528, 589, 650, 711, 772, 815-868, 909, 924, 985, 998, 1009, 1031-1033, 1035
@@ -592,7 +714,7 @@
 
 ---
 
-#### 3. docs/changelog/daily/codeChange-20260807.md [20260807_135032]
+#### 4. docs/changelog/daily/codeChange-20260807.md [20260807_135032]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-32, 61, 112, 169, 221, 282, 284-285, 288-338, 345-406, 467, 528, 589, 650, 693-734, 749, 810, 823, 834, 856-858, 860
@@ -653,7 +775,7 @@
 
 ---
 
-#### 4. docs/changelog/daily/codeChange-20260807.md [20260807_133241]
+#### 5. docs/changelog/daily/codeChange-20260807.md [20260807_133241]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-36, 87, 144, 196, 257, 260, 264-277, 284-345, 406, 467, 528, 571-586, 647, 660, 671, 693-695, 697
@@ -714,7 +836,7 @@
 
 ---
 
-#### 5. docs/changelog/daily/codeChange-20260807.md [20260807_131834]
+#### 6. docs/changelog/daily/codeChange-20260807.md [20260807_131834]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 228-256, 259-320, 381, 442, 570-575, 592-594, 596
@@ -775,7 +897,7 @@
 
 ---
 
-#### 6. docs/changelog/daily/codeChange-20260807.md [20260807_130318]
+#### 7. docs/changelog/daily/codeChange-20260807.md [20260807_130318]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Tambah error handling  
 **Lines:** 7, 58, 115, 167, 230-291, 352, 395-456, 469, 497, 500
@@ -836,7 +958,7 @@
 
 ---
 
-#### 7. docs/changelog/daily/codeChange-20260807.md [20260807_114122]
+#### 8. docs/changelog/daily/codeChange-20260807.md [20260807_114122]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 5-227, 230-291, 334-347, 358, 380-382, 384-385
@@ -897,7 +1019,7 @@
 
 ---
 
-#### 8. docs/changelog/daily/codeChange-20260807.md [20260807_084349]
+#### 9. docs/changelog/daily/codeChange-20260807.md [20260807_084349]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 5-47, 50, 61-66, 69, 72-78, 83-84, 86
@@ -958,7 +1080,7 @@
 
 ---
 
-#### 9. docs/changelog/daily/codeChange-20260807.md [20260807_083315]
+#### 10. docs/changelog/daily/codeChange-20260807.md [20260807_083315]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 1-30
@@ -1289,10 +1411,10 @@
 ---
 
 ## 📊 **Summary**
-- **✨ Features:** 10 items
-- **📖 Documentation:** 9 items
+- **✨ Features:** 11 items
+- **📖 Documentation:** 10 items
 - **🔌 API:** 8 items
 - **⚙️ Config:** 1 item
 - **⚙️ Others:** 1 item
-- **Total Files Modified:** 29
+- **Total Files Modified:** 31
 - **Main Focus:** Features

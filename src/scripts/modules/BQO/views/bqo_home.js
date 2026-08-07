@@ -458,7 +458,12 @@ export default function BQOHome() {
               >
                 <Grid container sx={{ px: 1, py: 0.2 }} justifyContent="flex-start" spacing={1}>
                   <Grid item>
-                    <img src={Placeholder} style={styles.imageList} alt="Foods & Drinks" />
+                    <img
+                      src={data.picture || Placeholder}
+                      style={styles.imageList}
+                      alt={data.name}
+                      onError={(e) => { e.target.onerror = null; e.target.src = Placeholder; }}
+                    />
                   </Grid>
                   <Grid item xs={7}>
                     <Typography variant="body1" component="h2">
@@ -603,8 +608,9 @@ export default function BQOHome() {
                     objectFit: 'cover',
                     borderRadius: '0.5rem',
                   }}
-                  src={data.picture}
+                  src={data.picture || Placeholder}
                   alt={data.name}
+                  onError={(e) => { e.target.onerror = null; e.target.src = Placeholder; }}
                 />
                 <Typography variant="h6" component="h2">
                   {data.name}
