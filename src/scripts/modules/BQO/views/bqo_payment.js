@@ -133,9 +133,9 @@ export default function BQOPayment() {
   };
 
   // ── Build payload ─────────────────────────────────────────────────────────
-  // Field sesuai dokumentasi BQO:
-  //   qoHeaderInfo: DQODATE, CCUSID, CWHSEID, CTABID, CREMARK, NPCTPPN, NAMOUNT, CBNKID
-  //   lineItemsInfo: NLINE, CSTOCODE, CSTONAME, NQQO, CUOM, NHRGJUA, NDISC, NRPDISC
+  // Field sesuai dokumentasi BQO draft.4:
+  //   qoHeaderInfo: struktur lengkap dengan nested customer object
+  //   lineItemsInfo: detail item per spec
   //   paymentInfo: CBNKID, NAMOUNT
   const buildPayload = (cbnkid) => {
     const today   = new Date();
@@ -150,33 +150,59 @@ export default function BQOPayment() {
       const nrpdisc = discPct > 0 ? Math.round(nhrgjua * nqqo * discPct / 100) : 0;
       return {
         nline:    idx + 1,
+        cgroup:   '',
+        ctime:    '',
+        crefnote: 'ONLINE',
         cstocode: (d.item?.cstocode || d.item?.id || '').trim(),
         cstoname: (d.item?.cstoname || d.item?.name || '').trim(),
-        csize:    '-',
+        csize:    '',
+        cloc:     '',
+        ncqo:     '',
         nqqo,
-        cuom:     (d.item?.csatuan || d.item?.cuom || 'PCS').trim(),
-        nhrgjua,
-        ndisc:    discPct,
-        nrpdisc,
+        cuom:     (d.item?.csatuan || d.item?.cuom || '').trim(),
+        nhrgjua:  String(nhrgjua),
+        cdisc:    '',
+        ndisc:    discPct > 0 ? String(discPct) : '',
+        nrpdisc:  String(nrpdisc),
+        csalesid: '',
+        nkomisi:  '',
         cremark:  d.note || '',
       };
     });
 
-    // NAMOUNT = total nilai order sebelum pajak (sesuai deskripsi field)
     return {
       qoHeaderInfo: {
         dqodate,
         ctime,
-        ccusid:   BQO_DEFAULT_CUSTOMER,          // dari env REACT_APP_BQO_DEFAULT_CUSTOMER
-        cwhseid:  BQO_DEFAULT_WHSE,              // dari env REACT_APP_BQO_DEFAULT_WHSE
-        ctabid:   orderInfo.seatNumber  || '',   // Nomor Meja
-        cremark:  orderInfo.orderByName || '',   // Nama pemesan
-        cnotelp:  orderInfo.phoneNumber || '',   // No telepon
-        npctdisc: 0,
-        npctppn:  TAX_PERCENT,
-        namount:  subtotal,                      // Total sebelum pajak
+        cqonum:   '',
+        ctabid:   orderInfo.seatNumber  || '',
+        cwhseid:  BQO_DEFAULT_WHSE,
+        cremark:  orderInfo.orderByName || '',
+        customer: {
+          ccusid:   BQO_DEFAULT_CUSTOMER,
+          cinitial: '',
+          cnotelp:  orderInfo.phoneNumber || '',
+          cemail:   '',
+        },
+        cshiptoadr: '',
+        nexchrate:  '1',
+        csalesid:   'ONLINE',
+        lmulsales:  'false',
+        npctdisc:   '0',
+        npctppn:    String(TAX_PERCENT),
+        namount:    String(subtotal),
+        ndp:        String(total),
+        cpaytype:   '',
         cbnkid,
-        cpaytype: cbnkid ? '' : '',              // kosong = Cash
+        nsaleschg:  '0',
+        ccrdnum:    '',
+        cqofoot1:   '',
+        cqofoot2:   '',
+        cqofoot3:   '',
+        referensi: {
+          crefnum: externalId.substring(0, 10),
+          creftrn: externalId.substring(0, 10),
+        },
       },
       lineItemsInfo,
       paymentInfo: { cbnkid, namount: total },

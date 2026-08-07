@@ -338,8 +338,9 @@ export default function BQOCheckout() {
       const pad     = (n) => String(n).padStart(2, '0');
       const dqodate = `${today.getFullYear()}${pad(today.getMonth() + 1)}${pad(today.getDate())}`;
       const ctime   = `${pad(today.getHours())}:${pad(today.getMinutes())}:${pad(today.getSeconds())}`;
+      const externalId = String(+today).substring(0, 10); // timestamp 10 char untuk referensi
 
-      // Field sesuai dokumentasi BQO (Header + BITMQO)
+      // Field sesuai dokumentasi BQO draft.4
       const lineItemsInfo = cartItems.map((d, idx) => {
         const nhrgjua = parseFloat(d.item?.nhrgjua || d.item?.sellPrice || 0);
         const nqqo    = parseInt(d.qty || 1);
@@ -347,14 +348,22 @@ export default function BQOCheckout() {
         const nrpdisc = discPct > 0 ? Math.round(nhrgjua * nqqo * discPct / 100) : 0;
         return {
           nline:    idx + 1,
+          cgroup:   '',
+          ctime:    '',
+          crefnote: 'ONLINE',
           cstocode: (d.item?.cstocode || d.item?.id || '').trim(),
           cstoname: (d.item?.cstoname || d.item?.name || '').trim(),
-          csize:    '-',
+          csize:    '',
+          cloc:     '',
+          ncqo:     '',
           nqqo,
-          cuom:     (d.item?.csatuan || d.item?.cuom || 'PCS').trim(),
-          nhrgjua,
-          ndisc:    discPct,
-          nrpdisc,
+          cuom:     (d.item?.csatuan || d.item?.cuom || '').trim(),
+          nhrgjua:  String(nhrgjua),
+          cdisc:    '',
+          ndisc:    discPct > 0 ? String(discPct) : '',
+          nrpdisc:  String(nrpdisc),
+          csalesid: '',
+          nkomisi:  '',
           cremark:  d.note || '',
         };
       });
@@ -363,16 +372,35 @@ export default function BQOCheckout() {
         qoHeaderInfo: {
           dqodate,
           ctime,
-          ccusid:   BQO_DEFAULT_CUSTOMER,          // dari env REACT_APP_BQO_DEFAULT_CUSTOMER
-          cwhseid:  BQO_DEFAULT_WHSE,              // dari env REACT_APP_BQO_DEFAULT_WHSE
+          cqonum:   '',                            // kosong, auto-generate dari backend
           ctabid:   info.seatNumber  || '',        // Nomor Meja
+          cwhseid:  BQO_DEFAULT_WHSE,              // dari env REACT_APP_BQO_DEFAULT_WHSE
           cremark:  info.orderByName || '',        // Nama pemesan
-          cnotelp:  info.phoneNumber || '',        // No telepon
-          npctdisc: 0,
-          npctppn:  TAX_PERCENT,
-          namount:  subtotal,                      // Total sebelum pajak
-          cbnkid:   CASH_BANK_CODE,                // dari env REACT_APP_CASH_BANK_CODE
-          cpaytype: '',
+          customer: {                              // nested object sesuai spec
+            ccusid:   BQO_DEFAULT_CUSTOMER,        // dari env REACT_APP_BQO_DEFAULT_CUSTOMER
+            cinitial: '',
+            cnotelp:  info.phoneNumber || '',
+            cemail:   '',
+          },
+          cshiptoadr: '',                          // alamat kirim (kosong untuk dine-in)
+          nexchrate:  '1',
+          csalesid:   'ONLINE',                    // sales person
+          lmulsales:  'false',
+          npctdisc:   '0',                         // discount header
+          npctppn:    String(TAX_PERCENT),         // pajak
+          namount:    String(subtotal),            // total sebelum pajak
+          ndp:        String(total),               // pembayaran diterima (DP)
+          cpaytype:   '',                          // blank = tunai
+          cbnkid:     CASH_BANK_CODE,              // dari env REACT_APP_CASH_BANK_CODE
+          nsaleschg:  '0',
+          ccrdnum:    '',
+          cqofoot1:   '',
+          cqofoot2:   '',
+          cqofoot3:   '',
+          referensi: {
+            crefnum: externalId.substring(0, 10), // ref order (max 10 char)
+            creftrn: externalId.substring(0, 10), // ref transaksi (max 10 char)
+          },
         },
         lineItemsInfo,
         paymentInfo: { cbnkid: CASH_BANK_CODE, namount: total },
