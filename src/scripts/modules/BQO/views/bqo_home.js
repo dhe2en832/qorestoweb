@@ -16,6 +16,8 @@ import IconButton from '@mui/material/IconButton';
 import InputBase from '@mui/material/InputBase';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import LinearProgress from '@mui/material/LinearProgress';
+import Skeleton from '@mui/material/Skeleton';
 import SearchIcon from '@mui/icons-material/Search';
 import NoteIcon from '@mui/icons-material/NoteAltOutlined';
 import EditIcon from '@mui/icons-material/Edit';
@@ -91,6 +93,7 @@ export default function BQOHome() {
   // List
   const [lists, setLists] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   /**
    * getDatas — ambil menu dari bstock_x.
@@ -192,12 +195,14 @@ export default function BQOHome() {
   useEffect(() => {
     let isActive = true;
     async function setDataToList() {
+      setIsLoading(true);
       const resJson = await getDatas();
       if (!isActive) return;
       if (resJson && resJson.datas) {
         setLists(resJson.datas);
         setCategories(resJson.categories ?? []);
       }
+      setIsLoading(false);
     }
     isActive && setDataToList();
     return () => (isActive = false);
@@ -207,7 +212,9 @@ export default function BQOHome() {
   const [tabValue, setTabValue] = useState('all');
   const handleTabChange = async (event, newValue) => {
     setTabValue(newValue);
+    setIsLoading(true);
     const resJson = await getDatas();
+    setIsLoading(false);
     if (!resJson || !resJson.datas) return;
     let datasFilter;
     switch (newValue) {
@@ -227,7 +234,9 @@ export default function BQOHome() {
 
   // List - Search
   const handleChangeSearch = async (event) => {
+    setIsLoading(true);
     const resJson = await getDatas();
+    setIsLoading(false);
     if (!resJson || !resJson.datas) return;
     const datasFilter = resJson.datas.filter((data) => data.name.includes(event.target.value));
     setLists(datasFilter);
@@ -418,6 +427,12 @@ export default function BQOHome() {
               </Grid>
             </Grid>
           </Toolbar>
+          {/* Progress bar muncul di bawah toolbar saat fetch */}
+          {isLoading && (
+            <LinearProgress
+              sx={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 3 }}
+            />
+          )}
         </AppBar>
         {/* List -> Category */}
         <Container maxWidth="sm" sx={{ mt: 5 }}>
@@ -443,7 +458,26 @@ export default function BQOHome() {
         </Container>
         {/* List -> Menu */}
         <Container maxWidth="sm">
-          {lists.length !== 0 ? (
+          {isLoading ? (
+            /* Skeleton cards saat fetch data */
+            Array.from({ length: 4 }).map((_, i) => (
+              <Paper key={`skel_${i}`} sx={{ my: 2 }}>
+                <Grid container sx={{ px: 1, py: 0.2 }} justifyContent="flex-start" spacing={1}>
+                  <Grid item>
+                    <Skeleton variant="rectangular" width={smUp ? 85 : 75} height={smUp ? 85 : 75} sx={{ borderRadius: 1 }} />
+                  </Grid>
+                  <Grid item xs={7}>
+                    <Skeleton variant="text" width="70%" height={28} />
+                    <Skeleton variant="text" width="40%" height={20} />
+                    <Skeleton variant="text" width="30%" height={24} />
+                  </Grid>
+                  <Grid container item xs={12} justifyContent="flex-end" mb={1}>
+                    <Skeleton variant="rounded" width={88} height={36} />
+                  </Grid>
+                </Grid>
+              </Paper>
+            ))
+          ) : lists.length !== 0 ? (
             lists.map((data) => (
               <Paper
                 key={data.id}
