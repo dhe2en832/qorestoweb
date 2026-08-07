@@ -37,7 +37,7 @@ class bqo_api {
   }
 
   static getList(data) {
-    return this.fetching('getList', data);
+    return this.fetching('getlist', data);
   }
 
   static add(data) {
