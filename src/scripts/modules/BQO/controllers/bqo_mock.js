@@ -127,35 +127,43 @@ const bqo_mock = {
 
     switch (action) {
 
-      // ── getList ──────────────────────────────────────────────────────────
+      // ── getList — return format bstock_x agar konsisten dengan backend ───
       case 'getList':
       case 'getlist': {
-        console.log('[BQO MOCK] getList called', data);
+        // Map MOCK_MENU ke format bstock_x response
+        const mockData = MOCK_MENU.map((item) => ({
+          key:       item.id,
+          cstocode:  item.id,
+          cstoname:  item.name,
+          cstoname2: item.desc,
+          nhrgjua:   parseFloat(item.sellPrice),
+          cfamcode:  item.category,
+          cprocod:   item.category,
+          npict:     0,
+        }));
         return {
           result: true,
-          datas: MOCK_MENU,
-          categories: MOCK_CATEGORIES,
+          data:   mockData,
+          metadata: { offset: 0, limit: mockData.length, count: mockData.length },
         };
       }
 
       // ── add ───────────────────────────────────────────────────────────────
       case 'add': {
         const bon = nextOrderNum();
-        console.log('[BQO MOCK] add called', { bon, data });
-        console.table(
-          (data.cart || []).map((item) => ({
-            nama:  item.item?.name,
-            qty:   item.qty,
-            harga: item.item?.sellPrice,
-            note:  item.note || '-',
-          }))
-        );
+        // Log detail order untuk debugging
+        const items = data.lineItemsInfo || data.cart || [];
+        console.log('[BQO MOCK] add called', {
+          bon,
+          headerInfo: data.headerInfo || data.info,
+          itemCount: items.length,
+        });
         return {
           result: true,
           onsuccess: {
-            cordernum: bon,
-            cmeja:     data.info?.seatNumber  || '-',
-            cnama:     data.info?.orderByName || '-',
+            cordernum:    bon,
+            cseatno:      data.headerInfo?.cseatno      || data.info?.seatNumber  || '-',
+            corderbyname: data.headerInfo?.corderbyname || data.info?.orderByName || '-',
           },
         };
       }

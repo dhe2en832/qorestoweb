@@ -90,11 +90,46 @@ export default function BQOHome() {
 
   // List
   const [lists, setLists] = useState([]);
-  // List
   const [categories, setCategories] = useState([]);
 
+  /**
+   * getDatas — ambil menu dari bstock_x dan map ke format yang dipakai frontend.
+   * bstock_x response: { result, data: [{ cstocode, cstoname, nhrgjua, cfamcode, ... }] }
+   * Frontend format:   { datas: [...], categories: [...] }
+   */
   async function getDatas() {
-    return await bqo_api.getList({});
+    const res = await bqo_api.getList({});
+    if (!res || !res.result || !res.data) return null;
+
+    // Map bstock_x fields → format menu restoran
+    // Simpan juga csatuan dan ndisc agar tersedia saat build payload order
+    const datas = res.data.map((item) => ({
+      id:        (item.cstocode || '').trim(),
+      name:      (item.cstoname || '').trim(),
+      desc:      (item.cstoname2 || item.cnotes1 || '').trim(),
+      price:     String(parseFloat(item.nhrgjua || 0)),
+      sellPrice: String(parseFloat(item.nhrgjua || 0)),
+      category:  (item.cfamcode || item.cprocod || 'UMUM').trim(),
+      picture:   null, // getimage tidak tersedia — pakai placeholder
+      // field tambahan untuk payload order
+      cstocode:  (item.cstocode || '').trim(),
+      cstoname:  (item.cstoname || '').trim(),
+      nhrgjua:   parseFloat(item.nhrgjua || 0),
+      csatuan:   (item.csatuan || 'PCS').trim(),
+      ndisc:     parseFloat(item.ndisc || 0),
+    }));
+
+    // Bangun kategori unik dari cfamcode
+    const catMap = {};
+    catMap['all']   = { id: 'all',   label: 'Semua' };
+    catMap['promos'] = { id: 'promos', label: '🏷️ Promo' };
+    datas.forEach((item) => {
+      const key = item.category;
+      if (key && !catMap[key]) catMap[key] = { id: key, label: key };
+    });
+    const categories = Object.values(catMap);
+
+    return { datas, categories };
   }
 
   useEffect(() => {
@@ -106,7 +141,6 @@ export default function BQOHome() {
         setLists(resJson.datas);
         setCategories(resJson.categories ?? []);
       }
-      // jika API belum siap / 404, biarkan state tetap [] (initial value)
     }
     isActive && setDataToList();
     return () => (isActive = false);

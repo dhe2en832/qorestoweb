@@ -6,18 +6,24 @@ import { getAppConfig } from '../../../utils/app-config';
 // URL server lokal sebagai fallback. Kosong = fitur lokal tidak aktif.
 const LOCAL_BASE_URL = (process.env.REACT_APP_API_LOCAL_ENDPOINT || '').trim();
 
+// Field yang diambil dari bstock_x untuk katalog menu — mengikuti pola trenly
+const MENU_LISTFIELDS = [
+  'cstocode', 'cstoname', 'cstoname2', 'nhrgjua', 'ndisc',
+  'cfamcode', 'cprocod', 'csatuan', 'npict',
+];
+
 class bqo_api {
+  // ── Mock mode check ──────────────────────────────────────────────────────
+  static _useMock() {
+    return getAppConfig().use_mock_bqo === true;
+  }
+
+  // ── fetch ke BQO_X (transaksi pesanan) ───────────────────────────────────
   static async fetching(action, data) {
-    // ── MOCK MODE — dibaca dari app.cfg (runtime, tanpa rebuild) ────────────
-    const useMock = getAppConfig().use_mock_bqo === true;
-    if (useMock) {
-      try {
-        return await bqo_mock.handle(action, data);
-      } catch (error) {
-        return error;
-      }
+    if (this._useMock()) {
+      try { return await bqo_mock.handle(action, data); }
+      catch (error) { return error; }
     }
-    // ── NORMAL MODE ─────────────────────────────────────────────────────────
     try {
       const res = await fetch(ApiRoute.BQO_X, {
         method: 'POST',
@@ -29,17 +35,60 @@ class bqo_api {
         body: JSON.stringify({ action, ...data }, null, 2),
         signal: AbortSignal.timeout(15000),
       });
-      const resJson = await res.json();
-      return resJson;
-    } catch (error) {
-      return error;
+      return await res.json();
+    } catch (error) { return error; }
+  }
+
+  // ── fetch ke BSTOCK_X (katalog menu) ─────────────────────────────────────
+  static async fetchStock(action, data) {
+    if (this._useMock()) {
+      try { return await bqo_mock.handle(action, data); }
+      catch (error) { return error; }
     }
+    try {
+      const res = await fetch(ApiRoute.BSTOCK_X, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          secretkey: Config.SESSION_KEY(),
+          sessionid: Config.SESSION_ID(),
+        },
+        body: JSON.stringify({ action, ...data }, null, 2),
+        signal: AbortSignal.timeout(15000),
+      });
+      return await res.json();
+    } catch (error) { return error; }
   }
 
+  /**
+   * getList — ambil katalog menu dari bstock_x.
+   * Mengikuti pola trenly useCashierCatalog:
+   *   - listfields: field minimal untuk tampil di menu
+   *   - freefilter: '!LDISCONT' → hanya item yang aktif dijual (bukan discontinue)
+   * Response: { result, data: [{cstocode, cstoname, nhrgjua, csatuan, ndisc, ...}] }
+   */
   static getList(data) {
-    return this.fetching('getlist', data);
+    return this.fetchStock('getlist', {
+      offset:     0,
+      limit:      999,
+      usebrwdef:  false,
+      listfields: MENU_LISTFIELDS,
+      query: {
+        freefilter:  { search: '!LDISCONT' },
+        textfilter:  { search: '' },
+      },
+      getimage: false, // getimage butuh ShowImageAPI di apicsa.cfg
+      ...data,
+    });
   }
 
+  /**
+   * add — simpan pesanan ke bqo_x.
+   * Payload mengikuti pola trenly bjual_x add:
+   *   headerInfo: info pesanan (meja, nama, telepon, tanggal, dll)
+   *   lineItemsInfo: detail item (cstocode, cstoname, cuom, nqjual, nhrgjua, namtjua, ndisc, nrpdisc)
+   *   paymentInfo: { cbnkid, namount }
+   */
   static add(data) {
     return this.fetching('add', data);
   }

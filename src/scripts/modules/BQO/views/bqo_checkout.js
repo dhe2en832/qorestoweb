@@ -270,11 +270,51 @@ export default function BQOCheckout() {
       const taxAmount = Math.floor(subtotal * (TAX_PERCENT / 100));
       const total     = subtotal + taxAmount;
 
-      const payload = { info, cart: cartItems };
-      const result  = await bqo_api.add(payload);
+      const today   = new Date();
+      const pad     = (n) => String(n).padStart(2, '0');
+      const dqodate = `${today.getFullYear()}${pad(today.getMonth() + 1)}${pad(today.getDate())}`;
+      const ctime   = `${pad(today.getHours())}:${pad(today.getMinutes())}:${pad(today.getSeconds())}`;
+
+      // Field sesuai dokumentasi BQO (Header + BITMQO)
+      const lineItemsInfo = cartItems.map((d, idx) => {
+        const nhrgjua = parseFloat(d.item?.nhrgjua || d.item?.sellPrice || 0);
+        const nqqo    = parseInt(d.qty || 1);
+        const discPct = parseFloat(d.item?.ndisc || 0);
+        const nrpdisc = discPct > 0 ? Math.round(nhrgjua * nqqo * discPct / 100) : 0;
+        return {
+          nline:    idx + 1,
+          cstocode: (d.item?.cstocode || d.item?.id || '').trim(),
+          cstoname: (d.item?.cstoname || d.item?.name || '').trim(),
+          csize:    '-',
+          nqqo,
+          cuom:     (d.item?.csatuan || d.item?.cuom || 'PCS').trim(),
+          nhrgjua,
+          ndisc:    discPct,
+          nrpdisc,
+          cremark:  d.note || '',
+        };
+      });
+
+      const payload = {
+        headerInfo: {
+          dqodate,
+          ctime,
+          ctabid:   info.seatNumber  || '',   // Nomor Meja
+          cremark:  info.orderByName || '',   // Nama pemesan
+          cnotelp:  info.phoneNumber || '',   // No telepon
+          npctdisc: 0,
+          npctppn:  TAX_PERCENT,
+          namount:  subtotal,                  // Total sebelum pajak
+          cbnkid:   '',                        // Kosong = bayar di kasir
+          cpaytype: '',                        // Kosong = Cash
+        },
+        lineItemsInfo,
+        paymentInfo: { cbnkid: '', namount: 0 }, // belum dibayar
+      };
+
+      const result = await bqo_api.add(payload);
       if (result.result === true) {
         const bon = result.onsuccess?.cordernum || result.onsuccess?.csonum || '';
-        // Tampilkan dialog konfirmasi + struk
         setKasirResult({ nomorBon: bon, cartItems, subtotal, taxAmount, total });
       } else {
         const errMsg = result.onfail?.cerror || 'Gagal mengirim pesanan.';

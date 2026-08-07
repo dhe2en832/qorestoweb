@@ -122,14 +122,52 @@ export default function BQOPayment() {
   };
 
   // ── Build payload ─────────────────────────────────────────────────────────
-  const buildPayload = (cbnkid) => ({
-    info: orderInfo,
-    cart: cartItems,
-    paymentInfo: { cbnkid, namount: total },
-    taxAmount,
-    subtotal,
-    total,
-  });
+  // Field sesuai dokumentasi BQO:
+  //   Header: DQODATE, CTABID, CWHSEID, CREMARK, NPCTPPN, NAMOUNT, CBNKID
+  //   Item:   NLINE, CSTOCODE, CSTONAME, NQQO, CUOM, NHRGJUA, NDISC, NRPDISC
+  const buildPayload = (cbnkid) => {
+    const today   = new Date();
+    const pad     = (n) => String(n).padStart(2, '0');
+    const dqodate = `${today.getFullYear()}${pad(today.getMonth() + 1)}${pad(today.getDate())}`;
+    const ctime   = `${pad(today.getHours())}:${pad(today.getMinutes())}:${pad(today.getSeconds())}`;
+
+    const lineItemsInfo = cartItems.map((d, idx) => {
+      const nhrgjua = parseFloat(d.item?.nhrgjua || d.item?.sellPrice || 0);
+      const nqqo    = parseInt(d.qty || 1);
+      const discPct = parseFloat(d.item?.ndisc || 0);
+      const nrpdisc = discPct > 0 ? Math.round(nhrgjua * nqqo * discPct / 100) : 0;
+      return {
+        nline:    idx + 1,
+        cstocode: (d.item?.cstocode || d.item?.id || '').trim(),
+        cstoname: (d.item?.cstoname || d.item?.name || '').trim(),
+        csize:    '-',
+        nqqo,
+        cuom:     (d.item?.csatuan || d.item?.cuom || 'PCS').trim(),
+        nhrgjua,
+        ndisc:    discPct,
+        nrpdisc,
+        cremark:  d.note || '',
+      };
+    });
+
+    // NAMOUNT = total nilai order sebelum pajak (sesuai deskripsi field)
+    return {
+      headerInfo: {
+        dqodate,
+        ctime,
+        ctabid:   orderInfo.seatNumber  || '',   // Nomor Meja
+        cremark:  orderInfo.orderByName || '',   // Nama pemesan sebagai keterangan
+        cnotelp:  orderInfo.phoneNumber || '',   // No telepon (jika backend support)
+        npctdisc: 0,
+        npctppn:  TAX_PERCENT,
+        namount:  subtotal,                       // Total sebelum pajak
+        cbnkid,
+        cpaytype: cbnkid ? '' : '',              // kosong = Cash
+      },
+      lineItemsInfo,
+      paymentInfo: { cbnkid, namount: total },
+    };
+  };
 
   // ── Core save ke backend ──────────────────────────────────────────────────
   const executeSave = async ({ payload, isXenditMode = false }) => {
@@ -196,15 +234,8 @@ export default function BQOPayment() {
     }
   };
 
-  // ── Rebuild payload dari state saat ini ───────────────────────────────────
-  const buildCurrentPayload = (cbnkid) => ({
-    info: orderInfo,
-    cart: cartItems,
-    paymentInfo: { cbnkid, namount: total },
-    taxAmount,
-    subtotal,
-    total,
-  });
+  // ── Rebuild payload dari state saat ini (untuk retry) ────────────────────
+  const buildCurrentPayload = (cbnkid) => buildPayload(cbnkid);
 
   // ── Tunai: retry ke pusat ─────────────────────────────────────────────────
   const handleTunaiRetry = async () => {
