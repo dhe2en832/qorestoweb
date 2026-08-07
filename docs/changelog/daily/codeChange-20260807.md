@@ -225,9 +225,99 @@
 
 ---
 
+#### 5. src/scripts/modules/BQO/views/bqo_home.js [20260807_131833]
+**Fungsi:** Halaman utama / dashboard  
+**Perubahan:** Pembaruan kode  
+**Lines:** 112-114, 124, 126-129, 132, 165
+
+```javascript
+// Line 109:
+-       category:  (item.cfamcode || item.cprocod || 'UMUM').trim(),
++       // Gunakan cprocod sebagai kategori (lebih deskriptif dari cfamcode kode 2-3 huruf)
++       // Fallback ke cfamcode jika cprocod kosong
++       category:  (item.cprocod || item.cfamcode || 'UMUM').trim(),
+// Line 121:
+-     // Bangun kategori unik dari cfamcode
++     // Bangun kategori unik
+-     catMap['all']   = { id: 'all',   label: 'Semua' };
+-     catMap['promos'] = { id: 'promos', label: '🏷️ Promo' };
++     catMap['all']    = { id: 'all',    label: 'Semua' };
++     // Tab Promo hanya muncul jika ada item yang punya diskon
++     const hasPromo = datas.some((item) => item.ndisc > 0);
++     if (hasPromo) catMap['promos'] = { id: 'promos', label: '🏷️ Promo' };
+-       if (key && !catMap[key]) catMap[key] = { id: key, label: key };
++       if (key && key !== '-' && !catMap[key]) catMap[key] = { id: key, label: key };
+// Line 162:
+-         datasFilter = resJson.datas.filter((data) => data.price !== data.sellPrice);
++         datasFilter = resJson.datas.filter((data) => data.ndisc > 0);
+```
+
+---
+
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260807.md [20260807_114122]
+#### 1. docs/changelog/daily/codeChange-20260807.md [20260807_130318]
+**Fungsi:** Implementasi: codeChange-20260807  
+**Perubahan:** Tambah error handling  
+**Lines:** 7, 58, 115, 167, 230-291, 352, 395-456, 469, 497, 500
+
+```javascript
+// Line 4:
+- #### 1. src/scripts/modules/BQO/controllers/bqo_mock.js [20260807_114121]
++ #### 1. src/scripts/modules/BQO/controllers/bqo_mock.js [20260807_114122]
+// Line 55:
+- #### 2. src/scripts/modules/BQO/views/bqo_checkout.js [20260807_114121]
++ #### 2. src/scripts/modules/BQO/views/bqo_checkout.js [20260807_114122]
+// Line 112:
+- #### 3. src/scripts/modules/BQO/views/bqo_home.js [20260807_114121]
++ #### 3. src/scripts/modules/BQO/views/bqo_home.js [20260807_114122]
+// Line 164:
+- #### 4. src/scripts/modules/BQO/views/bqo_payment.js [20260807_114121]
++ #### 4. src/scripts/modules/BQO/views/bqo_payment.js [20260807_114122]
+// Line 227:
+- #### 1. docs/changelog/daily/codeChange-20260807.md [20260807_084349]
++ #### 1. docs/changelog/daily/codeChange-20260807.md [20260807_114122]
++ **Fungsi:** Implementasi: codeChange-20260807  
++ **Perubahan:** Pembaruan kode  
++ **Lines:** 5-227, 230-291, 334-347, 358, 380-382, 384-385
++ 
++ ```javascript
++ // Line 2:
++ + ### ✨ Features
++ + 
++ + #### 1. src/scripts/modules/BQO/controllers/bqo_mock.js [20260807_114121]
++ + **Fungsi:** Modul: bqo_mock  
+  // ... (truncated)
++ +    * add — simpan pesanan ke bqo_x.
++ +    * Payload mengikuti pola trenly bjual_x add:
++ +    *   headerInfo: info pesanan (meja, nama, telepon, tanggal, dll)
++ +    *   lineItemsInfo: detail item (cstocode, cstoname, cuom, nqjual, nhrgjua, namtjua, ndisc, nrpdisc)
++ +    *   paymentInfo: { cbnkid, namount }
++ +    */
++ ```
++ 
++ ---
++ 
++ #### 2. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_084349]
+// Line 466:
+- #### 2. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_083315]
++ #### 3. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_083315]
+// Line 477:
+- #### 3. rc/scripts/modules/BQO/controllers/bqo_api.js [20260807_114121]
+- **Fungsi:** Modul: bqo_api  
+- **Perubahan:** Pembaruan kode  
+- 
+- 
+// Line 494:
+- - **📖 Documentation:** 2 items
++ - **📖 Documentation:** 3 items
+- - **Total Files Modified:** 10
++ - **Total Files Modified:** 11
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260807.md [20260807_114122]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 5-227, 230-291, 334-347, 358, 380-382, 384-385
@@ -288,7 +378,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260807.md [20260807_084349]
+#### 3. docs/changelog/daily/codeChange-20260807.md [20260807_084349]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 5-47, 50, 61-66, 69, 72-78, 83-84, 86
@@ -349,7 +439,7 @@
 
 ---
 
-#### 3. docs/changelog/daily/codeChange-20260807.md [20260807_083315]
+#### 4. docs/changelog/daily/codeChange-20260807.md [20260807_083315]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 1-30
@@ -477,6 +567,12 @@
 
 ---
 
+#### 4. rc/scripts/modules/BQO/controllers/bqo_api.js [20260807_131833]
+**Fungsi:** Modul: bqo_api  
+**Perubahan:** Pembaruan kode  
+
+---
+
 ### ⚙️ Others
 
 #### 1. public/app.cfg [20260807_083315]
@@ -493,9 +589,9 @@
 ---
 
 ## 📊 **Summary**
-- **✨ Features:** 4 items
-- **📖 Documentation:** 3 items
-- **🔌 API:** 3 items
+- **✨ Features:** 5 items
+- **📖 Documentation:** 4 items
+- **🔌 API:** 4 items
 - **⚙️ Others:** 1 item
-- **Total Files Modified:** 11
+- **Total Files Modified:** 14
 - **Main Focus:** Features

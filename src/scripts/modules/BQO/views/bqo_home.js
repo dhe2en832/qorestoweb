@@ -109,7 +109,9 @@ export default function BQOHome() {
       desc:      (item.cstoname2 || item.cnotes1 || '').trim(),
       price:     String(parseFloat(item.nhrgjua || 0)),
       sellPrice: String(parseFloat(item.nhrgjua || 0)),
-      category:  (item.cfamcode || item.cprocod || 'UMUM').trim(),
+      // Gunakan cprocod sebagai kategori (lebih deskriptif dari cfamcode kode 2-3 huruf)
+      // Fallback ke cfamcode jika cprocod kosong
+      category:  (item.cprocod || item.cfamcode || 'UMUM').trim(),
       picture:   null, // getimage tidak tersedia — pakai placeholder
       // field tambahan untuk payload order
       cstocode:  (item.cstocode || '').trim(),
@@ -119,13 +121,15 @@ export default function BQOHome() {
       ndisc:     parseFloat(item.ndisc || 0),
     }));
 
-    // Bangun kategori unik dari cfamcode
+    // Bangun kategori unik
     const catMap = {};
-    catMap['all']   = { id: 'all',   label: 'Semua' };
-    catMap['promos'] = { id: 'promos', label: '🏷️ Promo' };
+    catMap['all']    = { id: 'all',    label: 'Semua' };
+    // Tab Promo hanya muncul jika ada item yang punya diskon
+    const hasPromo = datas.some((item) => item.ndisc > 0);
+    if (hasPromo) catMap['promos'] = { id: 'promos', label: '🏷️ Promo' };
     datas.forEach((item) => {
       const key = item.category;
-      if (key && !catMap[key]) catMap[key] = { id: key, label: key };
+      if (key && key !== '-' && !catMap[key]) catMap[key] = { id: key, label: key };
     });
     const categories = Object.values(catMap);
 
@@ -158,7 +162,7 @@ export default function BQOHome() {
         setLists(resJson.datas);
         break;
       case 'promos':
-        datasFilter = resJson.datas.filter((data) => data.price !== data.sellPrice);
+        datasFilter = resJson.datas.filter((data) => data.ndisc > 0);
         setLists(datasFilter);
         break;
       default:

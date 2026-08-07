@@ -71,13 +71,13 @@ class bqo_api {
     return this.fetchStock('getlist', {
       offset:     0,
       limit:      999,
-      usebrwdef:  false,
+      usebrwdef:  true,
       listfields: MENU_LISTFIELDS,
       query: {
         freefilter:  { search: '!LDISCONT' },
         textfilter:  { search: '' },
       },
-      getimage: false, // getimage butuh ShowImageAPI di apicsa.cfg
+      getimage: true, // getimage butuh ShowImageAPI di apicsa.cfg
       ...data,
     });
   }
