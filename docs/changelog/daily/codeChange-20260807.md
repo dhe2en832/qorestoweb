@@ -4,7 +4,36 @@
 
 ### ✨ Features
 
-#### 1. src/scripts/modules/BQO/controllers/bqo_mock.js [20260807_114122]
+#### 1. src/scripts/modules/BQO/views/bqo_home.js [20260807_131834]
+**Fungsi:** Halaman utama / dashboard  
+**Perubahan:** Pembaruan kode  
+**Lines:** 112-114, 124, 126-129, 132, 165
+
+```javascript
+// Line 109:
+-       category:  (item.cfamcode || item.cprocod || 'UMUM').trim(),
++       // Gunakan cprocod sebagai kategori (lebih deskriptif dari cfamcode kode 2-3 huruf)
++       // Fallback ke cfamcode jika cprocod kosong
++       category:  (item.cprocod || item.cfamcode || 'UMUM').trim(),
+// Line 121:
+-     // Bangun kategori unik dari cfamcode
++     // Bangun kategori unik
+-     catMap['all']   = { id: 'all',   label: 'Semua' };
+-     catMap['promos'] = { id: 'promos', label: '🏷️ Promo' };
++     catMap['all']    = { id: 'all',    label: 'Semua' };
++     // Tab Promo hanya muncul jika ada item yang punya diskon
++     const hasPromo = datas.some((item) => item.ndisc > 0);
++     if (hasPromo) catMap['promos'] = { id: 'promos', label: '🏷️ Promo' };
+-       if (key && !catMap[key]) catMap[key] = { id: key, label: key };
++       if (key && key !== '-' && !catMap[key]) catMap[key] = { id: key, label: key };
+// Line 162:
+-         datasFilter = resJson.datas.filter((data) => data.price !== data.sellPrice);
++         datasFilter = resJson.datas.filter((data) => data.ndisc > 0);
+```
+
+---
+
+#### 2. src/scripts/modules/BQO/controllers/bqo_mock.js [20260807_114122]
 **Fungsi:** Modul: bqo_mock  
 **Perubahan:** Hapus debug log  
 **Lines:** 130, 133-143, 146-147, 154-160, 164-166
@@ -55,7 +84,7 @@
 
 ---
 
-#### 2. src/scripts/modules/BQO/views/bqo_checkout.js [20260807_114122]
+#### 3. src/scripts/modules/BQO/views/bqo_checkout.js [20260807_114122]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Tambah fungsi: pad  
 **Lines:** 273-315
@@ -112,7 +141,7 @@
 
 ---
 
-#### 3. src/scripts/modules/BQO/views/bqo_home.js [20260807_114122]
+#### 4. src/scripts/modules/BQO/views/bqo_home.js [20260807_114122]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Pembaruan kode  
 **Lines:** 95-99, 101-132
@@ -164,7 +193,7 @@
 
 ---
 
-#### 4. src/scripts/modules/BQO/views/bqo_payment.js [20260807_114122]
+#### 5. src/scripts/modules/BQO/views/bqo_payment.js [20260807_114122]
 **Fungsi:** Modul: bqo_payment  
 **Perubahan:** Tambah fungsi: buildPayload; Tambah fungsi: pad; Tambah fungsi: buildCurrentPayload  
 **Lines:** 125-170, 237-238
@@ -225,38 +254,95 @@
 
 ---
 
-#### 5. src/scripts/modules/BQO/views/bqo_home.js [20260807_131833]
+#### 6. src/scripts/modules/BQO/views/bqo_home.js [20260807_133238]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Pembaruan kode  
-**Lines:** 112-114, 124, 126-129, 132, 165
+**Lines:** 112, 122, 125, 161
 
 ```javascript
 // Line 109:
--       category:  (item.cfamcode || item.cprocod || 'UMUM').trim(),
-+       // Gunakan cprocod sebagai kategori (lebih deskriptif dari cfamcode kode 2-3 huruf)
-+       // Fallback ke cfamcode jika cprocod kosong
-+       category:  (item.cprocod || item.cfamcode || 'UMUM').trim(),
-// Line 121:
--     // Bangun kategori unik dari cfamcode
-+     // Bangun kategori unik
--     catMap['all']   = { id: 'all',   label: 'Semua' };
--     catMap['promos'] = { id: 'promos', label: '🏷️ Promo' };
-+     catMap['all']    = { id: 'all',    label: 'Semua' };
-+     // Tab Promo hanya muncul jika ada item yang punya diskon
-+     const hasPromo = datas.some((item) => item.ndisc > 0);
-+     if (hasPromo) catMap['promos'] = { id: 'promos', label: '🏷️ Promo' };
--       if (key && !catMap[key]) catMap[key] = { id: key, label: key };
-+       if (key && key !== '-' && !catMap[key]) catMap[key] = { id: key, label: key };
-// Line 162:
--         datasFilter = resJson.datas.filter((data) => data.price !== data.sellPrice);
-+         datasFilter = resJson.datas.filter((data) => data.ndisc > 0);
+-       // Gunakan cprocod sebagai kategori (lebih deskriptif dari cfamcode kode 2-3 huruf)
+-       // Fallback ke cfamcode jika cprocod kosong
+-       category:  (item.cprocod || item.cfamcode || 'UMUM').trim(),
++       category:  (item.cfamcode || 'UMUM').trim(),
+// Line 119:
+-     // Bangun kategori unik
++     // Bangun kategori unik dari cfamcode
+-     // Tab Promo hanya muncul jika ada item yang punya diskon
+-     const hasPromo = datas.some((item) => item.ndisc > 0);
+-     if (hasPromo) catMap['promos'] = { id: 'promos', label: '🏷️ Promo' };
++     catMap['promos'] = { id: 'promos', label: '🏷️ Promo' };
+// Line 158:
+-         datasFilter = resJson.datas.filter((data) => data.ndisc > 0);
++         datasFilter = resJson.datas.filter((data) => data.price !== data.sellPrice);
 ```
 
 ---
 
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260807.md [20260807_130318]
+#### 1. docs/changelog/daily/codeChange-20260807.md [20260807_131834]
+**Fungsi:** Implementasi: codeChange-20260807  
+**Perubahan:** Pembaruan kode  
+**Lines:** 228-256, 259-320, 381, 442, 570-575, 592-594, 596
+
+```javascript
+// Line 225:
++ #### 5. src/scripts/modules/BQO/views/bqo_home.js [20260807_131833]
++ **Fungsi:** Halaman utama / dashboard  
++ **Perubahan:** Pembaruan kode  
++ **Lines:** 112-114, 124, 126-129, 132, 165
++ 
++ ```javascript
++ // Line 109:
++ -       category:  (item.cfamcode || item.cprocod || 'UMUM').trim(),
++ +       // Gunakan cprocod sebagai kategori (lebih deskriptif dari cfamcode kode 2-3 huruf)
++ +       // Fallback ke cfamcode jika cprocod kosong
++ +       category:  (item.cprocod || item.cfamcode || 'UMUM').trim(),
++ // Line 121:
++ -     // Bangun kategori unik dari cfamcode
++ +     // Bangun kategori unik
++ -     catMap['all']   = { id: 'all',   label: 'Semua' };
++ -     catMap['promos'] = { id: 'promos', label: '🏷️ Promo' };
++ +     catMap['all']    = { id: 'all',    label: 'Semua' };
++ +     // Tab Promo hanya muncul jika ada item yang punya diskon
++ +     const hasPromo = datas.some((item) => item.ndisc > 0);
++ +     if (hasPromo) catMap['promos'] = { id: 'promos', label: '🏷️ Promo' };
++ -       if (key && !catMap[key]) catMap[key] = { id: key, label: key };
++ +       if (key && key !== '-' && !catMap[key]) catMap[key] = { id: key, label: key };
++ // Line 162:
++ -         datasFilter = resJson.datas.filter((data) => data.price !== data.sellPrice);
+  // ... (truncated)
++ ---
++ 
++ #### 2. docs/changelog/daily/codeChange-20260807.md [20260807_114122]
+// Line 378:
+- #### 2. docs/changelog/daily/codeChange-20260807.md [20260807_084349]
++ #### 3. docs/changelog/daily/codeChange-20260807.md [20260807_084349]
+// Line 439:
+- #### 3. docs/changelog/daily/codeChange-20260807.md [20260807_083315]
++ #### 4. docs/changelog/daily/codeChange-20260807.md [20260807_083315]
+// Line 567:
++ #### 4. rc/scripts/modules/BQO/controllers/bqo_api.js [20260807_131833]
++ **Fungsi:** Modul: bqo_api  
++ **Perubahan:** Pembaruan kode  
++ 
++ ---
++ 
+// Line 589:
+- - **✨ Features:** 4 items
+- - **📖 Documentation:** 3 items
+- - **🔌 API:** 3 items
++ - **✨ Features:** 5 items
++ - **📖 Documentation:** 4 items
++ - **🔌 API:** 4 items
+- - **Total Files Modified:** 11
++ - **Total Files Modified:** 14
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260807.md [20260807_130318]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Tambah error handling  
 **Lines:** 7, 58, 115, 167, 230-291, 352, 395-456, 469, 497, 500
@@ -317,7 +403,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260807.md [20260807_114122]
+#### 3. docs/changelog/daily/codeChange-20260807.md [20260807_114122]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 5-227, 230-291, 334-347, 358, 380-382, 384-385
@@ -378,7 +464,7 @@
 
 ---
 
-#### 3. docs/changelog/daily/codeChange-20260807.md [20260807_084349]
+#### 4. docs/changelog/daily/codeChange-20260807.md [20260807_084349]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 5-47, 50, 61-66, 69, 72-78, 83-84, 86
@@ -439,7 +525,7 @@
 
 ---
 
-#### 4. docs/changelog/daily/codeChange-20260807.md [20260807_083315]
+#### 5. docs/changelog/daily/codeChange-20260807.md [20260807_083315]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 1-30
@@ -482,7 +568,22 @@
 
 ### 🔌 API
 
-#### 1. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_114122]
+#### 1. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_131834]
+**Fungsi:** Modul: bqo_api  
+**Perubahan:** Pembaruan kode  
+**Lines:** 74, 80
+
+```javascript
+// Line 71:
+-       usebrwdef:  false,
++       usebrwdef:  true,
+-       getimage: false, // getimage butuh ShowImageAPI di apicsa.cfg
++       getimage: true, // getimage butuh ShowImageAPI di apicsa.cfg
+```
+
+---
+
+#### 2. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_114122]
 **Fungsi:** Modul: bqo_api  
 **Perubahan:** Tambah error handling; Tambah HTTP request  
 **Lines:** 9-14, 16-21, 23-25, 38-46, 48-60, 63-69, 71-82, 85-91
@@ -543,7 +644,7 @@
 
 ---
 
-#### 2. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_084349]
+#### 3. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_084349]
 **Fungsi:** Modul: bqo_api  
 **Perubahan:** Pembaruan kode  
 **Lines:** 40
@@ -556,7 +657,7 @@
 
 ---
 
-#### 3. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_083315]
+#### 4. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_083315]
 **Fungsi:** Modul: bqo_api  
 **Perubahan:** Hapus debug log  
 
@@ -567,7 +668,7 @@
 
 ---
 
-#### 4. rc/scripts/modules/BQO/controllers/bqo_api.js [20260807_131833]
+#### 5. rc/scripts/modules/BQO/controllers/bqo_api.js [20260807_133238]
 **Fungsi:** Modul: bqo_api  
 **Perubahan:** Pembaruan kode  
 
@@ -589,9 +690,9 @@
 ---
 
 ## 📊 **Summary**
-- **✨ Features:** 5 items
-- **📖 Documentation:** 4 items
-- **🔌 API:** 4 items
+- **✨ Features:** 6 items
+- **📖 Documentation:** 5 items
+- **🔌 API:** 5 items
 - **⚙️ Others:** 1 item
-- **Total Files Modified:** 14
+- **Total Files Modified:** 17
 - **Main Focus:** Features

@@ -6,10 +6,19 @@ import { getAppConfig } from '../../../utils/app-config';
 // URL server lokal sebagai fallback. Kosong = fitur lokal tidak aktif.
 const LOCAL_BASE_URL = (process.env.REACT_APP_API_LOCAL_ENDPOINT || '').trim();
 
-// Field yang diambil dari bstock_x untuk katalog menu — mengikuti pola trenly
+// Field yang diambil dari bstock_x — mengikuti pola trenly (semua field BSTOCKF)
 const MENU_LISTFIELDS = [
-  'cstocode', 'cstoname', 'cstoname2', 'nhrgjua', 'ndisc',
-  'cfamcode', 'cprocod', 'csatuan', 'npict',
+  'citemtype','cstocode','cstoname','ldiscont','cprocode','cfamcode','cdefwhseid',
+  'cmatcode','lbckflsh','csource','ccostmetho','ltaxable','coricode','cgencode',
+  'ccolor','csatuan','csortcode','pstcost','nqround','nmargin','nhrgjua','ndisc',
+  'pstprice','cdscsch','nqrj','nqrb','nqbeli','nqjual','nqin','nqout','nqrcv',
+  'nqsnd','nqpro','nqused','nqakhir','ncrj','ncrb','ncbeli','ncjual','ncin',
+  'ncout','ncrcv','ncsnd','ncpro','ncused','ncakhir','cnotes1','cnotes2','cnotes3',
+  'cnegstk','conegstk','nqmin','nqmax','creqbase','nleadtime','nordtime','nsafety',
+  'lavgsys','davgdate1','davgdate2','nqoutavg','nqinavg','nqalloc','nqorder','npict',
+  'dldatbel','nhrgbel','nlhrgbel','nlhrgbelbr','nldscbelit','nldscbelto','nldscbelal',
+  'dldatpro','nlhrgpro','nqtybrk1','nhrgbrk1','nqtybrk2','nhrgbrk2','nqtybrk3',
+  'nhrgbrk3','nqtybrk4','nhrgbrk4','nqtybrk5','nhrgbrk5',
 ];
 
 class bqo_api {
@@ -62,22 +71,20 @@ class bqo_api {
 
   /**
    * getList — ambil katalog menu dari bstock_x.
-   * Mengikuti pola trenly useCashierCatalog:
-   *   - listfields: field minimal untuk tampil di menu
-   *   - freefilter: '!LDISCONT' → hanya item yang aktif dijual (bukan discontinue)
-   * Response: { result, data: [{cstocode, cstoname, nhrgjua, csatuan, ndisc, ...}] }
+   * Payload sama persis dengan trenly, kecuali getimage=false
+   * (server belum dikonfigurasi ShowImageAPI di apicsa.cfg)
    */
   static getList(data) {
     return this.fetchStock('getlist', {
       offset:     0,
-      limit:      999,
+      limit:      25,
       usebrwdef:  true,
       listfields: MENU_LISTFIELDS,
       query: {
-        freefilter:  { search: '!LDISCONT' },
-        textfilter:  { search: '' },
+        freefilter: { search: '!LDISCONT' },
+        textfilter: { search: '' },
       },
-      getimage: true, // getimage butuh ShowImageAPI di apicsa.cfg
+      getimage: true,
       ...data,
     });
   }
