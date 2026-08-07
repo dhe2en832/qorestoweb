@@ -20,6 +20,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import ToastBar from '../../../components/ToastBar';
 import AlertDialog from '../../../components/AlertDialog';
 import ConfirmDialog from '../../../components/ConfirmDialog';
+import Config from '../../../Config';
 
 import bqo_api from '../controllers/bqo_api';
 import useXenditPayment from '../hooks/useXenditPayment';
@@ -39,8 +40,6 @@ const XENDIT_BANK_CODE = (process.env.REACT_APP_XENDIT_BANK_CODE || 'X000').trim
 
 // Customer ID default untuk walk-in / self-order BQO (wajib ada di backend)
 const BQO_DEFAULT_CUSTOMER = (process.env.REACT_APP_BQO_DEFAULT_CUSTOMER || 'UMUM').trim();
-
-import Config from '../../../Config';
 
 // Pajak — mengikuti pola webcsa-v2 (trenly): BASE_TAX_PERCENTAGE × EFFECTIVE_TAX_RATE
 const TAX_PERCENT = Config.BASE_TAX_PERCENTAGE * Config.EFFECTIVE_TAX_RATE;
