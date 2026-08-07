@@ -93,31 +93,72 @@ export default function BQOHome() {
   const [categories, setCategories] = useState([]);
 
   /**
-   * getDatas — ambil menu dari bstock_x dan map ke format yang dipakai frontend.
-   * bstock_x response: { result, data: [{ cstocode, cstoname, nhrgjua, cfamcode, ... }] }
-   * Frontend format:   { datas: [...], categories: [...] }
+   * getDatas — ambil menu dari bstock_x.
+   * Coba usebrwdef:true dulu (mengikuti pola trenly).
+   * Jika response punya columns → data berformat array, map pakai index kolom.
+   * Jika tidak punya columns → data berformat object {key:value}, map langsung.
    */
   async function getDatas() {
-    const res = await bqo_api.getList({});
+    const useBrwRef = { current: true };
+
+    // Pertama coba dengan usebrwdef: true
+    let res = await bqo_api.getListBrwdef({});
+
+    // Jika brwdef gagal atau tidak return columns, fallback ke usebrwdef: false
+    if (!res || !res.result || !res.data || res.data.length === 0) {
+      res = await bqo_api.getList({});
+      useBrwRef.current = false;
+    }
+
     if (!res || !res.result || !res.data) return null;
 
-    // Map bstock_x fields → format menu restoran
-    // Simpan juga csatuan dan ndisc agar tersedia saat build payload order
-    const datas = res.data.map((item) => ({
-      id:        (item.cstocode || '').trim(),
-      name:      (item.cstoname || '').trim(),
-      desc:      (item.cstoname2 || item.cnotes1 || '').trim(),
-      price:     String(parseFloat(item.nhrgjua || 0)),
-      sellPrice: String(parseFloat(item.nhrgjua || 0)),
-      category:  (item.cfamcode || 'UMUM').trim(),
-      picture:   null, // getimage tidak tersedia — pakai placeholder
-      // field tambahan untuk payload order
-      cstocode:  (item.cstocode || '').trim(),
-      cstoname:  (item.cstoname || '').trim(),
-      nhrgjua:   parseFloat(item.nhrgjua || 0),
-      csatuan:   (item.csatuan || 'PCS').trim(),
-      ndisc:     parseFloat(item.ndisc || 0),
-    }));
+    let datas;
+
+    if (useBrwRef.current && res.columns && res.columns.length > 0) {
+      // ── Format brwdef: data adalah array of arrays ────────────────────────
+      // Buat map dari title kolom → index
+      const colMap = {};
+      res.columns.forEach((col, idx) => {
+        const key = (col.field || col.title || '').toLowerCase().trim();
+        colMap[key] = idx;
+      });
+
+      const get = (row, field) => {
+        const idx = colMap[field.toLowerCase()];
+        return idx !== undefined ? row[idx] : undefined;
+      };
+
+      datas = res.data.map((row) => ({
+        id:        String(get(row, 'cstocode') || '').trim(),
+        name:      String(get(row, 'cstoname') || '').trim(),
+        desc:      String(get(row, 'cstoname2') || get(row, 'cnotes1') || '').trim(),
+        price:     String(parseFloat(get(row, 'nhrgjua') || 0)),
+        sellPrice: String(parseFloat(get(row, 'nhrgjua') || 0)),
+        category:  String(get(row, 'cfamcode') || 'UMUM').trim(),
+        picture:   null,
+        cstocode:  String(get(row, 'cstocode') || '').trim(),
+        cstoname:  String(get(row, 'cstoname') || '').trim(),
+        nhrgjua:   parseFloat(get(row, 'nhrgjua') || 0),
+        csatuan:   String(get(row, 'csatuan') || 'PCS').trim(),
+        ndisc:     parseFloat(get(row, 'ndisc') || 0),
+      }));
+    } else {
+      // ── Format non-brwdef: data adalah array of objects ───────────────────
+      datas = res.data.map((item) => ({
+        id:        (item.cstocode || '').trim(),
+        name:      (item.cstoname || '').trim(),
+        desc:      (item.cstoname2 || item.cnotes1 || '').trim(),
+        price:     String(parseFloat(item.nhrgjua || 0)),
+        sellPrice: String(parseFloat(item.nhrgjua || 0)),
+        category:  (item.cfamcode || 'UMUM').trim(),
+        picture:   null,
+        cstocode:  (item.cstocode || '').trim(),
+        cstoname:  (item.cstoname || '').trim(),
+        nhrgjua:   parseFloat(item.nhrgjua || 0),
+        csatuan:   (item.csatuan || 'PCS').trim(),
+        ndisc:     parseFloat(item.ndisc || 0),
+      }));
+    }
 
     // Bangun kategori unik dari cfamcode
     const catMap = {};
