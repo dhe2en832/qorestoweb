@@ -93,29 +93,90 @@ export default function BQOHome() {
   const [categories, setCategories] = useState([]);
 
   /**
-   * getDatas — ambil menu dari bstock_x dengan usebrwdef:false.
-   * Menggunakan getList() agar response berupa object dengan cfamcode
-   * (untuk kategori) dan getimage sesuai konfigurasi bqo_api.
+   * getDatas — ambil menu dari bstock_x.
+   * Mode dikontrol via env:
+   *   REACT_APP_MENU_USE_BRWDEF=Y → usebrwdef:true, response array of arrays
+   *   REACT_APP_MENU_USE_BRWDEF=N → usebrwdef:false, response array of objects (cfamcode tersedia)
+   *   REACT_APP_MENU_GETIMAGE=Y   → request gambar dari server
    */
   async function getDatas() {
+    const useBrwDef = process.env.REACT_APP_MENU_USE_BRWDEF === 'Y';
     const res = await bqo_api.getList({});
     if (!res || !res.result || !res.data) return null;
 
-    const datas = res.data.map((item) => ({
-      id:        (item.cstocode || '').trim(),
-      name:      (item.cstoname || '').trim(),
-      desc:      (item.cstoname2 || item.cnotes1 || '').trim(),
-      price:     String(parseFloat(item.nhrgjua || 0)),
-      sellPrice: String(parseFloat(item.nhrgjua || 0)),
-      category:  (item.cfamcode || 'UMUM').trim(),
-      picture:   item.picture || null,
-      cstocode:  (item.cstocode || '').trim(),
-      cstoname:  (item.cstoname || '').trim(),
-      nhrgjua:   parseFloat(item.nhrgjua || 0),
-      csatuan:   (item.csatuan || 'PCS').trim(),
-      ndisc:     parseFloat(item.ndisc || 0),
-    }));
+    let datas;
 
+    if (useBrwDef && res.columns && Array.isArray(res.data) && Array.isArray(res.data[0])) {
+      // ── Format brwdef: data berupa array of arrays, columns berupa array of {key,title,...} ──
+      const cols = res.columns; // [{key,title,...}, ...]
+      const findIdx = (...kw) =>
+        cols.findIndex((c) =>
+          kw.some((k) => (c.title || c.key || '').toLowerCase().includes(k.toLowerCase()))
+        );
+
+      const idxName  = findIdx('nama item', 'cstoname');
+      const idxSat   = findIdx('sat', 'csatuan');
+      const idxHarga = findIdx('harga jual', 'nhrgjua');
+      const idxKode  = findIdx('kode item', 'cstocode');
+      const idxFam   = findIdx('cfamcode', 'famcode', 'kategori');
+      const idxDisc  = findIdx('ndisc', 'diskon', 'disc');
+      const idxNotes = findIdx('cnotes1', 'notes1', 'keterangan');
+      const idxImg   = findIdx('cimageurl', 'picture', 'image');
+
+      const parseNum = (v) => parseFloat(String(v || '').replace(/,/g, '')) || 0;
+
+      datas = res.data.map((row) => {
+        const cstocode = String(row[idxKode  >= 0 ? idxKode  : 0] || '').trim();
+        const cstoname = String(row[idxName  >= 0 ? idxName  : 1] || '').trim();
+        const nhrgjua  = parseNum(row[idxHarga >= 0 ? idxHarga : 4]);
+        const csatuan  = String(row[idxSat   >= 0 ? idxSat   : 3] || 'PCS').trim();
+        const ndisc    = parseNum(row[idxDisc  >= 0 ? idxDisc  : -1]);
+        const desc     = idxNotes >= 0 ? String(row[idxNotes] || '').trim() : '';
+        const picture  = idxImg   >= 0 ? (String(row[idxImg]  || '').trim() || null) : null;
+
+        // Kategori: ambil dari cfamcode jika kolom tersedia, fallback ke prefix kode item
+        let category = 'UMUM';
+        if (idxFam >= 0 && row[idxFam]) {
+          category = String(row[idxFam]).trim();
+        } else {
+          const prefix = cstocode.match(/^([A-Z]+)-/);
+          category = prefix ? prefix[1] : 'UMUM';
+        }
+
+        return {
+          id:        cstocode,
+          name:      cstoname,
+          desc,
+          price:     String(nhrgjua),
+          sellPrice: String(nhrgjua),
+          category,
+          picture,
+          cstocode,
+          cstoname,
+          nhrgjua,
+          csatuan,
+          ndisc,
+        };
+      });
+    } else {
+      // ── Format non-brwdef: data berupa array of objects dengan cfamcode ──
+      datas = res.data.map((item) => ({
+        id:        (item.cstocode || '').trim(),
+        name:      (item.cstoname || '').trim(),
+        desc:      (item.cstoname2 || item.cnotes1 || '').trim(),
+        price:     String(parseFloat(item.nhrgjua || 0)),
+        sellPrice: String(parseFloat(item.nhrgjua || 0)),
+        category:  (item.cfamcode || 'UMUM').trim(),
+        picture:   item.picture || null,
+        cstocode:  (item.cstocode || '').trim(),
+        cstoname:  (item.cstoname || '').trim(),
+        nhrgjua:   parseFloat(item.nhrgjua || 0),
+        csatuan:   (item.csatuan || 'PCS').trim(),
+        ndisc:     parseFloat(item.ndisc || 0),
+      }));
+    }
+
+    // Bangun daftar kategori dari data yang ada
     const catMap = {};
     catMap['all']    = { id: 'all',    label: 'Semua' };
     catMap['promos'] = { id: 'promos', label: '🏷️ Promo' };
