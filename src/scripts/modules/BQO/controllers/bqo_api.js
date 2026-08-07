@@ -12,6 +12,10 @@ const MENU_LISTFIELDS = [
   'cfamcode', 'cprocod', 'csatuan', 'cnotes1',
 ];
 
+// Kontrol dari env — bisa di-set per environment tanpa rebuild bqo_api
+const MENU_USE_BRWDEF = process.env.REACT_APP_MENU_USE_BRWDEF === 'Y';
+const MENU_GETIMAGE   = process.env.REACT_APP_MENU_GETIMAGE   === 'Y';
+
 class bqo_api {
   // ── Mock mode check ──────────────────────────────────────────────────────
   static _useMock() {
@@ -61,28 +65,29 @@ class bqo_api {
   }
 
   /**
-   * getList — ambil katalog menu dari bstock_x dengan usebrwdef:false.
-   * Response: array of objects {cstocode, cstoname, nhrgjua, ...}
+   * getList — ambil katalog menu dari bstock_x.
+   * usebrwdef dan getimage dikontrol via env:
+   *   REACT_APP_MENU_USE_BRWDEF: Y/N
+   *   REACT_APP_MENU_GETIMAGE:   Y/N
    */
   static getList(data) {
     return this.fetchStock('getlist', {
       offset:     0,
       limit:      999,
-      usebrwdef:  true,
+      usebrwdef:  MENU_USE_BRWDEF,
       listfields: MENU_LISTFIELDS,
       query: {
         freefilter: { search: '!LDISCONT' },
         textfilter: { search: '' },
       },
-      getimage: true,
+      getimage: MENU_GETIMAGE,
       ...data,
     });
   }
 
   /**
-   * getListBrwdef — ambil katalog menu dengan usebrwdef:true.
-   * Response: { columns:[{title,...}], data:[[...]] } — format array of arrays
-   * Dipakai sebagai primary fetch di bqo_home.js, fallback ke getList jika gagal.
+   * getListBrwdef — alias dengan usebrwdef:true paksa.
+   * Dipakai jika ingin eksplisit pakai brwdef terlepas dari env.
    */
   static getListBrwdef(data) {
     return this.fetchStock('getlist', {
@@ -94,7 +99,7 @@ class bqo_api {
         freefilter: { search: '!LDISCONT' },
         textfilter: { search: '' },
       },
-      getimage: false,
+      getimage: MENU_GETIMAGE,
       ...data,
     });
   }

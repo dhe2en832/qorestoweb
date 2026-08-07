@@ -4,343 +4,7 @@
 
 ### ✨ Features
 
-#### 1. src/scripts/modules/BQO/views/bqo_home.js [20260807_135032]
-**Fungsi:** Halaman utama / dashboard  
-**Perubahan:** Tambah fungsi: key; Tambah fungsi: get  
-**Lines:** 96-99, 102-112, 115-161
-
-```javascript
-// Line 93:
--    * getDatas — ambil menu dari bstock_x dan map ke format yang dipakai frontend.
--    * bstock_x response: { result, data: [{ cstocode, cstoname, nhrgjua, cfamcode, ... }] }
--    * Frontend format:   { datas: [...], categories: [...] }
-+    * getDatas — ambil menu dari bstock_x.
-+    * Coba usebrwdef:true dulu (mengikuti pola trenly).
-+    * Jika response punya columns → data berformat array, map pakai index kolom.
-+    * Jika tidak punya columns → data berformat object {key:value}, map langsung.
--     const res = await bqo_api.getList({});
-+     const useBrwRef = { current: true };
-+ 
-+     // Pertama coba dengan usebrwdef: true
-+     let res = await bqo_api.getListBrwdef({});
-+ 
-+     // Jika brwdef gagal atau tidak return columns, fallback ke usebrwdef: false
-+     if (!res || !res.result || !res.data || res.data.length === 0) {
-+       res = await bqo_api.getList({});
-+       useBrwRef.current = false;
-+     }
-+ 
--     // Map bstock_x fields → format menu restoran
--     // Simpan juga csatuan dan ndisc agar tersedia saat build payload order
--     const datas = res.data.map((item) => ({
--       id:        (item.cstocode || '').trim(),
--       name:      (item.cstoname || '').trim(),
-  // ... (truncated)
-+         category:  String(get(row, 'cfamcode') || 'UMUM').trim(),
-+         picture:   null,
-+         cstocode:  String(get(row, 'cstocode') || '').trim(),
-+         cstoname:  String(get(row, 'cstoname') || '').trim(),
-+         nhrgjua:   parseFloat(get(row, 'nhrgjua') || 0),
-+         csatuan:   String(get(row, 'csatuan') || 'PCS').trim(),
-+         ndisc:     parseFloat(get(row, 'ndisc') || 0),
-+       }));
-+     } else {
-+       // ── Format non-brwdef: data adalah array of objects ───────────────────
-+       datas = res.data.map((item) => ({
-+         id:        (item.cstocode || '').trim(),
-+         name:      (item.cstoname || '').trim(),
-+         desc:      (item.cstoname2 || item.cnotes1 || '').trim(),
-+         price:     String(parseFloat(item.nhrgjua || 0)),
-+         sellPrice: String(parseFloat(item.nhrgjua || 0)),
-+         category:  (item.cfamcode || 'UMUM').trim(),
-+         picture:   null,
-+         cstocode:  (item.cstocode || '').trim(),
-+         cstoname:  (item.cstoname || '').trim(),
-+         nhrgjua:   parseFloat(item.nhrgjua || 0),
-+         csatuan:   (item.csatuan || 'PCS').trim(),
-+         ndisc:     parseFloat(item.ndisc || 0),
-+       }));
-+     }
-```
-
----
-
-#### 2. src/scripts/modules/BQO/views/bqo_home.js [20260807_133241]
-**Fungsi:** Halaman utama / dashboard  
-**Perubahan:** Pembaruan kode  
-**Lines:** 112, 122, 125, 161
-
-```javascript
-// Line 109:
--       // Gunakan cprocod sebagai kategori (lebih deskriptif dari cfamcode kode 2-3 huruf)
--       // Fallback ke cfamcode jika cprocod kosong
--       category:  (item.cprocod || item.cfamcode || 'UMUM').trim(),
-+       category:  (item.cfamcode || 'UMUM').trim(),
-// Line 119:
--     // Bangun kategori unik
-+     // Bangun kategori unik dari cfamcode
--     // Tab Promo hanya muncul jika ada item yang punya diskon
--     const hasPromo = datas.some((item) => item.ndisc > 0);
--     if (hasPromo) catMap['promos'] = { id: 'promos', label: '🏷️ Promo' };
-+     catMap['promos'] = { id: 'promos', label: '🏷️ Promo' };
-// Line 158:
--         datasFilter = resJson.datas.filter((data) => data.ndisc > 0);
-+         datasFilter = resJson.datas.filter((data) => data.price !== data.sellPrice);
-```
-
----
-
-#### 3. src/scripts/modules/BQO/views/bqo_home.js [20260807_131834]
-**Fungsi:** Halaman utama / dashboard  
-**Perubahan:** Pembaruan kode  
-**Lines:** 112-114, 124, 126-129, 132, 165
-
-```javascript
-// Line 109:
--       category:  (item.cfamcode || item.cprocod || 'UMUM').trim(),
-+       // Gunakan cprocod sebagai kategori (lebih deskriptif dari cfamcode kode 2-3 huruf)
-+       // Fallback ke cfamcode jika cprocod kosong
-+       category:  (item.cprocod || item.cfamcode || 'UMUM').trim(),
-// Line 121:
--     // Bangun kategori unik dari cfamcode
-+     // Bangun kategori unik
--     catMap['all']   = { id: 'all',   label: 'Semua' };
--     catMap['promos'] = { id: 'promos', label: '🏷️ Promo' };
-+     catMap['all']    = { id: 'all',    label: 'Semua' };
-+     // Tab Promo hanya muncul jika ada item yang punya diskon
-+     const hasPromo = datas.some((item) => item.ndisc > 0);
-+     if (hasPromo) catMap['promos'] = { id: 'promos', label: '🏷️ Promo' };
--       if (key && !catMap[key]) catMap[key] = { id: key, label: key };
-+       if (key && key !== '-' && !catMap[key]) catMap[key] = { id: key, label: key };
-// Line 162:
--         datasFilter = resJson.datas.filter((data) => data.price !== data.sellPrice);
-+         datasFilter = resJson.datas.filter((data) => data.ndisc > 0);
-```
-
----
-
-#### 4. src/scripts/modules/BQO/controllers/bqo_mock.js [20260807_114122]
-**Fungsi:** Modul: bqo_mock  
-**Perubahan:** Hapus debug log  
-**Lines:** 130, 133-143, 146-147, 154-160, 164-166
-
-```javascript
-// Line 127:
--       // ── getList ──────────────────────────────────────────────────────────
-+       // ── getList — return format bstock_x agar konsisten dengan backend ───
--         console.log('[BQO MOCK] getList called', data);
-+         // Map MOCK_MENU ke format bstock_x response
-+         const mockData = MOCK_MENU.map((item) => ({
-+           key:       item.id,
-+           cstocode:  item.id,
-+           cstoname:  item.name,
-+           cstoname2: item.desc,
-+           nhrgjua:   parseFloat(item.sellPrice),
-+           cfamcode:  item.category,
-+           cprocod:   item.category,
-+           npict:     0,
-+         }));
--           datas: MOCK_MENU,
--           categories: MOCK_CATEGORIES,
-+           data:   mockData,
-+           metadata: { offset: 0, limit: mockData.length, count: mockData.length },
--         console.log('[BQO MOCK] add called', { bon, data });
--         console.table(
--           (data.cart || []).map((item) => ({
--             nama:  item.item?.name,
--             qty:   item.qty,
--             harga: item.item?.sellPrice,
--             note:  item.note || '-',
--           }))
--         );
-+         // Log detail order untuk debugging
-+         const items = data.lineItemsInfo || data.cart || [];
-+         console.log('[BQO MOCK] add called', {
-+           bon,
-+           headerInfo: data.headerInfo || data.info,
-+           itemCount: items.length,
-+         });
--             cordernum: bon,
--             cmeja:     data.info?.seatNumber  || '-',
--             cnama:     data.info?.orderByName || '-',
-+             cordernum:    bon,
-+             cseatno:      data.headerInfo?.cseatno      || data.info?.seatNumber  || '-',
-+             corderbyname: data.headerInfo?.corderbyname || data.info?.orderByName || '-',
-```
-
----
-
-#### 5. src/scripts/modules/BQO/views/bqo_checkout.js [20260807_114122]
-**Fungsi:** Halaman checkout & submit order  
-**Perubahan:** Tambah fungsi: pad  
-**Lines:** 273-315
-
-```javascript
-// Line 270:
--       const payload = { info, cart: cartItems };
--       const result  = await bqo_api.add(payload);
-+       const today   = new Date();
-+       const pad     = (n) => String(n).padStart(2, '0');
-+       const dqodate = `${today.getFullYear()}${pad(today.getMonth() + 1)}${pad(today.getDate())}`;
-+       const ctime   = `${pad(today.getHours())}:${pad(today.getMinutes())}:${pad(today.getSeconds())}`;
-+ 
-+       // Field sesuai dokumentasi BQO (Header + BITMQO)
-+       const lineItemsInfo = cartItems.map((d, idx) => {
-+         const nhrgjua = parseFloat(d.item?.nhrgjua || d.item?.sellPrice || 0);
-+         const nqqo    = parseInt(d.qty || 1);
-+         const discPct = parseFloat(d.item?.ndisc || 0);
-+         const nrpdisc = discPct > 0 ? Math.round(nhrgjua * nqqo * discPct / 100) : 0;
-+         return {
-+           nline:    idx + 1,
-+           cstocode: (d.item?.cstocode || d.item?.id || '').trim(),
-+           cstoname: (d.item?.cstoname || d.item?.name || '').trim(),
-+           csize:    '-',
-+           nqqo,
-+           cuom:     (d.item?.csatuan || d.item?.cuom || 'PCS').trim(),
-+           nhrgjua,
-+           ndisc:    discPct,
-+           nrpdisc,
-+           cremark:  d.note || '',
-+         };
-+       });
-+ 
-+       const payload = {
-+         headerInfo: {
-+           dqodate,
-+           ctime,
-+           ctabid:   info.seatNumber  || '',   // Nomor Meja
-+           cremark:  info.orderByName || '',   // Nama pemesan
-+           cnotelp:  info.phoneNumber || '',   // No telepon
-+           npctdisc: 0,
-+           npctppn:  TAX_PERCENT,
-+           namount:  subtotal,                  // Total sebelum pajak
-+           cbnkid:   '',                        // Kosong = bayar di kasir
-+           cpaytype: '',                        // Kosong = Cash
-+         },
-+         lineItemsInfo,
-+         paymentInfo: { cbnkid: '', namount: 0 }, // belum dibayar
-+       };
-+ 
-+       const result = await bqo_api.add(payload);
--         // Tampilkan dialog konfirmasi + struk
-```
-
----
-
-#### 6. src/scripts/modules/BQO/views/bqo_home.js [20260807_114122]
-**Fungsi:** Halaman utama / dashboard  
-**Perubahan:** Pembaruan kode  
-**Lines:** 95-99, 101-132
-
-```javascript
-// Line 90:
--   // List
-+   /**
-+    * getDatas — ambil menu dari bstock_x dan map ke format yang dipakai frontend.
-+    * bstock_x response: { result, data: [{ cstocode, cstoname, nhrgjua, cfamcode, ... }] }
-+    * Frontend format:   { datas: [...], categories: [...] }
-+    */
--     return await bqo_api.getList({});
-+     const res = await bqo_api.getList({});
-+     if (!res || !res.result || !res.data) return null;
-+ 
-+     // Map bstock_x fields → format menu restoran
-+     // Simpan juga csatuan dan ndisc agar tersedia saat build payload order
-+     const datas = res.data.map((item) => ({
-+       id:        (item.cstocode || '').trim(),
-+       name:      (item.cstoname || '').trim(),
-+       desc:      (item.cstoname2 || item.cnotes1 || '').trim(),
-+       price:     String(parseFloat(item.nhrgjua || 0)),
-+       sellPrice: String(parseFloat(item.nhrgjua || 0)),
-+       category:  (item.cfamcode || item.cprocod || 'UMUM').trim(),
-+       picture:   null, // getimage tidak tersedia — pakai placeholder
-+       // field tambahan untuk payload order
-+       cstocode:  (item.cstocode || '').trim(),
-+       cstoname:  (item.cstoname || '').trim(),
-+       nhrgjua:   parseFloat(item.nhrgjua || 0),
-+       csatuan:   (item.csatuan || 'PCS').trim(),
-+       ndisc:     parseFloat(item.ndisc || 0),
-+     }));
-+ 
-+     // Bangun kategori unik dari cfamcode
-+     const catMap = {};
-+     catMap['all']   = { id: 'all',   label: 'Semua' };
-+     catMap['promos'] = { id: 'promos', label: '🏷️ Promo' };
-+     datas.forEach((item) => {
-+       const key = item.category;
-+       if (key && !catMap[key]) catMap[key] = { id: key, label: key };
-+     });
-+     const categories = Object.values(catMap);
-+ 
-+     return { datas, categories };
-// Line 141:
--       // jika API belum siap / 404, biarkan state tetap [] (initial value)
-```
-
----
-
-#### 7. src/scripts/modules/BQO/views/bqo_payment.js [20260807_114122]
-**Fungsi:** Modul: bqo_payment  
-**Perubahan:** Tambah fungsi: buildPayload; Tambah fungsi: pad; Tambah fungsi: buildCurrentPayload  
-**Lines:** 125-170, 237-238
-
-```javascript
-// Line 122:
--   const buildPayload = (cbnkid) => ({
--     info: orderInfo,
--     cart: cartItems,
--     paymentInfo: { cbnkid, namount: total },
--     taxAmount,
--     subtotal,
--     total,
--   });
-+   // Field sesuai dokumentasi BQO:
-+   //   Header: DQODATE, CTABID, CWHSEID, CREMARK, NPCTPPN, NAMOUNT, CBNKID
-+   //   Item:   NLINE, CSTOCODE, CSTONAME, NQQO, CUOM, NHRGJUA, NDISC, NRPDISC
-+   const buildPayload = (cbnkid) => {
-+     const today   = new Date();
-+     const pad     = (n) => String(n).padStart(2, '0');
-+     const dqodate = `${today.getFullYear()}${pad(today.getMonth() + 1)}${pad(today.getDate())}`;
-+     const ctime   = `${pad(today.getHours())}:${pad(today.getMinutes())}:${pad(today.getSeconds())}`;
-+ 
-+     const lineItemsInfo = cartItems.map((d, idx) => {
-+       const nhrgjua = parseFloat(d.item?.nhrgjua || d.item?.sellPrice || 0);
-+       const nqqo    = parseInt(d.qty || 1);
-+       const discPct = parseFloat(d.item?.ndisc || 0);
-+       const nrpdisc = discPct > 0 ? Math.round(nhrgjua * nqqo * discPct / 100) : 0;
-+       return {
-+         nline:    idx + 1,
-  // ... (truncated)
-+         ctabid:   orderInfo.seatNumber  || '',   // Nomor Meja
-+         cremark:  orderInfo.orderByName || '',   // Nama pemesan sebagai keterangan
-+         cnotelp:  orderInfo.phoneNumber || '',   // No telepon (jika backend support)
-+         npctdisc: 0,
-+         npctppn:  TAX_PERCENT,
-+         namount:  subtotal,                       // Total sebelum pajak
-+         cbnkid,
-+         cpaytype: cbnkid ? '' : '',              // kosong = Cash
-+       },
-+       lineItemsInfo,
-+       paymentInfo: { cbnkid, namount: total },
-+     };
-+   };
-// Line 234:
--   // ── Rebuild payload dari state saat ini ───────────────────────────────────
--   const buildCurrentPayload = (cbnkid) => ({
--     info: orderInfo,
--     cart: cartItems,
--     paymentInfo: { cbnkid, namount: total },
--     taxAmount,
--     subtotal,
--     total,
--   });
-+   // ── Rebuild payload dari state saat ini (untuk retry) ────────────────────
-+   const buildCurrentPayload = (cbnkid) => buildPayload(cbnkid);
-```
-
----
-
-#### 8. src/scripts/modules/BQO/views/bqo_home.js [20260807_140512]
+#### 1. src/scripts/modules/BQO/views/bqo_home.js [20260807_140514]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Tambah fungsi: findIdx; Tambah fungsi: parseHarga  
 **Lines:** 97-98, 101, 103, 105-106, 114-129, 131-134, 137-156, 158
@@ -401,9 +65,467 @@
 
 ---
 
+#### 2. src/scripts/modules/BQO/views/bqo_home.js [20260807_135032]
+**Fungsi:** Halaman utama / dashboard  
+**Perubahan:** Tambah fungsi: key; Tambah fungsi: get  
+**Lines:** 96-99, 102-112, 115-161
+
+```javascript
+// Line 93:
+-    * getDatas — ambil menu dari bstock_x dan map ke format yang dipakai frontend.
+-    * bstock_x response: { result, data: [{ cstocode, cstoname, nhrgjua, cfamcode, ... }] }
+-    * Frontend format:   { datas: [...], categories: [...] }
++    * getDatas — ambil menu dari bstock_x.
++    * Coba usebrwdef:true dulu (mengikuti pola trenly).
++    * Jika response punya columns → data berformat array, map pakai index kolom.
++    * Jika tidak punya columns → data berformat object {key:value}, map langsung.
+-     const res = await bqo_api.getList({});
++     const useBrwRef = { current: true };
++ 
++     // Pertama coba dengan usebrwdef: true
++     let res = await bqo_api.getListBrwdef({});
++ 
++     // Jika brwdef gagal atau tidak return columns, fallback ke usebrwdef: false
++     if (!res || !res.result || !res.data || res.data.length === 0) {
++       res = await bqo_api.getList({});
++       useBrwRef.current = false;
++     }
++ 
+-     // Map bstock_x fields → format menu restoran
+-     // Simpan juga csatuan dan ndisc agar tersedia saat build payload order
+-     const datas = res.data.map((item) => ({
+-       id:        (item.cstocode || '').trim(),
+-       name:      (item.cstoname || '').trim(),
+  // ... (truncated)
++         category:  String(get(row, 'cfamcode') || 'UMUM').trim(),
++         picture:   null,
++         cstocode:  String(get(row, 'cstocode') || '').trim(),
++         cstoname:  String(get(row, 'cstoname') || '').trim(),
++         nhrgjua:   parseFloat(get(row, 'nhrgjua') || 0),
++         csatuan:   String(get(row, 'csatuan') || 'PCS').trim(),
++         ndisc:     parseFloat(get(row, 'ndisc') || 0),
++       }));
++     } else {
++       // ── Format non-brwdef: data adalah array of objects ───────────────────
++       datas = res.data.map((item) => ({
++         id:        (item.cstocode || '').trim(),
++         name:      (item.cstoname || '').trim(),
++         desc:      (item.cstoname2 || item.cnotes1 || '').trim(),
++         price:     String(parseFloat(item.nhrgjua || 0)),
++         sellPrice: String(parseFloat(item.nhrgjua || 0)),
++         category:  (item.cfamcode || 'UMUM').trim(),
++         picture:   null,
++         cstocode:  (item.cstocode || '').trim(),
++         cstoname:  (item.cstoname || '').trim(),
++         nhrgjua:   parseFloat(item.nhrgjua || 0),
++         csatuan:   (item.csatuan || 'PCS').trim(),
++         ndisc:     parseFloat(item.ndisc || 0),
++       }));
++     }
+```
+
+---
+
+#### 3. src/scripts/modules/BQO/views/bqo_home.js [20260807_133241]
+**Fungsi:** Halaman utama / dashboard  
+**Perubahan:** Pembaruan kode  
+**Lines:** 112, 122, 125, 161
+
+```javascript
+// Line 109:
+-       // Gunakan cprocod sebagai kategori (lebih deskriptif dari cfamcode kode 2-3 huruf)
+-       // Fallback ke cfamcode jika cprocod kosong
+-       category:  (item.cprocod || item.cfamcode || 'UMUM').trim(),
++       category:  (item.cfamcode || 'UMUM').trim(),
+// Line 119:
+-     // Bangun kategori unik
++     // Bangun kategori unik dari cfamcode
+-     // Tab Promo hanya muncul jika ada item yang punya diskon
+-     const hasPromo = datas.some((item) => item.ndisc > 0);
+-     if (hasPromo) catMap['promos'] = { id: 'promos', label: '🏷️ Promo' };
++     catMap['promos'] = { id: 'promos', label: '🏷️ Promo' };
+// Line 158:
+-         datasFilter = resJson.datas.filter((data) => data.ndisc > 0);
++         datasFilter = resJson.datas.filter((data) => data.price !== data.sellPrice);
+```
+
+---
+
+#### 4. src/scripts/modules/BQO/views/bqo_home.js [20260807_131834]
+**Fungsi:** Halaman utama / dashboard  
+**Perubahan:** Pembaruan kode  
+**Lines:** 112-114, 124, 126-129, 132, 165
+
+```javascript
+// Line 109:
+-       category:  (item.cfamcode || item.cprocod || 'UMUM').trim(),
++       // Gunakan cprocod sebagai kategori (lebih deskriptif dari cfamcode kode 2-3 huruf)
++       // Fallback ke cfamcode jika cprocod kosong
++       category:  (item.cprocod || item.cfamcode || 'UMUM').trim(),
+// Line 121:
+-     // Bangun kategori unik dari cfamcode
++     // Bangun kategori unik
+-     catMap['all']   = { id: 'all',   label: 'Semua' };
+-     catMap['promos'] = { id: 'promos', label: '🏷️ Promo' };
++     catMap['all']    = { id: 'all',    label: 'Semua' };
++     // Tab Promo hanya muncul jika ada item yang punya diskon
++     const hasPromo = datas.some((item) => item.ndisc > 0);
++     if (hasPromo) catMap['promos'] = { id: 'promos', label: '🏷️ Promo' };
+-       if (key && !catMap[key]) catMap[key] = { id: key, label: key };
++       if (key && key !== '-' && !catMap[key]) catMap[key] = { id: key, label: key };
+// Line 162:
+-         datasFilter = resJson.datas.filter((data) => data.price !== data.sellPrice);
++         datasFilter = resJson.datas.filter((data) => data.ndisc > 0);
+```
+
+---
+
+#### 5. src/scripts/modules/BQO/controllers/bqo_mock.js [20260807_114122]
+**Fungsi:** Modul: bqo_mock  
+**Perubahan:** Hapus debug log  
+**Lines:** 130, 133-143, 146-147, 154-160, 164-166
+
+```javascript
+// Line 127:
+-       // ── getList ──────────────────────────────────────────────────────────
++       // ── getList — return format bstock_x agar konsisten dengan backend ───
+-         console.log('[BQO MOCK] getList called', data);
++         // Map MOCK_MENU ke format bstock_x response
++         const mockData = MOCK_MENU.map((item) => ({
++           key:       item.id,
++           cstocode:  item.id,
++           cstoname:  item.name,
++           cstoname2: item.desc,
++           nhrgjua:   parseFloat(item.sellPrice),
++           cfamcode:  item.category,
++           cprocod:   item.category,
++           npict:     0,
++         }));
+-           datas: MOCK_MENU,
+-           categories: MOCK_CATEGORIES,
++           data:   mockData,
++           metadata: { offset: 0, limit: mockData.length, count: mockData.length },
+-         console.log('[BQO MOCK] add called', { bon, data });
+-         console.table(
+-           (data.cart || []).map((item) => ({
+-             nama:  item.item?.name,
+-             qty:   item.qty,
+-             harga: item.item?.sellPrice,
+-             note:  item.note || '-',
+-           }))
+-         );
++         // Log detail order untuk debugging
++         const items = data.lineItemsInfo || data.cart || [];
++         console.log('[BQO MOCK] add called', {
++           bon,
++           headerInfo: data.headerInfo || data.info,
++           itemCount: items.length,
++         });
+-             cordernum: bon,
+-             cmeja:     data.info?.seatNumber  || '-',
+-             cnama:     data.info?.orderByName || '-',
++             cordernum:    bon,
++             cseatno:      data.headerInfo?.cseatno      || data.info?.seatNumber  || '-',
++             corderbyname: data.headerInfo?.corderbyname || data.info?.orderByName || '-',
+```
+
+---
+
+#### 6. src/scripts/modules/BQO/views/bqo_checkout.js [20260807_114122]
+**Fungsi:** Halaman checkout & submit order  
+**Perubahan:** Tambah fungsi: pad  
+**Lines:** 273-315
+
+```javascript
+// Line 270:
+-       const payload = { info, cart: cartItems };
+-       const result  = await bqo_api.add(payload);
++       const today   = new Date();
++       const pad     = (n) => String(n).padStart(2, '0');
++       const dqodate = `${today.getFullYear()}${pad(today.getMonth() + 1)}${pad(today.getDate())}`;
++       const ctime   = `${pad(today.getHours())}:${pad(today.getMinutes())}:${pad(today.getSeconds())}`;
++ 
++       // Field sesuai dokumentasi BQO (Header + BITMQO)
++       const lineItemsInfo = cartItems.map((d, idx) => {
++         const nhrgjua = parseFloat(d.item?.nhrgjua || d.item?.sellPrice || 0);
++         const nqqo    = parseInt(d.qty || 1);
++         const discPct = parseFloat(d.item?.ndisc || 0);
++         const nrpdisc = discPct > 0 ? Math.round(nhrgjua * nqqo * discPct / 100) : 0;
++         return {
++           nline:    idx + 1,
++           cstocode: (d.item?.cstocode || d.item?.id || '').trim(),
++           cstoname: (d.item?.cstoname || d.item?.name || '').trim(),
++           csize:    '-',
++           nqqo,
++           cuom:     (d.item?.csatuan || d.item?.cuom || 'PCS').trim(),
++           nhrgjua,
++           ndisc:    discPct,
++           nrpdisc,
++           cremark:  d.note || '',
++         };
++       });
++ 
++       const payload = {
++         headerInfo: {
++           dqodate,
++           ctime,
++           ctabid:   info.seatNumber  || '',   // Nomor Meja
++           cremark:  info.orderByName || '',   // Nama pemesan
++           cnotelp:  info.phoneNumber || '',   // No telepon
++           npctdisc: 0,
++           npctppn:  TAX_PERCENT,
++           namount:  subtotal,                  // Total sebelum pajak
++           cbnkid:   '',                        // Kosong = bayar di kasir
++           cpaytype: '',                        // Kosong = Cash
++         },
++         lineItemsInfo,
++         paymentInfo: { cbnkid: '', namount: 0 }, // belum dibayar
++       };
++ 
++       const result = await bqo_api.add(payload);
+-         // Tampilkan dialog konfirmasi + struk
+```
+
+---
+
+#### 7. src/scripts/modules/BQO/views/bqo_home.js [20260807_114122]
+**Fungsi:** Halaman utama / dashboard  
+**Perubahan:** Pembaruan kode  
+**Lines:** 95-99, 101-132
+
+```javascript
+// Line 90:
+-   // List
++   /**
++    * getDatas — ambil menu dari bstock_x dan map ke format yang dipakai frontend.
++    * bstock_x response: { result, data: [{ cstocode, cstoname, nhrgjua, cfamcode, ... }] }
++    * Frontend format:   { datas: [...], categories: [...] }
++    */
+-     return await bqo_api.getList({});
++     const res = await bqo_api.getList({});
++     if (!res || !res.result || !res.data) return null;
++ 
++     // Map bstock_x fields → format menu restoran
++     // Simpan juga csatuan dan ndisc agar tersedia saat build payload order
++     const datas = res.data.map((item) => ({
++       id:        (item.cstocode || '').trim(),
++       name:      (item.cstoname || '').trim(),
++       desc:      (item.cstoname2 || item.cnotes1 || '').trim(),
++       price:     String(parseFloat(item.nhrgjua || 0)),
++       sellPrice: String(parseFloat(item.nhrgjua || 0)),
++       category:  (item.cfamcode || item.cprocod || 'UMUM').trim(),
++       picture:   null, // getimage tidak tersedia — pakai placeholder
++       // field tambahan untuk payload order
++       cstocode:  (item.cstocode || '').trim(),
++       cstoname:  (item.cstoname || '').trim(),
++       nhrgjua:   parseFloat(item.nhrgjua || 0),
++       csatuan:   (item.csatuan || 'PCS').trim(),
++       ndisc:     parseFloat(item.ndisc || 0),
++     }));
++ 
++     // Bangun kategori unik dari cfamcode
++     const catMap = {};
++     catMap['all']   = { id: 'all',   label: 'Semua' };
++     catMap['promos'] = { id: 'promos', label: '🏷️ Promo' };
++     datas.forEach((item) => {
++       const key = item.category;
++       if (key && !catMap[key]) catMap[key] = { id: key, label: key };
++     });
++     const categories = Object.values(catMap);
++ 
++     return { datas, categories };
+// Line 141:
+-       // jika API belum siap / 404, biarkan state tetap [] (initial value)
+```
+
+---
+
+#### 8. src/scripts/modules/BQO/views/bqo_payment.js [20260807_114122]
+**Fungsi:** Modul: bqo_payment  
+**Perubahan:** Tambah fungsi: buildPayload; Tambah fungsi: pad; Tambah fungsi: buildCurrentPayload  
+**Lines:** 125-170, 237-238
+
+```javascript
+// Line 122:
+-   const buildPayload = (cbnkid) => ({
+-     info: orderInfo,
+-     cart: cartItems,
+-     paymentInfo: { cbnkid, namount: total },
+-     taxAmount,
+-     subtotal,
+-     total,
+-   });
++   // Field sesuai dokumentasi BQO:
++   //   Header: DQODATE, CTABID, CWHSEID, CREMARK, NPCTPPN, NAMOUNT, CBNKID
++   //   Item:   NLINE, CSTOCODE, CSTONAME, NQQO, CUOM, NHRGJUA, NDISC, NRPDISC
++   const buildPayload = (cbnkid) => {
++     const today   = new Date();
++     const pad     = (n) => String(n).padStart(2, '0');
++     const dqodate = `${today.getFullYear()}${pad(today.getMonth() + 1)}${pad(today.getDate())}`;
++     const ctime   = `${pad(today.getHours())}:${pad(today.getMinutes())}:${pad(today.getSeconds())}`;
++ 
++     const lineItemsInfo = cartItems.map((d, idx) => {
++       const nhrgjua = parseFloat(d.item?.nhrgjua || d.item?.sellPrice || 0);
++       const nqqo    = parseInt(d.qty || 1);
++       const discPct = parseFloat(d.item?.ndisc || 0);
++       const nrpdisc = discPct > 0 ? Math.round(nhrgjua * nqqo * discPct / 100) : 0;
++       return {
++         nline:    idx + 1,
+  // ... (truncated)
++         ctabid:   orderInfo.seatNumber  || '',   // Nomor Meja
++         cremark:  orderInfo.orderByName || '',   // Nama pemesan sebagai keterangan
++         cnotelp:  orderInfo.phoneNumber || '',   // No telepon (jika backend support)
++         npctdisc: 0,
++         npctppn:  TAX_PERCENT,
++         namount:  subtotal,                       // Total sebelum pajak
++         cbnkid,
++         cpaytype: cbnkid ? '' : '',              // kosong = Cash
++       },
++       lineItemsInfo,
++       paymentInfo: { cbnkid, namount: total },
++     };
++   };
+// Line 234:
+-   // ── Rebuild payload dari state saat ini ───────────────────────────────────
+-   const buildCurrentPayload = (cbnkid) => ({
+-     info: orderInfo,
+-     cart: cartItems,
+-     paymentInfo: { cbnkid, namount: total },
+-     taxAmount,
+-     subtotal,
+-     total,
+-   });
++   // ── Rebuild payload dari state saat ini (untuk retry) ────────────────────
++   const buildCurrentPayload = (cbnkid) => buildPayload(cbnkid);
+```
+
+---
+
+#### 9. src/scripts/modules/BQO/views/bqo_home.js [20260807_142208]
+**Fungsi:** Halaman utama / dashboard  
+**Perubahan:** Pembaruan kode  
+**Lines:** 96-98, 101, 104-117
+
+```javascript
+// Line 93:
+-    * getDatas — ambil menu dari bstock_x.
+-    * Coba usebrwdef:true dulu — data berformat array of arrays sesuai columns brwdef.
+-    * Fallback ke usebrwdef:false jika brwdef gagal.
++    * getDatas — ambil menu dari bstock_x dengan usebrwdef:false.
++    * Menggunakan getList() agar response berupa object dengan cfamcode
++    * (untuk kategori) dan getimage sesuai konfigurasi bqo_api.
+-     // Coba brwdef dulu
+-     let res = await bqo_api.getListBrwdef({});
+-     let useBrwDef = !!(res?.result && res?.columns?.length > 0 && Array.isArray(res?.data?.[0]));
+- 
+-     if (!useBrwDef) {
+-       // Fallback ke non-brwdef
+-       res = await bqo_api.getList({});
+-     }
+- 
++     const res = await bqo_api.getList({});
+-     let datas;
+- 
+-     if (useBrwDef) {
+-       // ── Format brwdef: array of arrays ───────────────────────────────────
+-       // Mapping berdasarkan title kolom dari response
+-       const cols = res.columns; // [{ title, alignment, width }]
+-       const findIdx = (keywords) => {
+-         const idx = cols.findIndex((c) =>
+  // ... (truncated)
+-         price:     String(parseFloat(item.nhrgjua || 0)),
+-         sellPrice: String(parseFloat(item.nhrgjua || 0)),
+-         category:  (item.cfamcode || 'UMUM').trim(),
+-         picture:   null,
+-         cstocode:  (item.cstocode || '').trim(),
+-         cstoname:  (item.cstoname || '').trim(),
+-         nhrgjua:   parseFloat(item.nhrgjua || 0),
+-         csatuan:   (item.csatuan || 'PCS').trim(),
+-         ndisc:     parseFloat(item.ndisc || 0),
+-       }));
+-     }
++     const datas = res.data.map((item) => ({
++       id:        (item.cstocode || '').trim(),
++       name:      (item.cstoname || '').trim(),
++       desc:      (item.cstoname2 || item.cnotes1 || '').trim(),
++       price:     String(parseFloat(item.nhrgjua || 0)),
++       sellPrice: String(parseFloat(item.nhrgjua || 0)),
++       category:  (item.cfamcode || 'UMUM').trim(),
++       picture:   item.picture || null,
++       cstocode:  (item.cstocode || '').trim(),
++       cstoname:  (item.cstoname || '').trim(),
++       nhrgjua:   parseFloat(item.nhrgjua || 0),
++       csatuan:   (item.csatuan || 'PCS').trim(),
++       ndisc:     parseFloat(item.ndisc || 0),
++     }));
+```
+
+---
+
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260807.md [20260807_135032]
+#### 1. docs/changelog/daily/codeChange-20260807.md [20260807_140514]
+**Fungsi:** Implementasi: codeChange-20260807  
+**Perubahan:** Pembaruan kode  
+**Lines:** 7-68, 93, 122, 173, 230, 282, 343, 345-346, 349-373, 375-399, 406-467, 528, 589, 650, 711, 772, 815-868, 909, 924, 985, 998, 1009, 1031-1033, 1035
+
+```javascript
+// Line 4:
+- #### 1. src/scripts/modules/BQO/views/bqo_home.js [20260807_133241]
++ #### 1. src/scripts/modules/BQO/views/bqo_home.js [20260807_135032]
++ **Fungsi:** Halaman utama / dashboard  
++ **Perubahan:** Tambah fungsi: key; Tambah fungsi: get  
++ **Lines:** 96-99, 102-112, 115-161
++ 
++ ```javascript
++ // Line 93:
++ -    * getDatas — ambil menu dari bstock_x dan map ke format yang dipakai frontend.
++ -    * bstock_x response: { result, data: [{ cstocode, cstoname, nhrgjua, cfamcode, ... }] }
++ -    * Frontend format:   { datas: [...], categories: [...] }
++ +    * getDatas — ambil menu dari bstock_x.
++ +    * Coba usebrwdef:true dulu (mengikuti pola trenly).
++ +    * Jika response punya columns → data berformat array, map pakai index kolom.
++ +    * Jika tidak punya columns → data berformat object {key:value}, map langsung.
++ -     const res = await bqo_api.getList({});
++ +     const useBrwRef = { current: true };
++ + 
++ +     // Pertama coba dengan usebrwdef: true
++ +     let res = await bqo_api.getListBrwdef({});
++ + 
++ +     // Jika brwdef gagal atau tidak return columns, fallback ke usebrwdef: false
++ +     if (!res || !res.result || !res.data || res.data.length === 0) {
++ +       res = await bqo_api.getList({});
+  // ... (truncated)
++ #### 2. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_133241]
+// Line 906:
+- #### 2. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_131834]
++ #### 3. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_131834]
+// Line 921:
+- #### 3. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_114122]
++ #### 4. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_114122]
+// Line 982:
+- #### 4. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_084349]
++ #### 5. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_084349]
+// Line 995:
+- #### 5. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_083315]
++ #### 6. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_083315]
+// Line 1006:
+- #### 6. rc/scripts/modules/BQO/controllers/bqo_api.js [20260807_135030]
++ #### 7. rc/scripts/modules/BQO/controllers/bqo_api.js [20260807_140512]
+// Line 1028:
+- - **✨ Features:** 7 items
+- - **📖 Documentation:** 6 items
+- - **🔌 API:** 6 items
++ - **✨ Features:** 8 items
++ - **📖 Documentation:** 7 items
++ - **🔌 API:** 7 items
+- - **Total Files Modified:** 20
++ - **Total Files Modified:** 23
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260807.md [20260807_135032]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-32, 61, 112, 169, 221, 282, 284-285, 288-338, 345-406, 467, 528, 589, 650, 693-734, 749, 810, 823, 834, 856-858, 860
@@ -464,7 +586,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260807.md [20260807_133241]
+#### 3. docs/changelog/daily/codeChange-20260807.md [20260807_133241]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-36, 87, 144, 196, 257, 260, 264-277, 284-345, 406, 467, 528, 571-586, 647, 660, 671, 693-695, 697
@@ -525,7 +647,7 @@
 
 ---
 
-#### 3. docs/changelog/daily/codeChange-20260807.md [20260807_131834]
+#### 4. docs/changelog/daily/codeChange-20260807.md [20260807_131834]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 228-256, 259-320, 381, 442, 570-575, 592-594, 596
@@ -586,7 +708,7 @@
 
 ---
 
-#### 4. docs/changelog/daily/codeChange-20260807.md [20260807_130318]
+#### 5. docs/changelog/daily/codeChange-20260807.md [20260807_130318]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Tambah error handling  
 **Lines:** 7, 58, 115, 167, 230-291, 352, 395-456, 469, 497, 500
@@ -647,7 +769,7 @@
 
 ---
 
-#### 5. docs/changelog/daily/codeChange-20260807.md [20260807_114122]
+#### 6. docs/changelog/daily/codeChange-20260807.md [20260807_114122]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 5-227, 230-291, 334-347, 358, 380-382, 384-385
@@ -708,7 +830,7 @@
 
 ---
 
-#### 6. docs/changelog/daily/codeChange-20260807.md [20260807_084349]
+#### 7. docs/changelog/daily/codeChange-20260807.md [20260807_084349]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 5-47, 50, 61-66, 69, 72-78, 83-84, 86
@@ -769,7 +891,7 @@
 
 ---
 
-#### 7. docs/changelog/daily/codeChange-20260807.md [20260807_083315]
+#### 8. docs/changelog/daily/codeChange-20260807.md [20260807_083315]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 1-30
@@ -812,7 +934,27 @@
 
 ### 🔌 API
 
-#### 1. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_135032]
+#### 1. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_140514]
+**Fungsi:** Modul: bqo_api  
+**Perubahan:** Pembaruan kode  
+**Lines:** 64-65, 84-85
+
+```javascript
+// Line 61:
+-    * getList — ambil katalog menu dari bstock_x.
+-    * Coba brwdef dulu, fallback ke listfields jika brwdef tidak tersedia.
++    * getList — ambil katalog menu dari bstock_x dengan usebrwdef:false.
++    * Response: array of objects {cstocode, cstoname, nhrgjua, ...}
+// Line 81:
+-    * Response: { result, columns:[...], data:[[...]] } — format array
+-    * Dipakai di bqo_home.js sebagai fallback ke tampilan kolom dinamis.
++    * Response: { columns:[{title,...}], data:[[...]] } — format array of arrays
++    * Dipakai sebagai primary fetch di bqo_home.js, fallback ke getList jika gagal.
+```
+
+---
+
+#### 2. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_135032]
 **Fungsi:** Modul: bqo_api  
 **Perubahan:** Pembaruan kode  
 **Lines:** 9, 11-12, 65, 70, 82-101
@@ -865,7 +1007,7 @@
 
 ---
 
-#### 2. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_133241]
+#### 3. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_133241]
 **Fungsi:** Modul: bqo_api  
 **Perubahan:** Pembaruan kode  
 **Lines:** 9, 11-21, 74-75, 80, 84-85, 87
@@ -906,7 +1048,7 @@
 
 ---
 
-#### 3. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_131834]
+#### 4. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_131834]
 **Fungsi:** Modul: bqo_api  
 **Perubahan:** Pembaruan kode  
 **Lines:** 74, 80
@@ -921,7 +1063,7 @@
 
 ---
 
-#### 4. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_114122]
+#### 5. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_114122]
 **Fungsi:** Modul: bqo_api  
 **Perubahan:** Tambah error handling; Tambah HTTP request  
 **Lines:** 9-14, 16-21, 23-25, 38-46, 48-60, 63-69, 71-82, 85-91
@@ -982,7 +1124,7 @@
 
 ---
 
-#### 5. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_084349]
+#### 6. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_084349]
 **Fungsi:** Modul: bqo_api  
 **Perubahan:** Pembaruan kode  
 **Lines:** 40
@@ -995,7 +1137,7 @@
 
 ---
 
-#### 6. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_083315]
+#### 7. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_083315]
 **Fungsi:** Modul: bqo_api  
 **Perubahan:** Hapus debug log  
 
@@ -1006,9 +1148,45 @@
 
 ---
 
-#### 7. rc/scripts/modules/BQO/controllers/bqo_api.js [20260807_140512]
+#### 8. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_142208]
 **Fungsi:** Modul: bqo_api  
 **Perubahan:** Pembaruan kode  
+**Lines:** 15-18, 68-71, 77, 83, 89-90, 102
+
+```javascript
+// Line 12:
++ // Kontrol dari env — bisa di-set per environment tanpa rebuild bqo_api
++ const MENU_USE_BRWDEF = process.env.REACT_APP_MENU_USE_BRWDEF === 'Y';
++ const MENU_GETIMAGE   = process.env.REACT_APP_MENU_GETIMAGE   === 'Y';
++ 
+// Line 65:
+-    * getList — ambil katalog menu dari bstock_x dengan usebrwdef:false.
+-    * Response: array of objects {cstocode, cstoname, nhrgjua, ...}
++    * getList — ambil katalog menu dari bstock_x.
++    * usebrwdef dan getimage dikontrol via env:
++    *   REACT_APP_MENU_USE_BRWDEF: Y/N
++    *   REACT_APP_MENU_GETIMAGE:   Y/N
+-       usebrwdef:  true,
++       usebrwdef:  MENU_USE_BRWDEF,
+-       getimage: true,
++       getimage: MENU_GETIMAGE,
+-    * getListBrwdef — ambil katalog menu dengan usebrwdef:true.
+-    * Response: { columns:[{title,...}], data:[[...]] } — format array of arrays
+-    * Dipakai sebagai primary fetch di bqo_home.js, fallback ke getList jika gagal.
++    * getListBrwdef — alias dengan usebrwdef:true paksa.
++    * Dipakai jika ingin eksplisit pakai brwdef terlepas dari env.
+// Line 99:
+-       getimage: false,
++       getimage: MENU_GETIMAGE,
+```
+
+---
+
+### ⚙️ Config
+
+#### 1. nv/qorestoweb/.env [20260807_142208]
+**Fungsi:** Implementasi: .env  
+**Perubahan:** Ubah konfigurasi environment / API endpoint  
 
 ---
 
@@ -1028,9 +1206,10 @@
 ---
 
 ## 📊 **Summary**
-- **✨ Features:** 8 items
-- **📖 Documentation:** 7 items
-- **🔌 API:** 7 items
+- **✨ Features:** 9 items
+- **📖 Documentation:** 8 items
+- **🔌 API:** 8 items
+- **⚙️ Config:** 1 item
 - **⚙️ Others:** 1 item
-- **Total Files Modified:** 23
+- **Total Files Modified:** 27
 - **Main Focus:** Features
