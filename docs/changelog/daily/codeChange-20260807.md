@@ -4,7 +4,7 @@
 
 ### ✨ Features
 
-#### 1. src/scripts/modules/BQO/controllers/bqo_mock.js [20260807_114121]
+#### 1. src/scripts/modules/BQO/controllers/bqo_mock.js [20260807_114122]
 **Fungsi:** Modul: bqo_mock  
 **Perubahan:** Hapus debug log  
 **Lines:** 130, 133-143, 146-147, 154-160, 164-166
@@ -55,7 +55,7 @@
 
 ---
 
-#### 2. src/scripts/modules/BQO/views/bqo_checkout.js [20260807_114121]
+#### 2. src/scripts/modules/BQO/views/bqo_checkout.js [20260807_114122]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Tambah fungsi: pad  
 **Lines:** 273-315
@@ -112,7 +112,7 @@
 
 ---
 
-#### 3. src/scripts/modules/BQO/views/bqo_home.js [20260807_114121]
+#### 3. src/scripts/modules/BQO/views/bqo_home.js [20260807_114122]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Pembaruan kode  
 **Lines:** 95-99, 101-132
@@ -164,7 +164,7 @@
 
 ---
 
-#### 4. src/scripts/modules/BQO/views/bqo_payment.js [20260807_114121]
+#### 4. src/scripts/modules/BQO/views/bqo_payment.js [20260807_114122]
 **Fungsi:** Modul: bqo_payment  
 **Perubahan:** Tambah fungsi: buildPayload; Tambah fungsi: pad; Tambah fungsi: buildCurrentPayload  
 **Lines:** 125-170, 237-238
@@ -227,7 +227,68 @@
 
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260807.md [20260807_084349]
+#### 1. docs/changelog/daily/codeChange-20260807.md [20260807_114122]
+**Fungsi:** Implementasi: codeChange-20260807  
+**Perubahan:** Pembaruan kode  
+**Lines:** 5-227, 230-291, 334-347, 358, 380-382, 384-385
+
+```javascript
+// Line 2:
++ ### ✨ Features
++ 
++ #### 1. src/scripts/modules/BQO/controllers/bqo_mock.js [20260807_114121]
++ **Fungsi:** Modul: bqo_mock  
++ **Perubahan:** Hapus debug log  
++ **Lines:** 130, 133-143, 146-147, 154-160, 164-166
++ 
++ ```javascript
++ // Line 127:
++ -       // ── getList ──────────────────────────────────────────────────────────
++ +       // ── getList — return format bstock_x agar konsisten dengan backend ───
++ -         console.log('[BQO MOCK] getList called', data);
++ +         // Map MOCK_MENU ke format bstock_x response
++ +         const mockData = MOCK_MENU.map((item) => ({
++ +           key:       item.id,
++ +           cstocode:  item.id,
++ +           cstoname:  item.name,
++ +           cstoname2: item.desc,
++ +           nhrgjua:   parseFloat(item.sellPrice),
++ +           cfamcode:  item.category,
++ +           cprocod:   item.category,
++ +           npict:     0,
++ +         }));
++ -           datas: MOCK_MENU,
+  // ... (truncated)
++ **Perubahan:** Pembaruan kode  
++ **Lines:** 40
++ 
++ ```javascript
++ // Line 37:
++ -     return this.fetching('getList', data);
++ +     return this.fetching('getlist', data);
++ ```
++ 
++ ---
++ 
++ #### 2. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_083315]
+// Line 355:
+- #### 2. rc/scripts/modules/BQO/controllers/bqo_api.js [20260807_084349]
++ #### 3. rc/scripts/modules/BQO/controllers/bqo_api.js [20260807_114121]
+// Line 377:
+- - **📖 Documentation:** 1 item
+- - **🔌 API:** 2 items
++ - **✨ Features:** 4 items
++ - **📖 Documentation:** 2 items
++ - **🔌 API:** 3 items
+- - **Total Files Modified:** 4
+- - **Main Focus:** 🔌 API
++ - **Total Files Modified:** 10
++ - **Main Focus:** Features
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260807.md [20260807_084349]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 5-47, 50, 61-66, 69, 72-78, 83-84, 86
@@ -288,7 +349,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260807.md [20260807_083315]
+#### 3. docs/changelog/daily/codeChange-20260807.md [20260807_083315]
 **Fungsi:** Implementasi: codeChange-20260807  
 **Perubahan:** Pembaruan kode  
 **Lines:** 1-30
@@ -331,7 +392,68 @@
 
 ### 🔌 API
 
-#### 1. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_084349]
+#### 1. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_114122]
+**Fungsi:** Modul: bqo_api  
+**Perubahan:** Tambah error handling; Tambah HTTP request  
+**Lines:** 9-14, 16-21, 23-25, 38-46, 48-60, 63-69, 71-82, 85-91
+
+```javascript
+// Line 6:
++ // Field yang diambil dari bstock_x untuk katalog menu — mengikuti pola trenly
++ const MENU_LISTFIELDS = [
++   'cstocode', 'cstoname', 'cstoname2', 'nhrgjua', 'ndisc',
++   'cfamcode', 'cprocod', 'csatuan', 'npict',
++ ];
++ 
++   // ── Mock mode check ──────────────────────────────────────────────────────
++   static _useMock() {
++     return getAppConfig().use_mock_bqo === true;
++   }
++ 
++   // ── fetch ke BQO_X (transaksi pesanan) ───────────────────────────────────
+-     // ── MOCK MODE — dibaca dari app.cfg (runtime, tanpa rebuild) ────────────
+-     const useMock = getAppConfig().use_mock_bqo === true;
+-     if (useMock) {
+-       try {
+-         return await bqo_mock.handle(action, data);
+-       } catch (error) {
+-         return error;
+-       }
++     if (this._useMock()) {
++       try { return await bqo_mock.handle(action, data); }
++       catch (error) { return error; }
+-     // ── NORMAL MODE ─────────────────────────────────────────────────────────
+  // ... (truncated)
++    * Mengikuti pola trenly useCashierCatalog:
++    *   - listfields: field minimal untuk tampil di menu
++    *   - freefilter: '!LDISCONT' → hanya item yang aktif dijual (bukan discontinue)
++    * Response: { result, data: [{cstocode, cstoname, nhrgjua, csatuan, ndisc, ...}] }
++    */
+-     return this.fetching('getlist', data);
++     return this.fetchStock('getlist', {
++       offset:     0,
++       limit:      999,
++       usebrwdef:  false,
++       listfields: MENU_LISTFIELDS,
++       query: {
++         freefilter:  { search: '!LDISCONT' },
++         textfilter:  { search: '' },
++       },
++       getimage: false, // getimage butuh ShowImageAPI di apicsa.cfg
++       ...data,
++     });
++   /**
++    * add — simpan pesanan ke bqo_x.
++    * Payload mengikuti pola trenly bjual_x add:
++    *   headerInfo: info pesanan (meja, nama, telepon, tanggal, dll)
++    *   lineItemsInfo: detail item (cstocode, cstoname, cuom, nqjual, nhrgjua, namtjua, ndisc, nrpdisc)
++    *   paymentInfo: { cbnkid, namount }
++    */
+```
+
+---
+
+#### 2. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_084349]
 **Fungsi:** Modul: bqo_api  
 **Perubahan:** Pembaruan kode  
 **Lines:** 40
@@ -344,7 +466,7 @@
 
 ---
 
-#### 2. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_083315]
+#### 3. src/scripts/modules/BQO/controllers/bqo_api.js [20260807_083315]
 **Fungsi:** Modul: bqo_api  
 **Perubahan:** Hapus debug log  
 
@@ -352,12 +474,6 @@
 // Line 10:
 -     console.log('[bqo_api] useMock:', useMock, '| config:', getAppConfig());
 ```
-
----
-
-#### 3. rc/scripts/modules/BQO/controllers/bqo_api.js [20260807_114121]
-**Fungsi:** Modul: bqo_api  
-**Perubahan:** Pembaruan kode  
 
 ---
 
@@ -378,8 +494,8 @@
 
 ## 📊 **Summary**
 - **✨ Features:** 4 items
-- **📖 Documentation:** 2 items
+- **📖 Documentation:** 3 items
 - **🔌 API:** 3 items
 - **⚙️ Others:** 1 item
-- **Total Files Modified:** 10
+- **Total Files Modified:** 11
 - **Main Focus:** Features
