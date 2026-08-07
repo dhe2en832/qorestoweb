@@ -41,6 +41,12 @@ const TAX_PERCENT = Config.BASE_TAX_PERCENTAGE * Config.EFFECTIVE_TAX_RATE;
 
 // Jumlah meja dari env
 const TABLE_COUNT = parseInt(process.env.REACT_APP_TABLE_COUNT || '10', 10);
+
+// Customer ID default untuk walk-in / self-order BQO (wajib ada di backend)
+const BQO_DEFAULT_CUSTOMER = (process.env.REACT_APP_BQO_DEFAULT_CUSTOMER || 'UMUM').trim();
+
+// Kode bank per metode pembayaran — harus sama dengan yang dikonfigurasi di master BBANK
+const CASH_BANK_CODE = (process.env.REACT_APP_CASH_BANK_CODE || 'T000').trim();
 export default function BQOCheckout() {
   const { smUp } = useResponsive();
   const navigate = useNavigate();
@@ -353,17 +359,18 @@ export default function BQOCheckout() {
         headerInfo: {
           dqodate,
           ctime,
-          ctabid:   info.seatNumber  || '',   // Nomor Meja
-          cremark:  info.orderByName || '',   // Nama pemesan
-          cnotelp:  info.phoneNumber || '',   // No telepon
+          ccusid:   BQO_DEFAULT_CUSTOMER,          // Customer ID dari env (walk-in/umum)
+          ctabid:   info.seatNumber  || '',         // Nomor Meja
+          cremark:  info.orderByName || '',         // Nama pemesan
+          cnotelp:  info.phoneNumber || '',         // No telepon
           npctdisc: 0,
           npctppn:  TAX_PERCENT,
-          namount:  subtotal,                  // Total sebelum pajak
-          cbnkid:   '',                        // Kosong = bayar di kasir
-          cpaytype: '',                        // Kosong = Cash
+          namount:  subtotal,                       // Total sebelum pajak
+          cbnkid:   CASH_BANK_CODE,                 // Kode bank tunai dari env
+          cpaytype: '',
         },
         lineItemsInfo,
-        paymentInfo: { cbnkid: '', namount: 0 }, // belum dibayar
+        paymentInfo: { cbnkid: CASH_BANK_CODE, namount: total }, // bayar di kasir = total
       };
 
       const result = await bqo_api.add(payload);

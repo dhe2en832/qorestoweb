@@ -37,7 +37,13 @@ const USE_XENDIT      = process.env.REACT_APP_USE_XENDIT_PAYMENT === 'Y';
 const CASH_BANK_CODE  = (process.env.REACT_APP_CASH_BANK_CODE   || 'T000').trim();
 const XENDIT_BANK_CODE = (process.env.REACT_APP_XENDIT_BANK_CODE || 'X000').trim();
 
-const TAX_PERCENT = 11;
+// Customer ID default untuk walk-in / self-order BQO (wajib ada di backend)
+const BQO_DEFAULT_CUSTOMER = (process.env.REACT_APP_BQO_DEFAULT_CUSTOMER || 'UMUM').trim();
+
+import Config from '../../../Config';
+
+// Pajak — mengikuti pola webcsa-v2 (trenly): BASE_TAX_PERCENTAGE × EFFECTIVE_TAX_RATE
+const TAX_PERCENT = Config.BASE_TAX_PERCENTAGE * Config.EFFECTIVE_TAX_RATE;
 
 const STATUS = { PENDING: 'pending', PAID: 'paid' };
 
@@ -155,6 +161,7 @@ export default function BQOPayment() {
       headerInfo: {
         dqodate,
         ctime,
+        ccusid:   BQO_DEFAULT_CUSTOMER,          // Customer ID dari env (walk-in/umum)
         ctabid:   orderInfo.seatNumber  || '',   // Nomor Meja
         cremark:  orderInfo.orderByName || '',   // Nama pemesan sebagai keterangan
         cnotelp:  orderInfo.phoneNumber || '',   // No telepon (jika backend support)
