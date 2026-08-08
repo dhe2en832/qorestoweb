@@ -107,16 +107,157 @@
 
 ---
 
+#### 3. rc/scripts/modules/BQO/views/bqo_checkout.js [20260808_101931]
+**Fungsi:** Halaman checkout & submit order  
+**Perubahan:** Pembaruan kode  
+
+---
+
+#### 4. src/scripts/modules/BQO/views/bqo_payment.js [20260808_101931]
+**Fungsi:** Modul: bqo_payment  
+**Perubahan:** Pembaruan kode  
+**Lines:** 156, 161, 164-165, 178-189, 191-200
+
+```javascript
+// Line 153:
+-         crefnote: 'ONLINE',
++         crefnote: '',
+-         ncqo:     '',
++         ncqo:     0,
++         ccpcode:  '',
++         csalesid: BQO_DEFAULT_SALES,
+-         csalesid: '',
+-         nkomisi:  '',
+// Line 175:
+-         cqonum:     '',
+-         ctabid:     orderInfo.seatNumber  || '',
+-         cwhseid:    BQO_DEFAULT_WHSE,
+-         cremark:    orderInfo.orderByName || '',
+-         customer: {
+-           ccusid:   BQO_DEFAULT_CUSTOMER,
+-           cinitial: '',
+-           cnotelp:  orderInfo.phoneNumber || '',
+-           cemail:   '',
+-         },
+-         cshiptoadr: '',
+-         nexchrate:  1,
+-         csalesid:   BQO_DEFAULT_SALES,
+-         lmulsales:  false,
+-         npctdisc:   0,
+  // ... (truncated)
++         cwhseid:   BQO_DEFAULT_WHSE,
++         cremark:   orderInfo.orderByName || '',
++         ccusid:    BQO_DEFAULT_CUSTOMER,
++         csalesid:  BQO_DEFAULT_SALES,
++         lmulsales: false,
++         creason:   '',
++         cadjdesc:  '',
++         creason2:  '',
++         cadjdesc2: '',
++         cpaytype:  '',
+-         nsaleschg:  0,
+-         ccrdnum:    '',
+-         cqofoot1:   '',
+-         cqofoot2:   '',
+-         cqofoot3:   '',
++         ccrdnum:   '',
++         nkupon:    0,
++         npctdisc:  0,
++         npctppn:   TAX_PERCENT,
++         namount:   subtotal,
++         ndp:       total,
++         nsaleschg: 0,
++         cqofoot1:  '',
++         cqofoot2:  '',
++         cqofoot3:  '',
+```
+
+---
+
+### 📖 Documentation
+
+#### 1. docs/changelog/daily/codeChange-20260808.md [20260808_092914]
+**Fungsi:** Implementasi: codeChange-20260808  
+**Perubahan:** Pembaruan kode  
+**Lines:** 1-122
+
+```javascript
+// Line 1:
++ # Code Changes Summary
++ 
++ ## 8 Agustus 2026
++ 
++ ### ✨ Features
++ 
++ #### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_092914]
++ **Fungsi:** Halaman checkout & submit order  
++ **Perubahan:** Tambah fungsi: BQO_DEFAULT_SALES  
++ **Lines:** 51, 362, 364-365, 376-381, 386-396, 402-403
++ 
++ ```javascript
++ // Line 48:
++ + const BQO_DEFAULT_SALES    = (process.env.REACT_APP_BQO_DEFAULT_SALES    || 'ONLINE').trim();
++ // Line 359:
++ -           nhrgjua:  String(nhrgjua),
++ +           nhrgjua,
++ -           ndisc:    discPct > 0 ? String(discPct) : '',
++ -           nrpdisc:  String(nrpdisc),
++ +           ndisc:    discPct > 0 ? discPct : 0,
++ +           nrpdisc,
++ // Line 373:
++ -           cqonum:   '',                            // kosong, auto-generate dari backend
++ -           ctabid:   info.seatNumber  || '',        // Nomor Meja
+  // ... (truncated)
++ +         csalesid:   BQO_DEFAULT_SALES,
++ +         lmulsales:  false,
++ +         npctdisc:   0,
++ +         npctppn:    TAX_PERCENT,
++ +         namount:    subtotal,
++ +         ndp:        total,
++ -         nsaleschg:  '0',
++ +         nsaleschg:  0,
++ ```
++ 
++ ---
++ 
++ ### ⚙️ Config
++ 
++ #### 1. nv/qorestoweb/.env [20260808_092914]
++ **Fungsi:** Implementasi: .env  
++ **Perubahan:** Ubah konfigurasi environment / API endpoint  
++ 
++ ---
++ 
++ ## 📊 **Summary**
++ - **✨ Features:** 2 items
++ - **⚙️ Config:** 1 item
++ - **Total Files Modified:** 3
++ - **Main Focus:** Features
+```
+
+---
+
 ### ⚙️ Config
 
-#### 1. nv/qorestoweb/.env [20260808_092914]
+#### 1. env/qorestoweb/.env [20260808_092914]
 **Fungsi:** Implementasi: .env  
 **Perubahan:** Ubah konfigurasi environment / API endpoint  
+**Lines:** 37, 42-44
+
+```javascript
+// Line 34:
+- REACT_APP_BQO_DEFAULT_CUSTOMER=CASH
++ REACT_APP_BQO_DEFAULT_CUSTOMER=UMUM
++ # Sales Person ID default untuk transaksi BQO
++ REACT_APP_BQO_DEFAULT_SALES=TKO
++ 
+```
 
 ---
 
 ## 📊 **Summary**
-- **✨ Features:** 2 items
+- **✨ Features:** 4 items
+- **📖 Documentation:** 1 item
 - **⚙️ Config:** 1 item
-- **Total Files Modified:** 3
+- **Total Files Modified:** 6
 - **Main Focus:** Features
