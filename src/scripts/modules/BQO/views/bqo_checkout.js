@@ -49,6 +49,7 @@ const TABLE_COUNT = parseInt(process.env.REACT_APP_TABLE_COUNT || '10', 10);
 const BQO_DEFAULT_CUSTOMER = (process.env.REACT_APP_BQO_DEFAULT_CUSTOMER || 'UMUM').trim();
 const BQO_DEFAULT_WHSE     = (process.env.REACT_APP_BQO_DEFAULT_WHSE     || '').trim();
 const BQO_DEFAULT_SALES    = (process.env.REACT_APP_BQO_DEFAULT_SALES    || 'ONLINE').trim();
+const BQO_DEFAULT_CPCODE   = (process.env.REACT_APP_BQO_DEFAULT_CPCODE   || 'STD').trim();
 
 // Kode bank per metode pembayaran — harus sama dengan yang dikonfigurasi di master BBANK
 const CASH_BANK_CODE = (process.env.REACT_APP_CASH_BANK_CODE || 'T000').trim();
@@ -359,7 +360,7 @@ export default function BQOCheckout() {
           ncqo:     0,
           nqqo,
           cuom:     (d.item?.csatuan || d.item?.cuom || '').trim(),
-          ccpcode:  '',
+          ccpcode:  BQO_DEFAULT_CPCODE,
           csalesid: BQO_DEFAULT_SALES,
           nhrgjua,
           cdisc:    '',
@@ -385,10 +386,10 @@ export default function BQOCheckout() {
           },
           csalesid:  BQO_DEFAULT_SALES,
           lmulsales: false,
-          creason:   '',
-          cadjdesc:  '',
-          creason2:  ' ',
-          cadjdesc2: ' ',
+          creason:   '-',
+          cadjdesc:  '-',
+          creason2:  '-',
+          cadjdesc2: '-',
           cpaytype:  '',
           cbnkid:    CASH_BANK_CODE,
           ccrdnum:   '',

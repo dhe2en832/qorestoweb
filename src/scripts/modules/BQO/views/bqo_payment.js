@@ -41,6 +41,7 @@ const XENDIT_BANK_CODE = (process.env.REACT_APP_XENDIT_BANK_CODE || 'X000').trim
 const BQO_DEFAULT_CUSTOMER = (process.env.REACT_APP_BQO_DEFAULT_CUSTOMER || 'UMUM').trim();
 const BQO_DEFAULT_WHSE     = (process.env.REACT_APP_BQO_DEFAULT_WHSE     || '').trim();
 const BQO_DEFAULT_SALES    = (process.env.REACT_APP_BQO_DEFAULT_SALES    || 'ONLINE').trim();
+const BQO_DEFAULT_CPCODE   = (process.env.REACT_APP_BQO_DEFAULT_CPCODE   || 'STD').trim();
 
 // Pajak — BASE_TAX × EFFECTIVE_RATE dari env (pola webcsa-v2)
 // Contoh: 12 × (11/12) = 11%
@@ -161,7 +162,7 @@ export default function BQOPayment() {
         ncqo:     0,
         nqqo,
         cuom:     (d.item?.csatuan || d.item?.cuom || '').trim(),
-        ccpcode:  '',
+        ccpcode:  BQO_DEFAULT_CPCODE,
         csalesid: BQO_DEFAULT_SALES,
         nhrgjua,
         cdisc:    '',
@@ -187,10 +188,10 @@ export default function BQOPayment() {
         },
         csalesid:  BQO_DEFAULT_SALES,
         lmulsales: false,
-        creason:   '',
-        cadjdesc:  '',
-        creason2:  ' ',
-        cadjdesc2: ' ',
+        creason:   '-',
+        cadjdesc:  '-',
+        creason2:  '-',
+        cadjdesc2: '-',
         cpaytype:  '',
         cbnkid,
         ccrdnum:   '',

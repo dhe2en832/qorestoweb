@@ -4,7 +4,33 @@
 
 ### ✨ Features
 
-#### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_103531]
+#### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_103848]
+**Fungsi:** Halaman checkout & submit order  
+**Perubahan:** Pembaruan kode  
+**Lines:** 390-391
+
+```javascript
+// Line 387:
++           creason2:  ' ',
++           cadjdesc2: ' ',
+```
+
+---
+
+#### 2. src/scripts/modules/BQO/views/bqo_payment.js [20260808_103848]
+**Fungsi:** Modul: bqo_payment  
+**Perubahan:** Pembaruan kode  
+**Lines:** 192-193
+
+```javascript
+// Line 189:
++         creason2:  ' ',
++         cadjdesc2: ' ',
+```
+
+---
+
+#### 3. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_103531]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Pembaruan kode  
 
@@ -16,7 +42,7 @@
 
 ---
 
-#### 2. src/scripts/modules/BQO/views/bqo_payment.js [20260808_103531]
+#### 4. src/scripts/modules/BQO/views/bqo_payment.js [20260808_103531]
 **Fungsi:** Modul: bqo_payment  
 **Perubahan:** Pembaruan kode  
 
@@ -28,7 +54,7 @@
 
 ---
 
-#### 3. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_103051]
+#### 5. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_103051]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Pembaruan kode  
 **Lines:** 380-385
@@ -46,7 +72,7 @@
 
 ---
 
-#### 4. src/scripts/modules/BQO/views/bqo_payment.js [20260808_103051]
+#### 6. src/scripts/modules/BQO/views/bqo_payment.js [20260808_103051]
 **Fungsi:** Modul: bqo_payment  
 **Perubahan:** Pembaruan kode  
 **Lines:** 182-187
@@ -64,7 +90,7 @@
 
 ---
 
-#### 5. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_101932]
+#### 7. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_101932]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Pembaruan kode  
 **Lines:** 354, 359, 362-363, 376-398
@@ -125,7 +151,7 @@
 
 ---
 
-#### 6. src/scripts/modules/BQO/views/bqo_payment.js [20260808_101932]
+#### 8. src/scripts/modules/BQO/views/bqo_payment.js [20260808_101932]
 **Fungsi:** Modul: bqo_payment  
 **Perubahan:** Pembaruan kode  
 **Lines:** 156, 161, 164-165, 178-189, 191-200
@@ -186,7 +212,7 @@
 
 ---
 
-#### 7. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_092914]
+#### 9. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_092914]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Tambah fungsi: BQO_DEFAULT_SALES  
 **Lines:** 51, 362, 364-365, 376-381, 386-396, 402-403
@@ -244,7 +270,7 @@
 
 ---
 
-#### 8. src/scripts/modules/BQO/views/bqo_payment.js [20260808_092914]
+#### 10. src/scripts/modules/BQO/views/bqo_payment.js [20260808_092914]
 **Fungsi:** Modul: bqo_payment  
 **Perubahan:** Tambah fungsi: BQO_DEFAULT_SALES  
 **Lines:** 43, 164, 166-167, 178-181, 189-195, 198
@@ -289,28 +315,118 @@
 
 ---
 
-#### 9. rc/scripts/modules/BQO/views/bqo_checkout.js [20260808_103847]
+#### 11. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_114715]
 **Fungsi:** Halaman checkout & submit order  
-**Perubahan:** Pembaruan kode  
+**Perubahan:** Tambah fungsi: BQO_DEFAULT_CPCODE  
+**Lines:** 52, 363, 389-392
+
+```javascript
+// Line 49:
++ const BQO_DEFAULT_CPCODE   = (process.env.REACT_APP_BQO_DEFAULT_CPCODE   || 'STD').trim();
+// Line 360:
+-           ccpcode:  '',
++           ccpcode:  BQO_DEFAULT_CPCODE,
+// Line 386:
+-           creason:   '',
+-           cadjdesc:  '',
+-           creason2:  ' ',
+-           cadjdesc2: ' ',
++           creason:   '-',
++           cadjdesc:  '-',
++           creason2:  '-',
++           cadjdesc2: '-',
+```
 
 ---
 
-#### 10. src/scripts/modules/BQO/views/bqo_payment.js [20260808_103847]
+#### 12. src/scripts/modules/BQO/views/bqo_payment.js [20260808_114715]
 **Fungsi:** Modul: bqo_payment  
-**Perubahan:** Pembaruan kode  
-**Lines:** 192-193
+**Perubahan:** Tambah fungsi: BQO_DEFAULT_CPCODE  
+**Lines:** 44, 165, 191-194
 
 ```javascript
-// Line 189:
-+         creason2:  ' ',
-+         cadjdesc2: ' ',
+// Line 41:
++ const BQO_DEFAULT_CPCODE   = (process.env.REACT_APP_BQO_DEFAULT_CPCODE   || 'STD').trim();
+// Line 162:
+-         ccpcode:  '',
++         ccpcode:  BQO_DEFAULT_CPCODE,
+// Line 188:
+-         creason:   '',
+-         cadjdesc:  '',
+-         creason2:  ' ',
+-         cadjdesc2: ' ',
++         creason:   '-',
++         cadjdesc:  '-',
++         creason2:  '-',
++         cadjdesc2: '-',
 ```
 
 ---
 
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260808.md [20260808_103531]
+#### 1. docs/changelog/daily/codeChange-20260808.md [20260808_103848]
+**Fungsi:** Implementasi: codeChange-20260808  
+**Perubahan:** Pembaruan kode  
+**Lines:** 7-31, 49, 67, 128, 189, 247, 292, 298, 301, 305-306, 313-374, 435, 496, 576-577, 579
+
+```javascript
+// Line 4:
+- #### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_103051]
++ #### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_103531]
++ **Fungsi:** Halaman checkout & submit order  
++ **Perubahan:** Pembaruan kode  
++ 
++ ```javascript
++ // Line 387:
++ -           creason2:  '',
++ -           cadjdesc2: '',
++ ```
++ 
++ ---
++ 
++ #### 2. src/scripts/modules/BQO/views/bqo_payment.js [20260808_103531]
++ **Fungsi:** Modul: bqo_payment  
++ **Perubahan:** Pembaruan kode  
++ 
++ ```javascript
++ // Line 189:
++ -         creason2:  '',
++ -         cadjdesc2: '',
++ ```
++ 
++ ---
+  // ... (truncated)
++ // Line 487:
++ - - **✨ Features:** 6 items
++ - - **📖 Documentation:** 2 items
++ + - **✨ Features:** 8 items
++ + - **📖 Documentation:** 3 items
++ - - **Total Files Modified:** 9
++ + - **Total Files Modified:** 12
++ ```
++ 
++ ---
++ 
++ #### 2. docs/changelog/daily/codeChange-20260808.md [20260808_103051]
+// Line 432:
+- #### 2. docs/changelog/daily/codeChange-20260808.md [20260808_101932]
++ #### 3. docs/changelog/daily/codeChange-20260808.md [20260808_101932]
+// Line 493:
+- #### 3. docs/changelog/daily/codeChange-20260808.md [20260808_092914]
++ #### 4. docs/changelog/daily/codeChange-20260808.md [20260808_092914]
+// Line 573:
+- - **✨ Features:** 8 items
+- - **📖 Documentation:** 3 items
++ - **✨ Features:** 10 items
++ - **📖 Documentation:** 4 items
+- - **Total Files Modified:** 12
++ - **Total Files Modified:** 15
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260808.md [20260808_103531]
 **Fungsi:** Implementasi: codeChange-20260808  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-43, 104, 165, 223, 268, 274, 279-281, 288-349, 410, 490-491, 493
@@ -371,7 +487,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260808.md [20260808_103051]
+#### 3. docs/changelog/daily/codeChange-20260808.md [20260808_103051]
 **Fungsi:** Implementasi: codeChange-20260808  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-129, 187, 232, 238, 241, 244-251, 258-319, 399-400, 402
@@ -432,7 +548,7 @@
 
 ---
 
-#### 3. docs/changelog/daily/codeChange-20260808.md [20260808_101932]
+#### 4. docs/changelog/daily/codeChange-20260808.md [20260808_101932]
 **Fungsi:** Implementasi: codeChange-20260808  
 **Perubahan:** Pembaruan kode  
 **Lines:** 110-239, 242, 245-254, 259-260, 262
@@ -493,7 +609,7 @@
 
 ---
 
-#### 4. docs/changelog/daily/codeChange-20260808.md [20260808_092914]
+#### 5. docs/changelog/daily/codeChange-20260808.md [20260808_092914]
 **Fungsi:** Implementasi: codeChange-20260808  
 **Perubahan:** Pembaruan kode  
 **Lines:** 1-122
@@ -572,9 +688,15 @@
 
 ---
 
+#### 2. nv/qorestoweb/.env [20260808_114715]
+**Fungsi:** Implementasi: .env  
+**Perubahan:** Ubah konfigurasi environment / API endpoint  
+
+---
+
 ## 📊 **Summary**
-- **✨ Features:** 10 items
-- **📖 Documentation:** 4 items
-- **⚙️ Config:** 1 item
-- **Total Files Modified:** 15
+- **✨ Features:** 12 items
+- **📖 Documentation:** 5 items
+- **⚙️ Config:** 2 items
+- **Total Files Modified:** 19
 - **Main Focus:** Features
