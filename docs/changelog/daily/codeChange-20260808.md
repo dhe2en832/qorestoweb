@@ -4,7 +4,128 @@
 
 ### ✨ Features
 
-#### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_132610]
+#### 1. src/scripts/modules/BQO/reports/BQOOrderSlip.jsx [20260808_140216]
+**Fungsi:** Modul: BQOOrderSlip  
+**Perubahan:** Pembaruan kode  
+**Lines:** 9-14, 18-22, 43-46
+
+```javascript
+// Line 5:
+-  * Fungsi: bukti pesanan sudah masuk ke dapur / kasir.
+-  * Status pembayaran: BELUM DIBAYAR — konsumen membawa ini ke kasir.
+-  *
+-  *   datas.orderInfo   - { seatNumber, orderByName, phoneNumber }
+-  *   datas.cart        - array item pesanan { item, qty, note? }
+-  *   datas.subtotal    - number (sebelum pajak)
+-  *   datas.taxAmount   - number
+-  *   datas.total       - number (grand total tagihan)
+-  *   datas.nomorPesanan - string (nomor pesanan dari backend)
++  *   datas.orderInfo    - { seatNumber, orderByName, phoneNumber }
++  *   datas.cart         - array item pesanan { item, qty, note? }
++  *   datas.subtotal     - number (sebelum pajak)
++  *   datas.taxAmount    - number
++  *   datas.total        - number (grand total tagihan)
++  *   datas.nomorPesanan - string (nomor pesanan / cqonum dari backend)
+-     orderInfo   = {},
+-     cart        = [],
+-     subtotal    = 0,
+-     taxAmount   = 0,
+-     total       = 0,
++     orderInfo    = {},
++     cart         = [],
++     subtotal     = 0,
++     taxAmount    = 0,
++     total        = 0,
+// Line 40:
+-       {nomorPesanan && (
+-         <div style={styles.row}>
+-           <span>No. Pesanan</span>
+-           <span><b>{nomorPesanan}</b></span>
+-         </div>
+-       )}
++       <div style={styles.row}>
++         <span>No. Order</span>
++         <span><b>{nomorPesanan || '-'}</b></span>
++       </div>
+```
+
+---
+
+#### 2. src/scripts/modules/BQO/reports/BQOReceipt.jsx [20260808_140216]
+**Fungsi:** Modul: BQOReceipt  
+**Perubahan:** Pembaruan kode  
+**Lines:** 15, 29, 60-65
+
+```javascript
+// Line 12:
++  *   datas.cqonum          - string (nomor QO dari backend, misal "2608000022")
+// Line 26:
++     cqonum = '',
+// Line 57:
++       {cqonum && (
++         <div style={styles.row}>
++           <span>No. Order</span>
++           <span>{cqonum}</span>
++         </div>
++       )}
+```
+
+---
+
+#### 3. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_140216]
+**Fungsi:** Halaman checkout & submit order  
+**Perubahan:** Ubah render/return JSX  
+**Lines:** 166-171, 176, 192-194, 432-434, 880
+
+```javascript
+// Line 163:
+-         // Status pesanan yang dianggap "masih aktif" (meja masih terisi)
+-         // Sesuaikan dengan status yang dipakai di backend BQO
+-         const ACTIVE_STATUSES = ['O', 'P', 'open', 'pending', 'OPEN', 'PENDING'];
++         // Status aktif dari data aktual backend BQO:
++         //   C = Created (baru dibuat, belum dibayar)
++         //   O = Open
++         //   P = Pending
++         // Status yang dianggap SELESAI (meja bebas): kosong/null atau selain C/O/P
++         const ACTIVE_STATUSES = new Set(['C', 'O', 'P']);
+-               return ACTIVE_STATUSES.some((s) => s.toUpperCase() === status) || status === '';
++               return ACTIVE_STATUSES.has(status);
+// Line 189:
++     // Refresh saat user kembali ke tab/window ini
++     window.addEventListener('focus', fetchOccupiedTables);
++     return () => window.removeEventListener('focus', fetchOccupiedTables);
+// Line 429:
+-         const bon = result.onsuccess?.cordernum || result.onsuccess?.csonum || '';
+-         setKasirResult({ nomorBon: bon, cartItems, subtotal, taxAmount, total });
++         const bon    = result.onsuccess?.cordernum || result.onsuccess?.csonum || '';
++         const cqonum = result.onsuccess?.cqonum    || bon;
++         setKasirResult({ nomorBon: bon, cqonum, cartItems, subtotal, taxAmount, total });
+// Line 877:
+-               nomorPesanan: kasirResult.nomorBon,
++               nomorPesanan: kasirResult.cqonum || kasirResult.nomorBon,
+```
+
+---
+
+#### 4. src/scripts/modules/BQO/views/bqo_payment.js [20260808_140216]
+**Fungsi:** Modul: bqo_payment  
+**Perubahan:** Tambah state management  
+**Lines:** 90, 231, 255, 967
+
+```javascript
+// Line 87:
++   const [cqonum,              setCqonum]              = useState('');
+// Line 228:
++         setCqonum(result.onsuccess?.cqonum || bon);
+// Line 252:
++             setCqonum(retryResult.onsuccess?.cqonum || bon);
+// Line 964:
++             cqonum:   cqonum   || nomorBon || externalId,
+```
+
+---
+
+#### 5. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_132610]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Import: AlertDialog  
 **Lines:** 32, 428-429, 450-456
@@ -27,7 +148,7 @@
 
 ---
 
-#### 2. src/scripts/modules/BQO/views/bqo_home.js [20260808_132610]
+#### 6. src/scripts/modules/BQO/views/bqo_home.js [20260808_132610]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Pembaruan kode  
 **Lines:** 583
@@ -40,7 +161,7 @@
 
 ---
 
-#### 3. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_131204]
+#### 7. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_131204]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Tambah fungsi: isSessionExpired; Akses localStorage; Tambah state management; Tambah error handling; Tambah navigasi halaman  
 **Lines:** 36-42, 139-145, 429-436
@@ -80,7 +201,7 @@
 
 ---
 
-#### 4. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_114717]
+#### 8. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_114717]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Tambah fungsi: BQO_DEFAULT_CPCODE  
 **Lines:** 52, 363, 389-392
@@ -104,7 +225,7 @@
 
 ---
 
-#### 5. src/scripts/modules/BQO/views/bqo_payment.js [20260808_114717]
+#### 9. src/scripts/modules/BQO/views/bqo_payment.js [20260808_114717]
 **Fungsi:** Modul: bqo_payment  
 **Perubahan:** Tambah fungsi: BQO_DEFAULT_CPCODE  
 **Lines:** 44, 165, 191-194
@@ -128,7 +249,7 @@
 
 ---
 
-#### 6. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_103848]
+#### 10. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_103848]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Pembaruan kode  
 **Lines:** 390-391
@@ -141,7 +262,7 @@
 
 ---
 
-#### 7. src/scripts/modules/BQO/views/bqo_payment.js [20260808_103848]
+#### 11. src/scripts/modules/BQO/views/bqo_payment.js [20260808_103848]
 **Fungsi:** Modul: bqo_payment  
 **Perubahan:** Pembaruan kode  
 **Lines:** 192-193
@@ -154,7 +275,7 @@
 
 ---
 
-#### 8. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_103531]
+#### 12. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_103531]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Pembaruan kode  
 
@@ -166,7 +287,7 @@
 
 ---
 
-#### 9. src/scripts/modules/BQO/views/bqo_payment.js [20260808_103531]
+#### 13. src/scripts/modules/BQO/views/bqo_payment.js [20260808_103531]
 **Fungsi:** Modul: bqo_payment  
 **Perubahan:** Pembaruan kode  
 
@@ -178,7 +299,7 @@
 
 ---
 
-#### 10. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_103051]
+#### 14. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_103051]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Pembaruan kode  
 **Lines:** 380-385
@@ -196,7 +317,7 @@
 
 ---
 
-#### 11. src/scripts/modules/BQO/views/bqo_payment.js [20260808_103051]
+#### 15. src/scripts/modules/BQO/views/bqo_payment.js [20260808_103051]
 **Fungsi:** Modul: bqo_payment  
 **Perubahan:** Pembaruan kode  
 **Lines:** 182-187
@@ -214,7 +335,7 @@
 
 ---
 
-#### 12. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_101932]
+#### 16. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_101932]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Pembaruan kode  
 **Lines:** 354, 359, 362-363, 376-398
@@ -275,7 +396,7 @@
 
 ---
 
-#### 13. src/scripts/modules/BQO/views/bqo_payment.js [20260808_101932]
+#### 17. src/scripts/modules/BQO/views/bqo_payment.js [20260808_101932]
 **Fungsi:** Modul: bqo_payment  
 **Perubahan:** Pembaruan kode  
 **Lines:** 156, 161, 164-165, 178-189, 191-200
@@ -336,7 +457,7 @@
 
 ---
 
-#### 14. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_092914]
+#### 18. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_092914]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Tambah fungsi: BQO_DEFAULT_SALES  
 **Lines:** 51, 362, 364-365, 376-381, 386-396, 402-403
@@ -394,7 +515,7 @@
 
 ---
 
-#### 15. src/scripts/modules/BQO/views/bqo_payment.js [20260808_092914]
+#### 19. src/scripts/modules/BQO/views/bqo_payment.js [20260808_092914]
 **Fungsi:** Modul: bqo_payment  
 **Perubahan:** Tambah fungsi: BQO_DEFAULT_SALES  
 **Lines:** 43, 164, 166-167, 178-181, 189-195, 198
@@ -439,89 +560,126 @@
 
 ---
 
-#### 16. rc/scripts/modules/BQO/reports/BQOOrderSlip.jsx [20260808_140214]
-**Fungsi:** Modul: BQOOrderSlip  
-**Perubahan:** Pembaruan kode  
-
----
-
-#### 17. src/scripts/modules/BQO/reports/BQOReceipt.jsx [20260808_140214]
-**Fungsi:** Modul: BQOReceipt  
-**Perubahan:** Pembaruan kode  
-**Lines:** 15, 29, 60-65
-
-```javascript
-// Line 12:
-+  *   datas.cqonum          - string (nomor QO dari backend, misal "2608000022")
-// Line 26:
-+     cqonum = '',
-// Line 57:
-+       {cqonum && (
-+         <div style={styles.row}>
-+           <span>No. Order</span>
-+           <span>{cqonum}</span>
-+         </div>
-+       )}
-```
-
----
-
-#### 18. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_140214]
+#### 20. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_143140]
 **Fungsi:** Halaman checkout & submit order  
-**Perubahan:** Ubah render/return JSX  
-**Lines:** 166-171, 176, 192-194, 432-434, 880
+**Perubahan:** Tambah fungsi: findIdx; Tambah fungsi: normalizeTabId  
+**Lines:** 166-192, 194-197, 199, 648
 
 ```javascript
 // Line 163:
--         // Status pesanan yang dianggap "masih aktif" (meja masih terisi)
--         // Sesuaikan dengan status yang dipakai di backend BQO
--         const ACTIVE_STATUSES = ['O', 'P', 'open', 'pending', 'OPEN', 'PENDING'];
-+         // Status aktif dari data aktual backend BQO:
-+         //   C = Created (baru dibuat, belum dibayar)
-+         //   O = Open
-+         //   P = Pending
-+         // Status yang dianggap SELESAI (meja bebas): kosong/null atau selain C/O/P
-+         const ACTIVE_STATUSES = new Set(['C', 'O', 'P']);
--               return ACTIVE_STATUSES.some((s) => s.toUpperCase() === status) || status === '';
-+               return ACTIVE_STATUSES.has(status);
-// Line 189:
-+     // Refresh saat user kembali ke tab/window ini
-+     window.addEventListener('focus', fetchOccupiedTables);
-+     return () => window.removeEventListener('focus', fetchOccupiedTables);
-// Line 429:
--         const bon = result.onsuccess?.cordernum || result.onsuccess?.csonum || '';
--         setKasirResult({ nomorBon: bon, cartItems, subtotal, taxAmount, total });
-+         const bon    = result.onsuccess?.cordernum || result.onsuccess?.csonum || '';
-+         const cqonum = result.onsuccess?.cqonum    || bon;
-+         setKasirResult({ nomorBon: bon, cqonum, cartItems, subtotal, taxAmount, total });
-// Line 877:
--               nomorPesanan: kasirResult.nomorBon,
-+               nomorPesanan: kasirResult.cqonum || kasirResult.nomorBon,
-```
-
----
-
-#### 19. src/scripts/modules/BQO/views/bqo_payment.js [20260808_140214]
-**Fungsi:** Modul: bqo_payment  
-**Perubahan:** Tambah state management  
-**Lines:** 90, 231, 255, 967
-
-```javascript
-// Line 87:
-+   const [cqonum,              setCqonum]              = useState('');
-// Line 228:
-+         setCqonum(result.onsuccess?.cqonum || bon);
-// Line 252:
-+             setCqonum(retryResult.onsuccess?.cqonum || bon);
-// Line 964:
-+             cqonum:   cqonum   || nomorBon || externalId,
+-         // Status aktif dari data aktual backend BQO:
+-         //   C = Created (baru dibuat, belum dibayar)
+-         //   O = Open
+-         //   P = Pending
+-         // Status yang dianggap SELESAI (meja bebas): kosong/null atau selain C/O/P
+-         const ACTIVE_STATUSES = new Set(['C', 'O', 'P']);
++         let orders = [];
++ 
++         if (res.columns && Array.isArray(res.data[0])) {
++           // Format brwdef: array of arrays — petakan kolom dulu
++           const cols = res.columns;
++           const findIdx = (key) => cols.findIndex((c) =>
++             (c.key || '').toLowerCase() === key.toLowerCase() ||
++             (c.title || '').toLowerCase().includes(key.toLowerCase())
++           );
++           const idxTabId  = findIdx('ctabid');
++           const idxStatus = findIdx('cstatus');
++           orders = res.data.map((row) => ({
++             ctabid:  String(row[idxTabId  >= 0 ? idxTabId  : 1] || '').trim(),
++             cstatus: String(row[idxStatus >= 0 ? idxStatus : 2] || '').trim(),
++           }));
++         } else {
++           // Format non-brwdef: array of objects
++           orders = res.data.map((order) => ({
++             ctabid:  String(order.ctabid  || '').trim(),
++             cstatus: String(order.cstatus || '').trim(),
++           }));
++         }
++ 
++         // Normalisasi ctabid: hapus leading zeros agar cocok dengan tableOptions ("1","2",dst.)
++         const normalizeTabId = (v) => String(parseInt(v, 10) || '').trim();
++ 
++         // Meja KOSONG jika statusnya 'C'. Meja TERISI jika statusnya bukan 'C' dan tidak kosong.
+-           res.data
+-             .filter((order) => {
+-               const status = (order.cstatus || '').trim().toUpperCase();
+-               return ACTIVE_STATUSES.has(status);
++           orders
++             .filter(({ cstatus }) => {
++               const s = cstatus.toUpperCase();
++               return s !== 'C' && s !== '';
+-             .map((order) => String(order.ctabid || '').trim())
++             .map(({ ctabid }) => normalizeTabId(ctabid))
+// Line 645:
++                 SelectProps={{ onOpen: fetchOccupiedTables }}
 ```
 
 ---
 
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260808.md [20260808_132610]
+#### 1. docs/changelog/daily/codeChange-20260808.md [20260808_140216]
+**Fungsi:** Implementasi: codeChange-20260808  
+**Perubahan:** Ubah render/return JSX; Tambah state management; Akses localStorage  
+**Lines:** 7-43, 83, 107, 131, 144, 157, 169, 181, 199, 217, 278, 339, 397, 442-443, 448-449, 451, 454-517, 524-585, 646, 707, 768, 829, 890, 951, 1093-1094, 1097
+
+```javascript
+// Line 4:
+- #### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_131204]
++ #### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_132610]
++ **Fungsi:** Halaman checkout & submit order  
++ **Perubahan:** Import: AlertDialog  
++ **Lines:** 32, 428-429, 450-456
++ 
++ ```javascript
++ // Line 29:
++ + import AlertDialog from '../../../components/AlertDialog';
++ // Line 425:
++ +         // Refresh daftar meja setelah pesanan berhasil — meja yang baru dipesan langsung terisi
++ +         fetchOccupiedTables();
++ // Line 447:
++ +     // Print guard — wajib cetak dulu sebelum bisa pesanan baru (pola trenly)
++ +     if (printCount === 0) {
++ +       AlertDialog('warning', 'Belum Cetak Tanda Pesanan',
++ +         'Silakan cetak tanda pesanan terlebih dahulu sebelum membuat pesanan baru.',
++ +         () => handlePrint());
++ +       return;
++ +     }
++ ```
++ 
++ ---
++ 
+  // ... (truncated)
+// Line 643:
+- #### 2. docs/changelog/daily/codeChange-20260808.md [20260808_114717]
++ #### 3. docs/changelog/daily/codeChange-20260808.md [20260808_114717]
+// Line 704:
+- #### 3. docs/changelog/daily/codeChange-20260808.md [20260808_103848]
++ #### 4. docs/changelog/daily/codeChange-20260808.md [20260808_103848]
+// Line 765:
+- #### 4. docs/changelog/daily/codeChange-20260808.md [20260808_103531]
++ #### 5. docs/changelog/daily/codeChange-20260808.md [20260808_103531]
+// Line 826:
+- #### 5. docs/changelog/daily/codeChange-20260808.md [20260808_103051]
++ #### 6. docs/changelog/daily/codeChange-20260808.md [20260808_103051]
+// Line 887:
+- #### 6. docs/changelog/daily/codeChange-20260808.md [20260808_101932]
++ #### 7. docs/changelog/daily/codeChange-20260808.md [20260808_101932]
+// Line 948:
+- #### 7. docs/changelog/daily/codeChange-20260808.md [20260808_092914]
++ #### 8. docs/changelog/daily/codeChange-20260808.md [20260808_092914]
+// Line 1090:
+- - **✨ Features:** 15 items
+- - **📖 Documentation:** 7 items
++ - **✨ Features:** 19 items
++ - **📖 Documentation:** 8 items
+- - **Total Files Modified:** 26
++ - **Total Files Modified:** 31
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260808.md [20260808_132610]
 **Fungsi:** Implementasi: codeChange-20260808  
 **Perubahan:** Akses localStorage; Tambah state management; Tambah error handling; Tambah navigasi halaman  
 **Lines:** 7-47, 71, 95, 108, 121, 133, 145, 163, 181, 242, 303, 361, 406, 408-415, 418-420, 427-488, 549, 610, 671, 732, 793, 856, 858-874, 878, 935-936, 939
@@ -582,7 +740,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260808.md [20260808_131204]
+#### 3. docs/changelog/daily/codeChange-20260808.md [20260808_131204]
 **Fungsi:** Implementasi: codeChange-20260808  
 **Perubahan:** Akses localStorage; Tambah state management; Tambah error handling; Tambah navigasi halaman  
 **Lines:** 7-55, 68, 81, 93, 105, 123, 141, 202, 263, 321, 366, 368-369, 372-401, 406-411, 414-464, 469, 530, 591, 652, 713, 774-805, 808-822, 839-841, 843
@@ -643,7 +801,7 @@
 
 ---
 
-#### 3. docs/changelog/daily/codeChange-20260808.md [20260808_114717]
+#### 4. docs/changelog/daily/codeChange-20260808.md [20260808_114717]
 **Fungsi:** Implementasi: codeChange-20260808  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-33, 45, 57, 75, 93, 154, 215, 273, 318, 320-338, 342, 344-345, 348-361, 368-429, 490, 551, 612, 691-696, 698-701
@@ -704,7 +862,7 @@
 
 ---
 
-#### 4. docs/changelog/daily/codeChange-20260808.md [20260808_103848]
+#### 5. docs/changelog/daily/codeChange-20260808.md [20260808_103848]
 **Fungsi:** Implementasi: codeChange-20260808  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-31, 49, 67, 128, 189, 247, 292, 298, 301, 305-306, 313-374, 435, 496, 576-577, 579
@@ -765,7 +923,7 @@
 
 ---
 
-#### 5. docs/changelog/daily/codeChange-20260808.md [20260808_103531]
+#### 6. docs/changelog/daily/codeChange-20260808.md [20260808_103531]
 **Fungsi:** Implementasi: codeChange-20260808  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-43, 104, 165, 223, 268, 274, 279-281, 288-349, 410, 490-491, 493
@@ -826,7 +984,7 @@
 
 ---
 
-#### 6. docs/changelog/daily/codeChange-20260808.md [20260808_103051]
+#### 7. docs/changelog/daily/codeChange-20260808.md [20260808_103051]
 **Fungsi:** Implementasi: codeChange-20260808  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-129, 187, 232, 238, 241, 244-251, 258-319, 399-400, 402
@@ -887,7 +1045,7 @@
 
 ---
 
-#### 7. docs/changelog/daily/codeChange-20260808.md [20260808_101932]
+#### 8. docs/changelog/daily/codeChange-20260808.md [20260808_101932]
 **Fungsi:** Implementasi: codeChange-20260808  
 **Perubahan:** Pembaruan kode  
 **Lines:** 110-239, 242, 245-254, 259-260, 262
@@ -948,7 +1106,7 @@
 
 ---
 
-#### 8. docs/changelog/daily/codeChange-20260808.md [20260808_092914]
+#### 9. docs/changelog/daily/codeChange-20260808.md [20260808_092914]
 **Fungsi:** Implementasi: codeChange-20260808  
 **Perubahan:** Pembaruan kode  
 **Lines:** 1-122
@@ -1057,6 +1215,14 @@
 
 ---
 
+### 🔌 API
+
+#### 1. rc/scripts/modules/BQO/controllers/bqo_api.js [20260808_143140]
+**Fungsi:** Modul: bqo_api  
+**Perubahan:** Pembaruan kode  
+
+---
+
 ### ⚙️ Config
 
 #### 1. env/qorestoweb/.env [20260808_114717]
@@ -1090,9 +1256,10 @@
 ---
 
 ## 📊 **Summary**
-- **✨ Features:** 19 items
-- **📖 Documentation:** 8 items
+- **✨ Features:** 20 items
+- **📖 Documentation:** 9 items
 - **🔐 Auth/Session:** 2 items
+- **🔌 API:** 1 item
 - **⚙️ Config:** 2 items
-- **Total Files Modified:** 31
+- **Total Files Modified:** 34
 - **Main Focus:** Features

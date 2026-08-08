@@ -163,19 +163,40 @@ export default function BQOCheckout() {
     try {
       const res = await bqo_api.getActiveOrders();
       if (res && res.result && Array.isArray(res.data)) {
-        // Status aktif dari data aktual backend BQO:
-        //   C = Created (baru dibuat, belum dibayar)
-        //   O = Open
-        //   P = Pending
-        // Status yang dianggap SELESAI (meja bebas): kosong/null atau selain C/O/P
-        const ACTIVE_STATUSES = new Set(['C', 'O', 'P']);
+        let orders = [];
+
+        if (res.columns && Array.isArray(res.data[0])) {
+          // Format brwdef: array of arrays — petakan kolom dulu
+          const cols = res.columns;
+          const findIdx = (key) => cols.findIndex((c) =>
+            (c.key || '').toLowerCase() === key.toLowerCase() ||
+            (c.title || '').toLowerCase().includes(key.toLowerCase())
+          );
+          const idxTabId  = findIdx('ctabid');
+          const idxStatus = findIdx('cstatus');
+          orders = res.data.map((row) => ({
+            ctabid:  String(row[idxTabId  >= 0 ? idxTabId  : 1] || '').trim(),
+            cstatus: String(row[idxStatus >= 0 ? idxStatus : 2] || '').trim(),
+          }));
+        } else {
+          // Format non-brwdef: array of objects
+          orders = res.data.map((order) => ({
+            ctabid:  String(order.ctabid  || '').trim(),
+            cstatus: String(order.cstatus || '').trim(),
+          }));
+        }
+
+        // Normalisasi ctabid: hapus leading zeros agar cocok dengan tableOptions ("1","2",dst.)
+        const normalizeTabId = (v) => String(parseInt(v, 10) || '').trim();
+
+        // Meja KOSONG jika statusnya 'C'. Meja TERISI jika statusnya bukan 'C' dan tidak kosong.
         const occupied = new Set(
-          res.data
-            .filter((order) => {
-              const status = (order.cstatus || '').trim().toUpperCase();
-              return ACTIVE_STATUSES.has(status);
+          orders
+            .filter(({ cstatus }) => {
+              const s = cstatus.toUpperCase();
+              return s !== 'C' && s !== '';
             })
-            .map((order) => String(order.ctabid || '').trim())
+            .map(({ ctabid }) => normalizeTabId(ctabid))
             .filter(Boolean)
         );
         setOccupiedTables(occupied);
@@ -624,6 +645,7 @@ export default function BQOCheckout() {
                 value={info.seatNumber}
                 onChange={handleChangeInfo}
                 disabled={loadingTables}
+                SelectProps={{ onOpen: fetchOccupiedTables }}
                 helperText={
                   info.seatNumber && occupiedTables.has(info.seatNumber)
                     ? '⚠️ Meja ini sedang terisi. Pilih meja lain.'

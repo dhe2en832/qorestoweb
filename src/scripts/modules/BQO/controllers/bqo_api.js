@@ -92,7 +92,7 @@ class bqo_api {
     return this.fetching('getlist', {
       offset:     0,
       limit:      999,
-      usebrwdef:  false,
+      usebrwdef:  Config.USE_BRWDEF,
       listfields: ['cqonum', 'ctabid', 'cstatus', 'cremark'],
       query: {
         freefilter: { search: '' },
