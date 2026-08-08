@@ -29,6 +29,7 @@ import Placeholder from '../../../../images/placeholder.png';
 import useResponsive from '../../../hooks/useResponsive';
 import { toCurrencyIDR } from '../../../utils/formatter';
 import ToastBar from '../../../components/ToastBar';
+import AlertDialog from '../../../components/AlertDialog';
 import bqo_api from '../controllers/bqo_api';
 import usePrintReceipt from '../hooks/usePrintReceipt';
 import BQOOrderSlip from '../reports/BQOOrderSlip';
@@ -424,6 +425,8 @@ export default function BQOCheckout() {
       if (result.result === true) {
         const bon = result.onsuccess?.cordernum || result.onsuccess?.csonum || '';
         setKasirResult({ nomorBon: bon, cartItems, subtotal, taxAmount, total });
+        // Refresh daftar meja setelah pesanan berhasil — meja yang baru dipesan langsung terisi
+        fetchOccupiedTables();
       } else {
         const errMsg = result.onfail?.cerror || 'Gagal mengirim pesanan.';
         // Deteksi session expired — simpan state lalu redirect ke login
@@ -444,6 +447,13 @@ export default function BQOCheckout() {
   };
 
   const handleNewOrderAfterKasir = () => {
+    // Print guard — wajib cetak dulu sebelum bisa pesanan baru (pola trenly)
+    if (printCount === 0) {
+      AlertDialog('warning', 'Belum Cetak Tanda Pesanan',
+        'Silakan cetak tanda pesanan terlebih dahulu sebelum membuat pesanan baru.',
+        () => handlePrint());
+      return;
+    }
     setKasirResult(null);
     window.localStorage.removeItem('QoCart');
     window.localStorage.removeItem('QoOrderInfo');

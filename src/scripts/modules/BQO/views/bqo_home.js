@@ -580,7 +580,7 @@ export default function BQOHome() {
           ) : (
             <Paper sx={{ my: 2 }}>
               <Typography p={2} color="#a7a7a7" fontWeight={100} textAlign="center">
-                Maaf, Menu Ini Belum Terdaftar.
+                Maaf, Menu Ini Belum Tersedia.
               </Typography>
             </Paper>
           )}
