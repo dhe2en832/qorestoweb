@@ -40,6 +40,7 @@ const XENDIT_BANK_CODE = (process.env.REACT_APP_XENDIT_BANK_CODE || 'X000').trim
 // Customer ID dan Warehouse ID default — baca langsung dari env
 const BQO_DEFAULT_CUSTOMER = (process.env.REACT_APP_BQO_DEFAULT_CUSTOMER || 'UMUM').trim();
 const BQO_DEFAULT_WHSE     = (process.env.REACT_APP_BQO_DEFAULT_WHSE     || '').trim();
+const BQO_DEFAULT_SALES    = (process.env.REACT_APP_BQO_DEFAULT_SALES    || 'ONLINE').trim();
 
 // Pajak — BASE_TAX × EFFECTIVE_RATE dari env (pola webcsa-v2)
 // Contoh: 12 × (11/12) = 11%
@@ -160,10 +161,10 @@ export default function BQOPayment() {
         ncqo:     '',
         nqqo,
         cuom:     (d.item?.csatuan || d.item?.cuom || '').trim(),
-        nhrgjua:  String(nhrgjua),
+        nhrgjua,
         cdisc:    '',
-        ndisc:    discPct > 0 ? String(discPct) : '',
-        nrpdisc:  String(nrpdisc),
+        ndisc:    discPct > 0 ? discPct : 0,
+        nrpdisc,
         csalesid: '',
         nkomisi:  '',
         cremark:  d.note || '',
@@ -174,10 +175,10 @@ export default function BQOPayment() {
       qoHeaderInfo: {
         dqodate,
         ctime,
-        cqonum:   '',
-        ctabid:   orderInfo.seatNumber  || '',
-        cwhseid:  BQO_DEFAULT_WHSE,
-        cremark:  orderInfo.orderByName || '',
+        cqonum:     '',
+        ctabid:     orderInfo.seatNumber  || '',
+        cwhseid:    BQO_DEFAULT_WHSE,
+        cremark:    orderInfo.orderByName || '',
         customer: {
           ccusid:   BQO_DEFAULT_CUSTOMER,
           cinitial: '',
@@ -185,16 +186,16 @@ export default function BQOPayment() {
           cemail:   '',
         },
         cshiptoadr: '',
-        nexchrate:  '1',
-        csalesid:   'ONLINE',
-        lmulsales:  'false',
-        npctdisc:   '0',
-        npctppn:    String(TAX_PERCENT),
-        namount:    String(subtotal),
-        ndp:        String(total),
+        nexchrate:  1,
+        csalesid:   BQO_DEFAULT_SALES,
+        lmulsales:  false,
+        npctdisc:   0,
+        npctppn:    TAX_PERCENT,
+        namount:    subtotal,
+        ndp:        total,
         cpaytype:   '',
         cbnkid,
-        nsaleschg:  '0',
+        nsaleschg:  0,
         ccrdnum:    '',
         cqofoot1:   '',
         cqofoot2:   '',

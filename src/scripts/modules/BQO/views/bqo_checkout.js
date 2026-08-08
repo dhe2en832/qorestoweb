@@ -48,6 +48,7 @@ const TABLE_COUNT = parseInt(process.env.REACT_APP_TABLE_COUNT || '10', 10);
 // Customer ID dan Warehouse ID default — baca langsung dari env
 const BQO_DEFAULT_CUSTOMER = (process.env.REACT_APP_BQO_DEFAULT_CUSTOMER || 'UMUM').trim();
 const BQO_DEFAULT_WHSE     = (process.env.REACT_APP_BQO_DEFAULT_WHSE     || '').trim();
+const BQO_DEFAULT_SALES    = (process.env.REACT_APP_BQO_DEFAULT_SALES    || 'ONLINE').trim();
 
 // Kode bank per metode pembayaran — harus sama dengan yang dikonfigurasi di master BBANK
 const CASH_BANK_CODE = (process.env.REACT_APP_CASH_BANK_CODE || 'T000').trim();
@@ -358,10 +359,10 @@ export default function BQOCheckout() {
           ncqo:     '',
           nqqo,
           cuom:     (d.item?.csatuan || d.item?.cuom || '').trim(),
-          nhrgjua:  String(nhrgjua),
+          nhrgjua,
           cdisc:    '',
-          ndisc:    discPct > 0 ? String(discPct) : '',
-          nrpdisc:  String(nrpdisc),
+          ndisc:    discPct > 0 ? discPct : 0,
+          nrpdisc,
           csalesid: '',
           nkomisi:  '',
           cremark:  d.note || '',
@@ -372,34 +373,34 @@ export default function BQOCheckout() {
         qoHeaderInfo: {
           dqodate,
           ctime,
-          cqonum:   '',                            // kosong, auto-generate dari backend
-          ctabid:   info.seatNumber  || '',        // Nomor Meja
-          cwhseid:  BQO_DEFAULT_WHSE,              // dari env REACT_APP_BQO_DEFAULT_WHSE
-          cremark:  info.orderByName || '',        // Nama pemesan
-          customer: {                              // nested object sesuai spec
-            ccusid:   BQO_DEFAULT_CUSTOMER,        // dari env REACT_APP_BQO_DEFAULT_CUSTOMER
+          cqonum:     '',
+          ctabid:     info.seatNumber  || '',
+          cwhseid:    BQO_DEFAULT_WHSE,
+          cremark:    info.orderByName || '',
+          customer: {
+            ccusid:   BQO_DEFAULT_CUSTOMER,
             cinitial: '',
             cnotelp:  info.phoneNumber || '',
             cemail:   '',
           },
-          cshiptoadr: '',                          // alamat kirim (kosong untuk dine-in)
-          nexchrate:  '1',
-          csalesid:   'ONLINE',                    // sales person
-          lmulsales:  'false',
-          npctdisc:   '0',                         // discount header
-          npctppn:    String(TAX_PERCENT),         // pajak
-          namount:    String(subtotal),            // total sebelum pajak
-          ndp:        String(total),               // pembayaran diterima (DP)
-          cpaytype:   '',                          // blank = tunai
-          cbnkid:     CASH_BANK_CODE,              // dari env REACT_APP_CASH_BANK_CODE
-          nsaleschg:  '0',
+          cshiptoadr: '',
+          nexchrate:  1,
+          csalesid:   BQO_DEFAULT_SALES,
+          lmulsales:  false,
+          npctdisc:   0,
+          npctppn:    TAX_PERCENT,
+          namount:    subtotal,
+          ndp:        total,
+          cpaytype:   '',
+          cbnkid:     CASH_BANK_CODE,
+          nsaleschg:  0,
           ccrdnum:    '',
           cqofoot1:   '',
           cqofoot2:   '',
           cqofoot3:   '',
           referensi: {
-            crefnum: externalId.substring(0, 10), // ref order (max 10 char)
-            creftrn: externalId.substring(0, 10), // ref transaksi (max 10 char)
+            crefnum: externalId.substring(0, 10),
+            creftrn: externalId.substring(0, 10),
           },
         },
         lineItemsInfo,
