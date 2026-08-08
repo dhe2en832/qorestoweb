@@ -179,7 +179,12 @@ export default function BQOPayment() {
         ctabid:    orderInfo.seatNumber  || '',
         cwhseid:   BQO_DEFAULT_WHSE,
         cremark:   orderInfo.orderByName || '',
-        ccusid:    BQO_DEFAULT_CUSTOMER,
+        customer: {
+          ccusid:   BQO_DEFAULT_CUSTOMER,
+          cinitial: '',
+          cnotelp:  orderInfo.phoneNumber || '',
+          cemail:   '',
+        },
         csalesid:  BQO_DEFAULT_SALES,
         lmulsales: false,
         creason:   '',

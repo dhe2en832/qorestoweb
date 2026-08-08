@@ -377,7 +377,12 @@ export default function BQOCheckout() {
           ctabid:    info.seatNumber  || '',
           cwhseid:   BQO_DEFAULT_WHSE,
           cremark:   info.orderByName || '',
-          ccusid:    BQO_DEFAULT_CUSTOMER,    // langsung di header, bukan nested
+          customer: {
+            ccusid:   BQO_DEFAULT_CUSTOMER,
+            cinitial: '',
+            cnotelp:  info.phoneNumber || '',
+            cemail:   '',
+          },
           csalesid:  BQO_DEFAULT_SALES,
           lmulsales: false,
           creason:   '',
