@@ -93,9 +93,9 @@ class bqo_api {
       offset:     0,
       limit:      999,
       usebrwdef:  Config.USE_BRWDEF,
-      listfields: ['cqonum', 'ctabid', 'cstatus', 'cremark'],
+      listfields: ['cqonum', 'ctabid', 'cstatus', 'dqodate'],
       query: {
-        freefilter: { search: '' },
+        freefilter: { search: 'dqodate >= date()' },  // hanya order hari ini
         textfilter: { search: '' },
       },
     });
