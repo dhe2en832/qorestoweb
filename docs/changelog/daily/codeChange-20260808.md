@@ -4,7 +4,31 @@
 
 ### ✨ Features
 
-#### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_103051]
+#### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_103531]
+**Fungsi:** Halaman checkout & submit order  
+**Perubahan:** Pembaruan kode  
+
+```javascript
+// Line 387:
+-           creason2:  '',
+-           cadjdesc2: '',
+```
+
+---
+
+#### 2. src/scripts/modules/BQO/views/bqo_payment.js [20260808_103531]
+**Fungsi:** Modul: bqo_payment  
+**Perubahan:** Pembaruan kode  
+
+```javascript
+// Line 189:
+-         creason2:  '',
+-         cadjdesc2: '',
+```
+
+---
+
+#### 3. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_103051]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Pembaruan kode  
 **Lines:** 380-385
@@ -22,7 +46,7 @@
 
 ---
 
-#### 2. src/scripts/modules/BQO/views/bqo_payment.js [20260808_103051]
+#### 4. src/scripts/modules/BQO/views/bqo_payment.js [20260808_103051]
 **Fungsi:** Modul: bqo_payment  
 **Perubahan:** Pembaruan kode  
 **Lines:** 182-187
@@ -40,7 +64,7 @@
 
 ---
 
-#### 3. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_101932]
+#### 5. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_101932]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Pembaruan kode  
 **Lines:** 354, 359, 362-363, 376-398
@@ -101,7 +125,7 @@
 
 ---
 
-#### 4. src/scripts/modules/BQO/views/bqo_payment.js [20260808_101932]
+#### 6. src/scripts/modules/BQO/views/bqo_payment.js [20260808_101932]
 **Fungsi:** Modul: bqo_payment  
 **Perubahan:** Pembaruan kode  
 **Lines:** 156, 161, 164-165, 178-189, 191-200
@@ -162,7 +186,7 @@
 
 ---
 
-#### 5. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_092914]
+#### 7. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_092914]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Tambah fungsi: BQO_DEFAULT_SALES  
 **Lines:** 51, 362, 364-365, 376-381, 386-396, 402-403
@@ -220,7 +244,7 @@
 
 ---
 
-#### 6. src/scripts/modules/BQO/views/bqo_payment.js [20260808_092914]
+#### 8. src/scripts/modules/BQO/views/bqo_payment.js [20260808_092914]
 **Fungsi:** Modul: bqo_payment  
 **Perubahan:** Tambah fungsi: BQO_DEFAULT_SALES  
 **Lines:** 43, 164, 166-167, 178-181, 189-195, 198
@@ -265,27 +289,89 @@
 
 ---
 
-#### 7. rc/scripts/modules/BQO/views/bqo_checkout.js [20260808_103530]
+#### 9. rc/scripts/modules/BQO/views/bqo_checkout.js [20260808_103847]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Pembaruan kode  
 
 ---
 
-#### 8. src/scripts/modules/BQO/views/bqo_payment.js [20260808_103530]
+#### 10. src/scripts/modules/BQO/views/bqo_payment.js [20260808_103847]
 **Fungsi:** Modul: bqo_payment  
 **Perubahan:** Pembaruan kode  
+**Lines:** 192-193
 
 ```javascript
 // Line 189:
--         creason2:  '',
--         cadjdesc2: '',
++         creason2:  ' ',
++         cadjdesc2: ' ',
 ```
 
 ---
 
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260808.md [20260808_103051]
+#### 1. docs/changelog/daily/codeChange-20260808.md [20260808_103531]
+**Fungsi:** Implementasi: codeChange-20260808  
+**Perubahan:** Pembaruan kode  
+**Lines:** 7-43, 104, 165, 223, 268, 274, 279-281, 288-349, 410, 490-491, 493
+
+```javascript
+// Line 4:
+- #### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_101932]
++ #### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_103051]
++ **Fungsi:** Halaman checkout & submit order  
++ **Perubahan:** Pembaruan kode  
++ **Lines:** 380-385
++ 
++ ```javascript
++ // Line 377:
++ -           ccusid:    BQO_DEFAULT_CUSTOMER,    // langsung di header, bukan nested
++ +           customer: {
++ +             ccusid:   BQO_DEFAULT_CUSTOMER,
++ +             cinitial: '',
++ +             cnotelp:  info.phoneNumber || '',
++ +             cemail:   '',
++ +           },
++ ```
++ 
++ ---
++ 
++ #### 2. src/scripts/modules/BQO/views/bqo_payment.js [20260808_103051]
++ **Fungsi:** Modul: bqo_payment  
++ **Perubahan:** Pembaruan kode  
++ **Lines:** 182-187
++ 
+  // ... (truncated)
++ + ---
++ + 
++ + #### 2. docs/changelog/daily/codeChange-20260808.md [20260808_092914]
++ // Line 396:
++ - - **✨ Features:** 4 items
++ - - **📖 Documentation:** 1 item
++ + - **✨ Features:** 6 items
++ + - **📖 Documentation:** 2 items
++ - - **Total Files Modified:** 6
++ + - **Total Files Modified:** 9
++ ```
++ 
++ ---
++ 
++ #### 2. docs/changelog/daily/codeChange-20260808.md [20260808_101932]
+// Line 407:
+- #### 2. docs/changelog/daily/codeChange-20260808.md [20260808_092914]
++ #### 3. docs/changelog/daily/codeChange-20260808.md [20260808_092914]
+// Line 487:
+- - **✨ Features:** 6 items
+- - **📖 Documentation:** 2 items
++ - **✨ Features:** 8 items
++ - **📖 Documentation:** 3 items
+- - **Total Files Modified:** 9
++ - **Total Files Modified:** 12
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260808.md [20260808_103051]
 **Fungsi:** Implementasi: codeChange-20260808  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-129, 187, 232, 238, 241, 244-251, 258-319, 399-400, 402
@@ -346,7 +432,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260808.md [20260808_101932]
+#### 3. docs/changelog/daily/codeChange-20260808.md [20260808_101932]
 **Fungsi:** Implementasi: codeChange-20260808  
 **Perubahan:** Pembaruan kode  
 **Lines:** 110-239, 242, 245-254, 259-260, 262
@@ -407,7 +493,7 @@
 
 ---
 
-#### 3. docs/changelog/daily/codeChange-20260808.md [20260808_092914]
+#### 4. docs/changelog/daily/codeChange-20260808.md [20260808_092914]
 **Fungsi:** Implementasi: codeChange-20260808  
 **Perubahan:** Pembaruan kode  
 **Lines:** 1-122
@@ -487,8 +573,8 @@
 ---
 
 ## 📊 **Summary**
-- **✨ Features:** 8 items
-- **📖 Documentation:** 3 items
+- **✨ Features:** 10 items
+- **📖 Documentation:** 4 items
 - **⚙️ Config:** 1 item
-- **Total Files Modified:** 12
+- **Total Files Modified:** 15
 - **Main Focus:** Features

@@ -387,6 +387,8 @@ export default function BQOCheckout() {
           lmulsales: false,
           creason:   '',
           cadjdesc:  '',
+          creason2:  ' ',
+          cadjdesc2: ' ',
           cpaytype:  '',
           cbnkid:    CASH_BANK_CODE,
           ccrdnum:   '',
