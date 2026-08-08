@@ -189,8 +189,6 @@ export default function BQOPayment() {
         lmulsales: false,
         creason:   '',
         cadjdesc:  '',
-        creason2:  '',
-        cadjdesc2: '',
         cpaytype:  '',
         cbnkid,
         ccrdnum:   '',

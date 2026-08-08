@@ -4,7 +4,43 @@
 
 ### ✨ Features
 
-#### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_101932]
+#### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_103051]
+**Fungsi:** Halaman checkout & submit order  
+**Perubahan:** Pembaruan kode  
+**Lines:** 380-385
+
+```javascript
+// Line 377:
+-           ccusid:    BQO_DEFAULT_CUSTOMER,    // langsung di header, bukan nested
++           customer: {
++             ccusid:   BQO_DEFAULT_CUSTOMER,
++             cinitial: '',
++             cnotelp:  info.phoneNumber || '',
++             cemail:   '',
++           },
+```
+
+---
+
+#### 2. src/scripts/modules/BQO/views/bqo_payment.js [20260808_103051]
+**Fungsi:** Modul: bqo_payment  
+**Perubahan:** Pembaruan kode  
+**Lines:** 182-187
+
+```javascript
+// Line 179:
+-         ccusid:    BQO_DEFAULT_CUSTOMER,
++         customer: {
++           ccusid:   BQO_DEFAULT_CUSTOMER,
++           cinitial: '',
++           cnotelp:  orderInfo.phoneNumber || '',
++           cemail:   '',
++         },
+```
+
+---
+
+#### 3. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_101932]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Pembaruan kode  
 **Lines:** 354, 359, 362-363, 376-398
@@ -65,7 +101,7 @@
 
 ---
 
-#### 2. src/scripts/modules/BQO/views/bqo_payment.js [20260808_101932]
+#### 4. src/scripts/modules/BQO/views/bqo_payment.js [20260808_101932]
 **Fungsi:** Modul: bqo_payment  
 **Perubahan:** Pembaruan kode  
 **Lines:** 156, 161, 164-165, 178-189, 191-200
@@ -126,7 +162,7 @@
 
 ---
 
-#### 3. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_092914]
+#### 5. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_092914]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Tambah fungsi: BQO_DEFAULT_SALES  
 **Lines:** 51, 362, 364-365, 376-381, 386-396, 402-403
@@ -184,7 +220,7 @@
 
 ---
 
-#### 4. src/scripts/modules/BQO/views/bqo_payment.js [20260808_092914]
+#### 6. src/scripts/modules/BQO/views/bqo_payment.js [20260808_092914]
 **Fungsi:** Modul: bqo_payment  
 **Perubahan:** Tambah fungsi: BQO_DEFAULT_SALES  
 **Lines:** 43, 164, 166-167, 178-181, 189-195, 198
@@ -229,33 +265,88 @@
 
 ---
 
-#### 5. rc/scripts/modules/BQO/views/bqo_checkout.js [20260808_103050]
+#### 7. rc/scripts/modules/BQO/views/bqo_checkout.js [20260808_103530]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Pembaruan kode  
 
 ---
 
-#### 6. src/scripts/modules/BQO/views/bqo_payment.js [20260808_103050]
+#### 8. src/scripts/modules/BQO/views/bqo_payment.js [20260808_103530]
 **Fungsi:** Modul: bqo_payment  
 **Perubahan:** Pembaruan kode  
-**Lines:** 182-187
 
 ```javascript
-// Line 179:
--         ccusid:    BQO_DEFAULT_CUSTOMER,
-+         customer: {
-+           ccusid:   BQO_DEFAULT_CUSTOMER,
-+           cinitial: '',
-+           cnotelp:  orderInfo.phoneNumber || '',
-+           cemail:   '',
-+         },
+// Line 189:
+-         creason2:  '',
+-         cadjdesc2: '',
 ```
 
 ---
 
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260808.md [20260808_101932]
+#### 1. docs/changelog/daily/codeChange-20260808.md [20260808_103051]
+**Fungsi:** Implementasi: codeChange-20260808  
+**Perubahan:** Pembaruan kode  
+**Lines:** 7-129, 187, 232, 238, 241, 244-251, 258-319, 399-400, 402
+
+```javascript
+// Line 4:
+- #### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_092914]
++ #### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_101932]
++ **Fungsi:** Halaman checkout & submit order  
++ **Perubahan:** Pembaruan kode  
++ **Lines:** 354, 359, 362-363, 376-398
++ 
++ ```javascript
++ // Line 351:
++ -           crefnote: 'ONLINE',
++ +           crefnote: '',
++ -           ncqo:     '',
++ +           ncqo:     0,
++ +           ccpcode:  '',
++ +           csalesid: BQO_DEFAULT_SALES,
++ -           csalesid: '',
++ -           nkomisi:  '',
++ // Line 373:
++ -           cqonum:     '',
++ -           ctabid:     info.seatNumber  || '',
++ -           cwhseid:    BQO_DEFAULT_WHSE,
++ -           cremark:    info.orderByName || '',
++ -           customer: {
++ -             ccusid:   BQO_DEFAULT_CUSTOMER,
++ -             cinitial: '',
+  // ... (truncated)
++ + ```javascript
++ + // Line 34:
++ + - REACT_APP_BQO_DEFAULT_CUSTOMER=CASH
++ + + REACT_APP_BQO_DEFAULT_CUSTOMER=UMUM
++ + + # Sales Person ID default untuk transaksi BQO
++ + + REACT_APP_BQO_DEFAULT_SALES=TKO
++ + + 
++ + ```
++ - - **✨ Features:** 2 items
++ + - **✨ Features:** 4 items
++ + - **📖 Documentation:** 1 item
++ - - **Total Files Modified:** 3
++ + - **Total Files Modified:** 6
++ ```
++ 
++ ---
++ 
++ #### 2. docs/changelog/daily/codeChange-20260808.md [20260808_092914]
+// Line 396:
+- - **✨ Features:** 4 items
+- - **📖 Documentation:** 1 item
++ - **✨ Features:** 6 items
++ - **📖 Documentation:** 2 items
+- - **Total Files Modified:** 6
++ - **Total Files Modified:** 9
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260808.md [20260808_101932]
 **Fungsi:** Implementasi: codeChange-20260808  
 **Perubahan:** Pembaruan kode  
 **Lines:** 110-239, 242, 245-254, 259-260, 262
@@ -316,7 +407,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260808.md [20260808_092914]
+#### 3. docs/changelog/daily/codeChange-20260808.md [20260808_092914]
 **Fungsi:** Implementasi: codeChange-20260808  
 **Perubahan:** Pembaruan kode  
 **Lines:** 1-122
@@ -396,8 +487,8 @@
 ---
 
 ## 📊 **Summary**
-- **✨ Features:** 6 items
-- **📖 Documentation:** 2 items
+- **✨ Features:** 8 items
+- **📖 Documentation:** 3 items
 - **⚙️ Config:** 1 item
-- **Total Files Modified:** 9
+- **Total Files Modified:** 12
 - **Main Focus:** Features
