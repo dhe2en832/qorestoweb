@@ -618,7 +618,68 @@
 
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260808.md [20260808_143143]
+#### 1. docs/changelog/daily/codeChange-20260808.md [20260808_144008]
+**Fungsi:** Implementasi: codeChange-20260808  
+**Perubahan:** Akses localStorage  
+**Lines:** 7-63, 110, 131, 166, 184, 207, 220, 260, 284, 308, 321, 334, 346, 358, 376, 394, 455, 516, 574, 619-624, 627-632, 634-662, 664-666, 668-677, 682, 743, 804, 865, 926, 987, 1048, 1109, 1170, 1281-1294, 1334, 1336, 1338
+
+```javascript
+// Line 4:
+- #### 1. src/scripts/modules/BQO/reports/BQOOrderSlip.jsx [20260808_140216]
++ #### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260808_143143]
++ **Fungsi:** Halaman checkout & submit order  
++ **Perubahan:** Tambah fungsi: findIdx; Tambah fungsi: normalizeTabId  
++ **Lines:** 166-192, 194-197, 199, 648
++ 
++ ```javascript
++ // Line 163:
++ -         // Status aktif dari data aktual backend BQO:
++ -         //   C = Created (baru dibuat, belum dibayar)
++ -         //   O = Open
++ -         //   P = Pending
++ -         // Status yang dianggap SELESAI (meja bebas): kosong/null atau selain C/O/P
++ -         const ACTIVE_STATUSES = new Set(['C', 'O', 'P']);
++ +         let orders = [];
++ + 
++ +         if (res.columns && Array.isArray(res.data[0])) {
++ +           // Format brwdef: array of arrays — petakan kolom dulu
++ +           const cols = res.columns;
++ +           const findIdx = (key) => cols.findIndex((c) =>
++ +             (c.key || '').toLowerCase() === key.toLowerCase() ||
++ +             (c.title || '').toLowerCase().includes(key.toLowerCase())
++ +           );
++ +           const idxTabId  = findIdx('ctabid');
+  // ... (truncated)
+- #### 9. docs/changelog/daily/codeChange-20260808.md [20260808_092914]
++ #### 10. docs/changelog/daily/codeChange-20260808.md [20260808_092914]
+// Line 1278:
+- #### 1. rc/scripts/modules/BQO/controllers/bqo_api.js [20260808_143140]
++ #### 1. src/scripts/modules/BQO/controllers/bqo_api.js [20260808_143143]
++ **Fungsi:** Modul: bqo_api  
++ **Perubahan:** Pembaruan kode  
++ **Lines:** 95
++ 
++ ```javascript
++ // Line 92:
++ -       usebrwdef:  false,
++ +       usebrwdef:  Config.USE_BRWDEF,
++ ```
++ 
++ ---
++ 
++ #### 2. rc/scripts/modules/BQO/controllers/bqo_api.js [20260808_144006]
+// Line 1331:
+- - **📖 Documentation:** 9 items
++ - **📖 Documentation:** 10 items
+- - **🔌 API:** 1 item
++ - **🔌 API:** 2 items
+- - **Total Files Modified:** 34
++ - **Total Files Modified:** 36
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260808.md [20260808_143143]
 **Fungsi:** Implementasi: codeChange-20260808  
 **Perubahan:** Ubah render/return JSX; Tambah state management; Akses localStorage  
 **Lines:** 7-128, 151, 164, 204, 228, 252, 265, 278, 290, 302, 320, 338, 399, 460, 518, 563, 565-566, 570-614, 619-624, 627-677, 682, 743, 804, 865, 926, 987, 1048, 1109, 1218-1225, 1259-1260, 1262, 1264
@@ -679,7 +740,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260808.md [20260808_140216]
+#### 3. docs/changelog/daily/codeChange-20260808.md [20260808_140216]
 **Fungsi:** Implementasi: codeChange-20260808  
 **Perubahan:** Ubah render/return JSX; Tambah state management; Akses localStorage  
 **Lines:** 7-43, 83, 107, 131, 144, 157, 169, 181, 199, 217, 278, 339, 397, 442-443, 448-449, 451, 454-517, 524-585, 646, 707, 768, 829, 890, 951, 1093-1094, 1097
@@ -740,7 +801,7 @@
 
 ---
 
-#### 3. docs/changelog/daily/codeChange-20260808.md [20260808_132610]
+#### 4. docs/changelog/daily/codeChange-20260808.md [20260808_132610]
 **Fungsi:** Implementasi: codeChange-20260808  
 **Perubahan:** Akses localStorage; Tambah state management; Tambah error handling; Tambah navigasi halaman  
 **Lines:** 7-47, 71, 95, 108, 121, 133, 145, 163, 181, 242, 303, 361, 406, 408-415, 418-420, 427-488, 549, 610, 671, 732, 793, 856, 858-874, 878, 935-936, 939
@@ -801,7 +862,7 @@
 
 ---
 
-#### 4. docs/changelog/daily/codeChange-20260808.md [20260808_131204]
+#### 5. docs/changelog/daily/codeChange-20260808.md [20260808_131204]
 **Fungsi:** Implementasi: codeChange-20260808  
 **Perubahan:** Akses localStorage; Tambah state management; Tambah error handling; Tambah navigasi halaman  
 **Lines:** 7-55, 68, 81, 93, 105, 123, 141, 202, 263, 321, 366, 368-369, 372-401, 406-411, 414-464, 469, 530, 591, 652, 713, 774-805, 808-822, 839-841, 843
@@ -862,7 +923,7 @@
 
 ---
 
-#### 5. docs/changelog/daily/codeChange-20260808.md [20260808_114717]
+#### 6. docs/changelog/daily/codeChange-20260808.md [20260808_114717]
 **Fungsi:** Implementasi: codeChange-20260808  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-33, 45, 57, 75, 93, 154, 215, 273, 318, 320-338, 342, 344-345, 348-361, 368-429, 490, 551, 612, 691-696, 698-701
@@ -923,7 +984,7 @@
 
 ---
 
-#### 6. docs/changelog/daily/codeChange-20260808.md [20260808_103848]
+#### 7. docs/changelog/daily/codeChange-20260808.md [20260808_103848]
 **Fungsi:** Implementasi: codeChange-20260808  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-31, 49, 67, 128, 189, 247, 292, 298, 301, 305-306, 313-374, 435, 496, 576-577, 579
@@ -984,7 +1045,7 @@
 
 ---
 
-#### 7. docs/changelog/daily/codeChange-20260808.md [20260808_103531]
+#### 8. docs/changelog/daily/codeChange-20260808.md [20260808_103531]
 **Fungsi:** Implementasi: codeChange-20260808  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-43, 104, 165, 223, 268, 274, 279-281, 288-349, 410, 490-491, 493
@@ -1045,7 +1106,7 @@
 
 ---
 
-#### 8. docs/changelog/daily/codeChange-20260808.md [20260808_103051]
+#### 9. docs/changelog/daily/codeChange-20260808.md [20260808_103051]
 **Fungsi:** Implementasi: codeChange-20260808  
 **Perubahan:** Pembaruan kode  
 **Lines:** 7-129, 187, 232, 238, 241, 244-251, 258-319, 399-400, 402
@@ -1106,7 +1167,7 @@
 
 ---
 
-#### 9. docs/changelog/daily/codeChange-20260808.md [20260808_101932]
+#### 10. docs/changelog/daily/codeChange-20260808.md [20260808_101932]
 **Fungsi:** Implementasi: codeChange-20260808  
 **Perubahan:** Pembaruan kode  
 **Lines:** 110-239, 242, 245-254, 259-260, 262
@@ -1167,7 +1228,7 @@
 
 ---
 
-#### 10. docs/changelog/daily/codeChange-20260808.md [20260808_092914]
+#### 11. docs/changelog/daily/codeChange-20260808.md [20260808_092914]
 **Fungsi:** Implementasi: codeChange-20260808  
 **Perubahan:** Pembaruan kode  
 **Lines:** 1-122
@@ -1278,7 +1339,22 @@
 
 ### 🔌 API
 
-#### 1. src/scripts/modules/BQO/controllers/bqo_api.js [20260808_143143]
+#### 1. src/scripts/modules/BQO/controllers/bqo_api.js [20260808_144008]
+**Fungsi:** Modul: bqo_api  
+**Perubahan:** Pembaruan kode  
+**Lines:** 96, 98
+
+```javascript
+// Line 93:
+-       listfields: ['cqonum', 'ctabid', 'cstatus', 'cremark'],
++       listfields: ['cqonum', 'ctabid', 'cstatus', 'dqodate'],
+-         freefilter: { search: '' },
++         freefilter: { search: 'dqodate >= date()' },  // hanya order hari ini
+```
+
+---
+
+#### 2. src/scripts/modules/BQO/controllers/bqo_api.js [20260808_143143]
 **Fungsi:** Modul: bqo_api  
 **Perubahan:** Pembaruan kode  
 **Lines:** 95
@@ -1288,12 +1364,6 @@
 -       usebrwdef:  false,
 +       usebrwdef:  Config.USE_BRWDEF,
 ```
-
----
-
-#### 2. rc/scripts/modules/BQO/controllers/bqo_api.js [20260808_144006]
-**Fungsi:** Modul: bqo_api  
-**Perubahan:** Pembaruan kode  
 
 ---
 
@@ -1329,11 +1399,20 @@
 
 ---
 
+### ⚙️ Others
+
+#### 1. rc/scripts/Config.js [20260808_144647]
+**Fungsi:** Konfigurasi aplikasi (base URL, konstanta)  
+**Perubahan:** Pembaruan kode  
+
+---
+
 ## 📊 **Summary**
 - **✨ Features:** 20 items
-- **📖 Documentation:** 10 items
+- **📖 Documentation:** 11 items
 - **🔐 Auth/Session:** 2 items
 - **🔌 API:** 2 items
 - **⚙️ Config:** 2 items
-- **Total Files Modified:** 36
+- **⚙️ Others:** 1 item
+- **Total Files Modified:** 38
 - **Main Focus:** Features
