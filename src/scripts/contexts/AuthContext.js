@@ -58,6 +58,12 @@ function useProvideAuth() {
           window.localStorage.setItem('auth_local_user', data.cuserid);
           window.localStorage.setItem('auth_local_pass', data.cpassw);
         }
+        // Saat login fresh (bukan re-login dari session expired), clear BQO data
+        const isRelogin = window.localStorage.getItem('QoReturnPath') !== null;
+        if (!isRelogin) {
+          window.localStorage.removeItem('QoCart');
+          window.localStorage.removeItem('QoOrderInfo');
+        }
         if (isForm) {
           window.localStorage.setItem('sessionKey', JSON.stringify(resSessionKey));
           window.localStorage.setItem('sessionID', JSON.stringify(resSessionID));
@@ -112,6 +118,10 @@ function useProvideAuth() {
     // Bersihkan credential fallback saat logout
     window.localStorage.removeItem('auth_local_user');
     window.localStorage.removeItem('auth_local_pass');
+    // Bersihkan data BQO saat logout — pelanggan berikutnya mulai fresh
+    window.localStorage.removeItem('QoCart');
+    window.localStorage.removeItem('QoOrderInfo');
+    window.localStorage.removeItem('QoReturnPath');
     if (typeof cb === 'function') cb();
   };
 

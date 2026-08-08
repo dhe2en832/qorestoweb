@@ -33,6 +33,13 @@ import bqo_api from '../controllers/bqo_api';
 import usePrintReceipt from '../hooks/usePrintReceipt';
 import BQOOrderSlip from '../reports/BQOOrderSlip';
 
+/** Deteksi apakah error dari backend adalah session expired */
+const isSessionExpired = (msg) =>
+  typeof msg === 'string' &&
+  (msg.includes('Session Id telah expired') ||
+   msg.includes('Session Id tidak valid') ||
+   msg.includes('expired'));
+
 // Pajak — BASE_TAX × EFFECTIVE_RATE dari env (pola webcsa-v2)
 // Contoh: 12 × (11/12) = 11%
 const TAX_BASE = parseFloat(process.env.REACT_APP_TAX_BASE || '12');
@@ -129,11 +136,13 @@ export default function BQOCheckout() {
     });
   };
 
-  // Info Order
-  const [info, setInfo] = useState({
-    seatNumber: '',
-    orderByName: '',
-    phoneNumber: '',
+  // Info Order — restore dari localStorage jika ada (setelah re-login dari session expired)
+  const [info, setInfo] = useState(() => {
+    const saved = window.localStorage.getItem('QoOrderInfo');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (_) {}
+    }
+    return { seatNumber: '', orderByName: '', phoneNumber: '' };
   });
 
   const handleChangeInfo = (event) => {
@@ -417,6 +426,14 @@ export default function BQOCheckout() {
         setKasirResult({ nomorBon: bon, cartItems, subtotal, taxAmount, total });
       } else {
         const errMsg = result.onfail?.cerror || 'Gagal mengirim pesanan.';
+        // Deteksi session expired — simpan state lalu redirect ke login
+        if (isSessionExpired(errMsg)) {
+          window.localStorage.setItem('QoOrderInfo', JSON.stringify(info));
+          window.localStorage.setItem('QoReturnPath', '/checkout');
+          ToastBar('warning', 'Session habis. Silakan login kembali — pesanan Anda tersimpan.', 4000);
+          setTimeout(() => navigate('/login', { state: { from: { pathname: '/checkout' } } }), 1500);
+          return;
+        }
         ToastBar('error', `Gagal: ${errMsg}`, 5000);
       }
     } catch (_) {

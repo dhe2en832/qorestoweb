@@ -53,8 +53,17 @@ function Login({ isForm, afterLogin }) {
   let { from } = location.state || { from: { pathname: '/' } };
   let login = (event) => {
     event.preventDefault();
-    setLoading(true)
-    auth.signin(state, () => (isForm ? afterLogin() : navigate(from)), isForm, setLoading);
+    setLoading(true);
+    auth.signin(state, () => {
+      // Setelah login berhasil — cek apakah ada returnPath dari session expired
+      const returnPath = window.localStorage.getItem('QoReturnPath');
+      if (returnPath) {
+        window.localStorage.removeItem('QoReturnPath'); // clear flag re-login
+        isForm ? afterLogin() : navigate(returnPath);
+      } else {
+        isForm ? afterLogin() : navigate(from);
+      }
+    }, isForm, setLoading);
   };
 
   return (
