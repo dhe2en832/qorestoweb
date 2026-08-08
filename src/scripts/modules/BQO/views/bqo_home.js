@@ -171,7 +171,7 @@ export default function BQOHome() {
         price:     String(parseFloat(item.nhrgjua || 0)),
         sellPrice: String(parseFloat(item.nhrgjua || 0)),
         category:  (item.cfamcode || 'UMUM').trim(),
-        picture:   item.picture || null,
+        picture:   item.cimageurl || item.picture || null,
         cstocode:  (item.cstocode || '').trim(),
         cstoname:  (item.cstoname || '').trim(),
         nhrgjua:   parseFloat(item.nhrgjua || 0),
