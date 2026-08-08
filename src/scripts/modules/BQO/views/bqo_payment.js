@@ -87,6 +87,7 @@ export default function BQOPayment() {
   const [paymentStatus,       setPaymentStatus]       = useState(STATUS.PENDING);
   const [paymentMethod,       setPaymentMethod]       = useState('');  // label untuk struk
   const [nomorBon,            setNomorBon]            = useState('');
+  const [cqonum,              setCqonum]              = useState('');
   const [isSavedToLocal,      setIsSavedToLocal]      = useState(false);
   const [isManuallyCompleted, setIsManuallyCompleted] = useState(false);
   const [isValidating,        setIsValidating]        = useState(false);
@@ -227,6 +228,7 @@ export default function BQOPayment() {
       if (result.result === true) {
         const bon = result.onsuccess?.cordernum || result.onsuccess?.csonum || externalId;
         setNomorBon(bon);
+        setCqonum(result.onsuccess?.cqonum || bon);
         ToastBar('success', `Pesanan berhasil disimpan: ${bon}`, 3000);
         setPaymentStatus(STATUS.PAID);
       } else if (result.result === false) {
@@ -250,6 +252,7 @@ export default function BQOPayment() {
           if (retryResult.result === true) {
             const bon = retryResult.onsuccess?.cordernum || retryResult.onsuccess?.csonum || externalId;
             setNomorBon(bon);
+            setCqonum(retryResult.onsuccess?.cqonum || bon);
             ToastBar('success', `Pesanan berhasil disimpan: ${bon}`, 3000);
             setPaymentStatus(STATUS.PAID);
             return;
@@ -961,6 +964,7 @@ export default function BQOPayment() {
             total,
             paymentMethod,
             nomorBon: nomorBon || externalId,
+            cqonum:   cqonum   || nomorBon || externalId,
             isLocalServer,
             showArchiveCopy: isSavedToLocal || isManuallyCompleted || isLocalServer,
             isUnrecorded: isManuallyCompleted,

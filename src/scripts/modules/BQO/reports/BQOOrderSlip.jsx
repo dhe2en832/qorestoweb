@@ -5,24 +5,21 @@ import { toCurrencyIDR } from '../../../utils/formatter';
  * BQOOrderSlip — Tanda Terima Pesanan (bukan struk pembayaran).
  * Dicetak saat konsumen memilih "Bayar di Kasir".
  *
- * Fungsi: bukti pesanan sudah masuk ke dapur / kasir.
- * Status pembayaran: BELUM DIBAYAR — konsumen membawa ini ke kasir.
- *
  * Props:
- *   datas.orderInfo   - { seatNumber, orderByName, phoneNumber }
- *   datas.cart        - array item pesanan { item, qty, note? }
- *   datas.subtotal    - number (sebelum pajak)
- *   datas.taxAmount   - number
- *   datas.total       - number (grand total tagihan)
- *   datas.nomorPesanan - string (nomor pesanan dari backend)
+ *   datas.orderInfo    - { seatNumber, orderByName, phoneNumber }
+ *   datas.cart         - array item pesanan { item, qty, note? }
+ *   datas.subtotal     - number (sebelum pajak)
+ *   datas.taxAmount    - number
+ *   datas.total        - number (grand total tagihan)
+ *   datas.nomorPesanan - string (nomor pesanan / cqonum dari backend)
  */
 const BQOOrderSlip = forwardRef(function BQOOrderSlip({ datas = {} }, ref) {
   const {
-    orderInfo   = {},
-    cart        = [],
-    subtotal    = 0,
-    taxAmount   = 0,
-    total       = 0,
+    orderInfo    = {},
+    cart         = [],
+    subtotal     = 0,
+    taxAmount    = 0,
+    total        = 0,
     nomorPesanan = '',
   } = datas;
 
@@ -43,12 +40,10 @@ const BQOOrderSlip = forwardRef(function BQOOrderSlip({ datas = {} }, ref) {
       <div style={styles.divider}>{'─'.repeat(32)}</div>
 
       {/* Info pesanan */}
-      {nomorPesanan && (
-        <div style={styles.row}>
-          <span>No. Pesanan</span>
-          <span><b>{nomorPesanan}</b></span>
-        </div>
-      )}
+      <div style={styles.row}>
+        <span>No. Order</span>
+        <span><b>{nomorPesanan || '-'}</b></span>
+      </div>
       <div style={styles.row}>
         <span>Tanggal</span>
         <span>{dateStr} {timeStr}</span>

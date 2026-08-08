@@ -163,14 +163,17 @@ export default function BQOCheckout() {
     try {
       const res = await bqo_api.getActiveOrders();
       if (res && res.result && Array.isArray(res.data)) {
-        // Status pesanan yang dianggap "masih aktif" (meja masih terisi)
-        // Sesuaikan dengan status yang dipakai di backend BQO
-        const ACTIVE_STATUSES = ['O', 'P', 'open', 'pending', 'OPEN', 'PENDING'];
+        // Status aktif dari data aktual backend BQO:
+        //   C = Created (baru dibuat, belum dibayar)
+        //   O = Open
+        //   P = Pending
+        // Status yang dianggap SELESAI (meja bebas): kosong/null atau selain C/O/P
+        const ACTIVE_STATUSES = new Set(['C', 'O', 'P']);
         const occupied = new Set(
           res.data
             .filter((order) => {
               const status = (order.cstatus || '').trim().toUpperCase();
-              return ACTIVE_STATUSES.some((s) => s.toUpperCase() === status) || status === '';
+              return ACTIVE_STATUSES.has(status);
             })
             .map((order) => String(order.ctabid || '').trim())
             .filter(Boolean)
@@ -186,6 +189,9 @@ export default function BQOCheckout() {
 
   useEffect(() => {
     fetchOccupiedTables();
+    // Refresh saat user kembali ke tab/window ini
+    window.addEventListener('focus', fetchOccupiedTables);
+    return () => window.removeEventListener('focus', fetchOccupiedTables);
   }, []);
 
   // Generate daftar nomor meja 1..TABLE_COUNT
@@ -423,8 +429,9 @@ export default function BQOCheckout() {
 
       const result = await bqo_api.add(payload);
       if (result.result === true) {
-        const bon = result.onsuccess?.cordernum || result.onsuccess?.csonum || '';
-        setKasirResult({ nomorBon: bon, cartItems, subtotal, taxAmount, total });
+        const bon    = result.onsuccess?.cordernum || result.onsuccess?.csonum || '';
+        const cqonum = result.onsuccess?.cqonum    || bon;
+        setKasirResult({ nomorBon: bon, cqonum, cartItems, subtotal, taxAmount, total });
         // Refresh daftar meja setelah pesanan berhasil — meja yang baru dipesan langsung terisi
         fetchOccupiedTables();
       } else {
@@ -870,7 +877,7 @@ export default function BQOCheckout() {
               subtotal:     kasirResult.subtotal,
               taxAmount:    kasirResult.taxAmount,
               total:        kasirResult.total,
-              nomorPesanan: kasirResult.nomorBon,
+              nomorPesanan: kasirResult.cqonum || kasirResult.nomorBon,
             }}
           />
         </div>

@@ -12,6 +12,7 @@ import { toCurrencyIDR } from '../../../utils/formatter';
  *   datas.total           - number (grand total)
  *   datas.paymentMethod   - string (nama metode bayar)
  *   datas.nomorBon        - string (nomor bon dari backend, atau externalId)
+ *   datas.cqonum          - string (nomor QO dari backend, misal "2608000022")
  *   datas.isLocalServer   - bool (true = cetak dari server cadangan)
  *   datas.showArchiveCopy - bool (true = tampilkan salinan arsip)
  *   datas.isUnrecorded    - bool (true = watermark BELUM TEREKAM)
@@ -25,6 +26,7 @@ const BQOReceipt = forwardRef(function BQOReceipt({ datas = {} }, ref) {
     total = 0,
     paymentMethod = '-',
     nomorBon = '',
+    cqonum = '',
     isLocalServer = false,
     showArchiveCopy = false,
     isUnrecorded = false,
@@ -55,6 +57,12 @@ const BQOReceipt = forwardRef(function BQOReceipt({ datas = {} }, ref) {
         <span>No. Bon</span>
         <span>{nomorBon || '-'}</span>
       </div>
+      {cqonum && (
+        <div style={styles.row}>
+          <span>No. Order</span>
+          <span>{cqonum}</span>
+        </div>
+      )}
       <div style={styles.row}>
         <span>Tanggal</span>
         <span>{dateStr} {timeStr}</span>
