@@ -546,7 +546,12 @@ export default function BQOCheckout() {
               spacing={1}
             >
               <Grid item>
-                <img src={Placeholder} style={styles.imageList} alt="Foods & Drinks" />
+                <img
+                  src={data.item.picture || Placeholder}
+                  style={styles.imageList}
+                  alt={data.item.name}
+                  onError={(e) => { e.target.onerror = null; e.target.src = Placeholder; }}
+                />
               </Grid>
               <Grid item xs={7}>
                 <Typography variant="body1" component="h2">
