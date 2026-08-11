@@ -18,6 +18,8 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import LinearProgress from '@mui/material/LinearProgress';
 import Skeleton from '@mui/material/Skeleton';
+import TableRestaurantIcon from '@mui/icons-material/TableRestaurant';
+import { getTableId } from '../../../utils/table-session';
 import SearchIcon from '@mui/icons-material/Search';
 import NoteIcon from '@mui/icons-material/NoteAltOutlined';
 import EditIcon from '@mui/icons-material/Edit';
@@ -405,7 +407,7 @@ export default function BQOHome() {
         {/* List -> Search Bar */}
         <AppBar position="fixed" sx={styles.appBar}>
           <Toolbar>
-            <Grid container justifyContent="space-between">
+            <Grid container justifyContent="space-between" alignItems="center">
               <Grid item xs={1}>
                 <IconButton
                   sx={styles.appBarIcon}
@@ -416,7 +418,7 @@ export default function BQOHome() {
                   <BackIcon />
                 </IconButton>
               </Grid>
-              <Grid item xs={11}>
+              <Grid item xs={getTableId() ? 7 : 11}>
                 <InputBase
                   onChange={handleChangeSearch}
                   fullWidth={true}
@@ -430,6 +432,14 @@ export default function BQOHome() {
                   placeholder="Cari Apa?"
                 />
               </Grid>
+              {getTableId() && (
+                <Grid item xs={4} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', pr: 1 }}>
+                  <TableRestaurantIcon sx={{ color: '#3f50b5', fontSize: 18, mr: 0.5 }} />
+                  <Typography variant="body2" fontWeight={600} color="#3f50b5" noWrap>
+                    Meja {getTableId()}
+                  </Typography>
+                </Grid>
+              )}
             </Grid>
           </Toolbar>
           {/* Progress bar muncul di bawah toolbar saat fetch */}

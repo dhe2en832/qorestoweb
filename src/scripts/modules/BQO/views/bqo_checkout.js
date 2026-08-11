@@ -33,6 +33,7 @@ import AlertDialog from '../../../components/AlertDialog';
 import bqo_api from '../controllers/bqo_api';
 import usePrintReceipt from '../hooks/usePrintReceipt';
 import BQOOrderSlip from '../reports/BQOOrderSlip';
+import { getTableId } from '../../../utils/table-session';
 
 /** Deteksi apakah error dari backend adalah session expired */
 const isSessionExpired = (msg) =>
@@ -138,13 +139,22 @@ export default function BQOCheckout() {
   };
 
   // Info Order — restore dari localStorage jika ada (setelah re-login dari session expired)
+  // seatNumber diisi otomatis dari URL ?table=XX jika tersedia
   const [info, setInfo] = useState(() => {
+    const tableFromUrl = getTableId();
     const saved = window.localStorage.getItem('QoOrderInfo');
     if (saved) {
-      try { return JSON.parse(saved); } catch (_) {}
+      try {
+        const parsed = JSON.parse(saved);
+        // Override seatNumber dengan nilai dari URL jika ada
+        return { ...parsed, seatNumber: tableFromUrl || parsed.seatNumber };
+      } catch (_) {}
     }
-    return { seatNumber: '', orderByName: '', phoneNumber: '' };
+    return { seatNumber: tableFromUrl, orderByName: '', phoneNumber: '' };
   });
+
+  // Apakah nomor meja dikunci (dari URL parameter)
+  const isTableLocked = getTableId() !== '';
 
   const handleChangeInfo = (event) => {
     setInfo({
@@ -650,39 +660,54 @@ export default function BQOCheckout() {
           </Typography>
           <Grid container spacing={1} px={1} pb={3} borderTop="1px solid #ddd">
             <Grid item xs={12}>
-              <TextField
-                select
-                size="small"
-                variant="standard"
-                label={loadingTables ? 'Memuat meja...' : 'No. Meja'}
-                name="seatNumber"
-                value={info.seatNumber}
-                onChange={handleChangeInfo}
-                disabled={loadingTables}
-                SelectProps={{ onOpen: fetchOccupiedTables }}
-                helperText={
-                  info.seatNumber && occupiedTables.has(info.seatNumber)
-                    ? '⚠️ Meja ini sedang terisi. Pilih meja lain.'
-                    : ''
-                }
-                FormHelperTextProps={{ sx: { color: 'warning.main' } }}
-                sx={{ minWidth: 160 }}
-              >
-                <MenuItem value="" disabled>
-                  <em>— Pilih Nomor Meja —</em>
-                </MenuItem>
-                {tableOptions.map((opt) => (
-                  <MenuItem
-                    key={opt.value}
-                    value={opt.value}
-                    disabled={opt.occupied}
-                    sx={opt.occupied ? { color: '#aaa' } : {}}
-                  >
-                    {opt.label}
-                    {opt.occupied ? ' (Terisi)' : ''}
+              {isTableLocked ? (
+                /* Meja dari URL — tampilkan read-only, tidak bisa diubah */
+                <TextField
+                  size="small"
+                  variant="standard"
+                  label="No. Meja"
+                  value={`Meja ${info.seatNumber}`}
+                  InputProps={{ readOnly: true, disableUnderline: true }}
+                  sx={{ minWidth: 160, '& input': { color: '#555', fontWeight: 500 } }}
+                  helperText="Nomor meja sudah ditentukan dari QR/link meja"
+                  FormHelperTextProps={{ sx: { color: 'text.secondary', fontStyle: 'italic' } }}
+                />
+              ) : (
+                /* Meja dipilih manual (fallback jika tidak ada ?table= di URL) */
+                <TextField
+                  select
+                  size="small"
+                  variant="standard"
+                  label={loadingTables ? 'Memuat meja...' : 'No. Meja'}
+                  name="seatNumber"
+                  value={info.seatNumber}
+                  onChange={handleChangeInfo}
+                  disabled={loadingTables}
+                  SelectProps={{ onOpen: fetchOccupiedTables }}
+                  helperText={
+                    info.seatNumber && occupiedTables.has(info.seatNumber)
+                      ? '⚠️ Meja ini sedang terisi. Pilih meja lain.'
+                      : ''
+                  }
+                  FormHelperTextProps={{ sx: { color: 'warning.main' } }}
+                  sx={{ minWidth: 160 }}
+                >
+                  <MenuItem value="" disabled>
+                    <em>— Pilih Nomor Meja —</em>
                   </MenuItem>
-                ))}
-              </TextField>
+                  {tableOptions.map((opt) => (
+                    <MenuItem
+                      key={opt.value}
+                      value={opt.value}
+                      disabled={opt.occupied}
+                      sx={opt.occupied ? { color: '#aaa' } : {}}
+                    >
+                      {opt.label}
+                      {opt.occupied ? ' (Terisi)' : ''}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              )}
             </Grid>
             <Grid item xs={12}>
               <TextField

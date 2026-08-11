@@ -9,6 +9,7 @@ import ThemeContext from './contexts/ThemeContext';
 import ModuleContext from './contexts/ModuleContext';
 import PrivateRoute from './routes/PrivateRoute';
 import { loadAppConfig } from './utils/app-config';
+import { initTableId } from './utils/table-session';
 
 const Home = lazy(() => import('./modules/HOME'));
 const Login = lazy(() => import('./modules/LOGIN'));
@@ -18,8 +19,9 @@ export default function App() {
   const anchorRef = useRef(null);
   const [configReady, setConfigReady] = useState(false);
 
-  // Load app.cfg sekali saat app pertama mount — blok render sampai selesai
+  // Load app.cfg dan inisialisasi table ID dari URL — blok render sampai selesai
   useEffect(() => {
+    initTableId(); // baca ?table=XX dari URL, simpan ke sessionStorage
     loadAppConfig().finally(() => setConfigReady(true));
   }, []);
 
