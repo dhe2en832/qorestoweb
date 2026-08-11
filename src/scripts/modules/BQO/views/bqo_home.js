@@ -19,7 +19,7 @@ import Typography from '@mui/material/Typography';
 import LinearProgress from '@mui/material/LinearProgress';
 import Skeleton from '@mui/material/Skeleton';
 import TableRestaurantIcon from '@mui/icons-material/TableRestaurant';
-import { getTableId } from '../../../utils/table-session';
+import { getTableId, initTableId } from '../../../utils/table-session';
 import SearchIcon from '@mui/icons-material/Search';
 import NoteIcon from '@mui/icons-material/NoteAltOutlined';
 import EditIcon from '@mui/icons-material/Edit';
@@ -196,6 +196,10 @@ export default function BQOHome() {
   }
 
   useEffect(() => {
+    // Re-init table ID dari URL setiap kali halaman menu dimount
+    // (handle kasus: customer sudah login, lalu scan QR meja baru)
+    initTableId();
+
     let isActive = true;
     async function setDataToList() {
       setIsLoading(true);
