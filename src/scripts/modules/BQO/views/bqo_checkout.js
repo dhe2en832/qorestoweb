@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Container from '@mui/material/Container';
 import Dialog from '@mui/material/Dialog';
@@ -156,6 +156,7 @@ export default function BQOCheckout() {
   // Daftar meja: status tersedia / terisi
   // occupiedTables: Set dari ctabid yang sedang ada pesanan aktif
   const [occupiedTables, setOccupiedTables] = useState(new Set());
+  const occupiedTablesRef = useRef(new Set()); // ref untuk cek sinkron setelah fetch
   const [loadingTables, setLoadingTables] = useState(false);
 
   const fetchOccupiedTables = async () => {
@@ -200,6 +201,7 @@ export default function BQOCheckout() {
             .filter(Boolean)
         );
         setOccupiedTables(occupied);
+        occupiedTablesRef.current = occupied; // update ref sinkron untuk cek race condition
       }
     } catch (_) {
       // Gagal fetch — semua meja dianggap tersedia, tidak blokir
@@ -346,13 +348,9 @@ export default function BQOCheckout() {
   const [kasirResult, setKasirResult] = useState(null); // { nomorBon, cartItems, subtotal, taxAmount, total }
   const { printComponentRef, handlePrint, printCount } = usePrintReceipt();
 
-  const handleOnCheckout = () => {
+  const handleOnCheckout = async () => {
     if (info.seatNumber === '') {
       showValidation('Nomor Meja');
-      return;
-    }
-    if (occupiedTables.has(info.seatNumber)) {
-      ToastBar('error', `Meja ${info.seatNumber} sedang terisi. Pilih meja lain.`, 4000);
       return;
     }
     if (info.orderByName === '') {
@@ -361,6 +359,12 @@ export default function BQOCheckout() {
     }
     if (info.phoneNumber === '') {
       showValidation('Nomor Telepon');
+      return;
+    }
+    // Refresh data meja tepat sebelum submit — cegah race condition antar device
+    await fetchOccupiedTables();
+    if (occupiedTablesRef.current.has(info.seatNumber)) {
+      ToastBar('error', `Meja ${info.seatNumber} baru saja dipesan orang lain. Pilih meja lain.`, 4000);
       return;
     }
     // Tampilkan dialog pilihan: bayar di kasir atau mandiri
