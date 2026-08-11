@@ -103,9 +103,9 @@ export default function BQOHome() {
    *   false → usebrwdef:false, response array of objects (cfamcode tersedia)
    *   REACT_APP_MENU_GETIMAGE=Y → request gambar dari server
    */
-  async function getDatas() {
+  async function getDatas(overrides = {}) {
     const useBrwDef = Config.USE_BRWDEF;
-    const res = await bqo_api.getList({});
+    const res = await bqo_api.getList(overrides);
     if (!res || !res.result || !res.data) return null;
 
     let datas;
@@ -235,11 +235,15 @@ export default function BQOHome() {
 
   // List - Search
   const handleChangeSearch = async (event) => {
+    const keyword = (event.target.value || '').trim();
     setIsLoading(true);
-    const resJson = await getDatas();
+    const resJson = await getDatas({ query: { freefilter: { search: '!LDISCONT' }, textfilter: { search: keyword } } });
     setIsLoading(false);
     if (!resJson || !resJson.datas) return;
-    const datasFilter = resJson.datas.filter((data) => data.name.includes(event.target.value));
+    // Fallback filter client-side jika backend tidak support textfilter
+    const datasFilter = keyword
+      ? resJson.datas.filter((data) => data.name.toLowerCase().includes(keyword.toLowerCase()))
+      : resJson.datas;
     setLists(datasFilter);
     setTabValue('none');
   };

@@ -212,7 +212,12 @@ export default function BQOCheckout() {
     fetchOccupiedTables();
     // Refresh saat user kembali ke tab/window ini
     window.addEventListener('focus', fetchOccupiedTables);
-    return () => window.removeEventListener('focus', fetchOccupiedTables);
+    // Polling setiap 15 detik agar data meja selalu sinkron antar device
+    const intervalId = setInterval(fetchOccupiedTables, 15000);
+    return () => {
+      window.removeEventListener('focus', fetchOccupiedTables);
+      clearInterval(intervalId);
+    };
   }, []);
 
   // Generate daftar nomor meja 1..TABLE_COUNT
