@@ -2,9 +2,72 @@
 
 ## 12 Agustus 2026
 
+### 📖 Documentation
+
+#### 1. docs/changelog/daily/codeChange-20260812.md [20260812_090252]
+**Fungsi:** Implementasi: codeChange-20260812  
+**Perubahan:** Akses localStorage; Tambah side effect; Tambah navigasi halaman  
+**Lines:** 1-162
+
+```javascript
+// Line 1:
++ # Code Changes Summary
++ 
++ ## 12 Agustus 2026
++ 
++ ### 🔐 Auth/Session
++ 
++ #### 1. src/scripts/contexts/AuthContext.js [20260812_090251]
++ **Fungsi:** Context autentikasi global  
++ **Perubahan:** Import: app-config; Tambah fungsi: signinAsGuest; Akses localStorage  
++ **Lines:** 10, 24-25, 27-28, 30-49, 60, 62-63, 77-78, 99-102, 131-133, 135, 165, 176
++ 
++ ```javascript
++ // Line 7:
++ + import { getAppConfig } from '../utils/app-config';
++ // Line 21:
++ -   const [loggedIn, setLoggedIn] = useLocalStorage('loggedIn', false);
++ -   const [userID, setUserID] = useLocalStorage('userID', null);
++ +   const [loggedIn, setLoggedIn]           = useLocalStorage('loggedIn', false);
++ +   const [userID, setUserID]               = useLocalStorage('userID', null);
++ -   const [sessionKey, setSessionKey] = useLocalStorage('sessionKey', null);
++ -   const [sessionID, setSessionID] = useLocalStorage('sessionID', null);
++ +   const [sessionKey, setSessionKey]       = useLocalStorage('sessionKey', null);
++ +   const [sessionID, setSessionID]         = useLocalStorage('sessionID', null);
++ -   // const signin = async (data, cb, isForm) => {
+  // ... (truncated)
++ +                   : <PrivateRoute><Home /></PrivateRoute>  // akses biasa → home (butuh login)
++ +               } />
++ ```
++ 
++ ---
++ 
++ #### 3. src/scripts/utils/app-config.js [20260812_090251]
++ **Fungsi:** Entry point aplikasi React  
++ **Perubahan:** Pembaruan kode  
++ **Lines:** 25-26
++ 
++ ```javascript
++ // Line 22:
++ +   qr_session_key:                '',    // secret key untuk akses via QR (tanpa login)
++ +   qr_guest_user:                 'GUEST',
++ ```
++ 
++ ---
++ 
++ ## 📊 **Summary**
++ - **🔐 Auth/Session:** 1 item
++ - **🔌 API:** 1 item
++ - **⚙️ Others:** 3 items
++ - **Total Files Modified:** 5
++ - **Main Focus:** ⚙️ Others
+```
+
+---
+
 ### 🔐 Auth/Session
 
-#### 1. src/scripts/contexts/AuthContext.js [20260812_090251]
+#### 1. src/scripts/contexts/AuthContext.js [20260812_090252]
 **Fungsi:** Context autentikasi global  
 **Perubahan:** Import: app-config; Tambah fungsi: signinAsGuest; Akses localStorage  
 **Lines:** 10, 24-25, 27-28, 30-49, 60, 62-63, 77-78, 99-102, 131-133, 135, 165, 176
@@ -67,7 +130,7 @@
 
 ### 🔌 API
 
-#### 1. src/scripts/routes/PrivateRoute.js [20260812_090251]
+#### 1. src/scripts/routes/PrivateRoute.js [20260812_090252]
 **Fungsi:** Route: PrivateRoute  
 **Perubahan:** Import: react; Tambah side effect; Import: react-router-dom; Import: table-session; Tambah navigasi halaman  
 **Lines:** 1-2, 4, 7-31
@@ -115,13 +178,22 @@
 
 ### ⚙️ Others
 
-#### 1. ublic/app.cfg [20260812_090251]
+#### 1. public/app.cfg [20260812_090252]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
+**Lines:** 9-11
+
+```javascript
+// Line 6:
+-   "use_mock_bqo": false
++   "use_mock_bqo": false,
++   "qr_session_key": "78dfcc919bfa35f1852da50f7c6d4d14",
++   "qr_guest_user": "GUEST"
+```
 
 ---
 
-#### 2. src/scripts/App.js [20260812_090251]
+#### 2. src/scripts/App.js [20260812_090252]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Import: table-session  
 **Lines:** 12, 50-54
@@ -141,7 +213,7 @@
 
 ---
 
-#### 3. src/scripts/utils/app-config.js [20260812_090251]
+#### 3. src/scripts/utils/app-config.js [20260812_090252]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 **Lines:** 25-26
@@ -154,9 +226,16 @@
 
 ---
 
+#### 4. public/qr-tables.html [20260812_091045]
+**Fungsi:** Implementasi: qr-tables  
+**Perubahan:** Pembaruan kode  
+
+---
+
 ## 📊 **Summary**
+- **📖 Documentation:** 1 item
 - **🔐 Auth/Session:** 1 item
 - **🔌 API:** 1 item
-- **⚙️ Others:** 3 items
-- **Total Files Modified:** 5
+- **⚙️ Others:** 4 items
+- **Total Files Modified:** 7
 - **Main Focus:** ⚙️ Others
