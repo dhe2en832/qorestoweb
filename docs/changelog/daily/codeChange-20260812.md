@@ -4,7 +4,20 @@
 
 ### ✨ Features
 
-#### 1. src/scripts/modules/BQO/controllers/bqo_mock.js [20260812_105050]
+#### 1. src/scripts/modules/BQO/views/bqo_home.js [20260812_110833]
+**Fungsi:** Halaman utama / dashboard  
+**Perubahan:** Pembaruan kode  
+**Lines:** 216-217
+
+```javascript
+// Line 213:
++     const loginErr = window.sessionStorage.getItem('qoGuestLoginError');
++     if (loginErr) addDebugLog(`LOGIN ERR: ${loginErr}`, true);
+```
+
+---
+
+#### 2. src/scripts/modules/BQO/controllers/bqo_mock.js [20260812_105050]
 **Fungsi:** Modul: bqo_mock  
 **Perubahan:** Pembaruan kode  
 **Lines:** 19, 91
@@ -18,7 +31,7 @@
 
 ---
 
-#### 2. src/scripts/modules/BQO/views/bqo_checkout.js [20260812_105050]
+#### 3. src/scripts/modules/BQO/views/bqo_checkout.js [20260812_105050]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Import: CircularProgress  
 **Lines:** 17, 50, 426
@@ -36,7 +49,7 @@
 
 ---
 
-#### 3. src/scripts/modules/BQO/views/bqo_home.js [20260812_105050]
+#### 4. src/scripts/modules/BQO/views/bqo_home.js [20260812_105050]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Pembaruan kode  
 **Lines:** 233
@@ -49,7 +62,7 @@
 
 ---
 
-#### 4. src/scripts/modules/BQO/views/bqo_payment.js [20260812_105050]
+#### 5. src/scripts/modules/BQO/views/bqo_payment.js [20260812_105050]
 **Fungsi:** Modul: bqo_payment  
 **Perubahan:** Import: payment-api  
 **Lines:** 29, 51, 100, 129, 173, 356
@@ -75,7 +88,7 @@
 
 ---
 
-#### 5. src/scripts/modules/BQO/views/bqo_home.js [20260812_103649]
+#### 6. src/scripts/modules/BQO/views/bqo_home.js [20260812_103649]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Import: app-config  
 **Lines:** 38
@@ -87,7 +100,7 @@
 
 ---
 
-#### 6. src/scripts/modules/BQO/views/bqo_home.js [20260812_101813]
+#### 7. src/scripts/modules/BQO/views/bqo_home.js [20260812_101813]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Tambah state management; Tambah fungsi: addDebugLog  
 **Lines:** 100-107, 118, 120-124, 214, 224-226, 425-442
@@ -140,7 +153,7 @@
 
 ---
 
-#### 7. src/scripts/modules/BQO/views/bqo_home.js [20260812_093434]
+#### 8. src/scripts/modules/BQO/views/bqo_home.js [20260812_093434]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Tambah navigasi halaman  
 **Lines:** 415-425
@@ -172,22 +185,70 @@
 
 ---
 
-#### 8. src/scripts/modules/BQO/views/bqo_home.js [20260812_110829]
-**Fungsi:** Halaman utama / dashboard  
-**Perubahan:** Pembaruan kode  
-**Lines:** 216-217
+### 📖 Documentation
+
+#### 1. docs/changelog/daily/codeChange-20260812.md [20260812_110833]
+**Fungsi:** Implementasi: codeChange-20260812  
+**Perubahan:** Akses localStorage; Tambah side effect; Tambah state management  
+**Lines:** 175-187, 190-251, 312, 373, 434, 495, 556, 756-761, 764-810, 1108-1110, 1113
 
 ```javascript
-// Line 213:
-+     const loginErr = window.sessionStorage.getItem('qoGuestLoginError');
-+     if (loginErr) addDebugLog(`LOGIN ERR: ${loginErr}`, true);
+// Line 172:
++ #### 8. src/scripts/modules/BQO/views/bqo_home.js [20260812_110829]
++ **Fungsi:** Halaman utama / dashboard  
++ **Perubahan:** Pembaruan kode  
++ **Lines:** 216-217
++ 
++ ```javascript
++ // Line 213:
++ +     const loginErr = window.sessionStorage.getItem('qoGuestLoginError');
++ +     if (loginErr) addDebugLog(`LOGIN ERR: ${loginErr}`, true);
++ ```
++ 
++ ---
++ 
+- #### 1. docs/changelog/daily/codeChange-20260812.md [20260812_105050]
++ #### 1. docs/changelog/daily/codeChange-20260812.md [20260812_105611]
++ **Fungsi:** Implementasi: codeChange-20260812  
++ **Perubahan:** Akses localStorage  
++ **Lines:** 7-78, 90, 143, 175, 177-180, 183-233, 238, 299, 360, 421, 482, 730-735, 989, 991, 993
++ 
++ ```javascript
++ // Line 4:
++ - #### 1. src/scripts/modules/BQO/views/bqo_home.js [20260812_103649]
++ + #### 1. src/scripts/modules/BQO/controllers/bqo_mock.js [20260812_105050]
++ + **Fungsi:** Modul: bqo_mock  
+  // ... (truncated)
++ +   if (isSigningIn) return <ProgressLoader />;
++ -   // Mode QR: sedang proses auto-login → render null (tunggu sebentar)
++ -   if (isQRMode && !auth.loggedIn) return null;
++ +   // Mode QR: belum login dan belum dicoba → loader sementara
++ +   if (isQRMode && !auth.loggedIn && !signInDone) return <ProgressLoader />;
++ ```
++ 
++ ---
++ 
++ #### 2. src/scripts/routes/PrivateRoute.js [20260812_090252]
+// Line 853:
+- #### 2. rc/scripts/routes/PrivateRoute.js [20260812_105608]
+- **Fungsi:** Route: PrivateRoute  
+- **Perubahan:** Pembaruan kode  
+- 
+- 
+// Line 1105:
+- - **✨ Features:** 7 items
+- - **📖 Documentation:** 6 items
+- - **🔐 Auth/Session:** 3 items
++ - **✨ Features:** 8 items
++ - **📖 Documentation:** 7 items
++ - **🔐 Auth/Session:** 4 items
+- - **Total Files Modified:** 28
++ - **Total Files Modified:** 31
 ```
 
 ---
 
-### 📖 Documentation
-
-#### 1. docs/changelog/daily/codeChange-20260812.md [20260812_105611]
+#### 2. docs/changelog/daily/codeChange-20260812.md [20260812_105611]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage  
 **Lines:** 7-78, 90, 143, 175, 177-180, 183-233, 238, 299, 360, 421, 482, 730-735, 989, 991, 993
@@ -248,7 +309,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260812.md [20260812_105050]
+#### 3. docs/changelog/daily/codeChange-20260812.md [20260812_105050]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage; Tambah navigasi halaman  
 **Lines:** 7-19, 72, 104-128, 130-131, 134-162, 169-230, 291, 352, 413, 663-724, 738, 754, 768, 791, 803, 864, 879, 899, 913-914, 918
@@ -309,7 +370,7 @@
 
 ---
 
-#### 3. docs/changelog/daily/codeChange-20260812.md [20260812_103649]
+#### 4. docs/changelog/daily/codeChange-20260812.md [20260812_103649]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Tambah navigasi halaman; Akses localStorage; Tambah state management  
 **Lines:** 7, 60-103, 106-167, 228, 289, 539-569, 583, 606, 618, 679, 694, 714, 727-728, 734-735, 738-739
@@ -370,7 +431,7 @@
 
 ---
 
-#### 4. docs/changelog/daily/codeChange-20260812.md [20260812_101813]
+#### 5. docs/changelog/daily/codeChange-20260812.md [20260812_101813]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Tambah state management; Akses localStorage; Tambah navigasi halaman  
 **Lines:** 7, 39-91, 94-155, 216, 279, 340, 355-415, 466-515, 576, 591, 611, 624, 630, 633, 636-641, 647-648, 651-652
@@ -431,7 +492,7 @@
 
 ---
 
-#### 5. docs/changelog/daily/codeChange-20260812.md [20260812_093434]
+#### 6. docs/changelog/daily/codeChange-20260812.md [20260812_093434]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Tambah navigasi halaman; Akses localStorage  
 **Lines:** 5-38, 41-102, 226-301, 352-413, 428, 448, 461-462, 467-501, 503-505, 507-508
@@ -492,7 +553,7 @@
 
 ---
 
-#### 6. docs/changelog/daily/codeChange-20260812.md [20260812_091046]
+#### 7. docs/changelog/daily/codeChange-20260812.md [20260812_091046]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage  
 **Lines:** 5-67, 70, 133, 181, 184-192, 196, 216, 229-234, 236, 239-240
@@ -553,7 +614,7 @@
 
 ---
 
-#### 7. docs/changelog/daily/codeChange-20260812.md [20260812_090252]
+#### 8. docs/changelog/daily/codeChange-20260812.md [20260812_090252]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage; Tambah side effect; Tambah navigasi halaman  
 **Lines:** 1-162
@@ -616,7 +677,24 @@
 
 ### 🔐 Auth/Session
 
-#### 1. src/scripts/contexts/AuthContext.js [20260812_093434]
+#### 1. src/scripts/contexts/AuthContext.js [20260812_110833]
+**Fungsi:** Context autentikasi global  
+**Perubahan:** Pembaruan kode  
+**Lines:** 79-83
+
+```javascript
+// Line 76:
+-         // Login gagal — tetap masuk tapi dengan static key sebagai fallback
++         // Login gagal — log error ke console dan sessionStorage untuk debugging
++         const errMsg = resJson.onfail?.cerror || resJson.message || JSON.stringify(resJson);
++         console.error('[signinAsGuest] Login gagal:', errMsg);
++         window.sessionStorage.setItem('qoGuestLoginError', errMsg);
++         // Fallback ke static key
+```
+
+---
+
+#### 2. src/scripts/contexts/AuthContext.js [20260812_093434]
 **Fungsi:** Context autentikasi global  
 **Perubahan:** Tambah fungsi: signinAsGuest; Tambah error handling; Tambah HTTP request  
 **Lines:** 32-33, 35-39, 44-97
@@ -677,7 +755,7 @@
 
 ---
 
-#### 2. src/scripts/utils/table-session.js [20260812_093434]
+#### 3. src/scripts/utils/table-session.js [20260812_093434]
 **Fungsi:** Utility: table-session  
 **Perubahan:** Pembaruan kode  
 **Lines:** 21-22, 29, 31
@@ -692,7 +770,7 @@
 
 ---
 
-#### 3. src/scripts/contexts/AuthContext.js [20260812_090252]
+#### 4. src/scripts/contexts/AuthContext.js [20260812_090252]
 **Fungsi:** Context autentikasi global  
 **Perubahan:** Import: app-config; Tambah fungsi: signinAsGuest; Akses localStorage  
 **Lines:** 10, 24-25, 27-28, 30-49, 60, 62-63, 77-78, 99-102, 131-133, 135, 165, 176
@@ -750,12 +828,6 @@
 // Line 173:
 +     signinAsGuest,
 ```
-
----
-
-#### 4. rc/scripts/contexts/AuthContext.js [20260812_110829]
-**Fungsi:** Context autentikasi global  
-**Perubahan:** Pembaruan kode  
 
 ---
 
@@ -1104,11 +1176,17 @@
 
 ---
 
+#### 11. ublic/app.cfg [20260812_114803]
+**Fungsi:** Entry point aplikasi React  
+**Perubahan:** Pembaruan kode  
+
+---
+
 ## 📊 **Summary**
 - **✨ Features:** 8 items
-- **📖 Documentation:** 7 items
+- **📖 Documentation:** 8 items
 - **🔐 Auth/Session:** 4 items
 - **🔌 API:** 2 items
-- **⚙️ Others:** 10 items
-- **Total Files Modified:** 31
+- **⚙️ Others:** 11 items
+- **Total Files Modified:** 33
 - **Main Focus:** ⚙️ Others
