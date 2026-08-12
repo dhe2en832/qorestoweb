@@ -1,4 +1,54 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, memo } from 'react';
+
+// ── Komponen Dialog Catatan — dipisah agar tidak memicu re-render list saat ketik ──
+const NoteDialog = memo(function NoteDialog({ open, initialValue, onSave, onClose }) {
+  const [value, setValue] = useState(initialValue || '');
+
+  // Sync nilai awal saat dialog dibuka
+  useEffect(() => {
+    if (open) setValue(initialValue || '');
+  }, [open, initialValue]);
+
+  return (
+    <Dialog
+      maxWidth="xs"
+      fullWidth
+      open={open}
+      onClose={onClose}
+      PaperProps={{
+        sx: {
+          position: { xs: 'fixed', sm: 'relative' },
+          top:      { xs: 16,     sm: 'auto'      },
+          m:        { xs: 1,      sm: 'auto'      },
+        }
+      }}
+    >
+      <DialogContent>
+        <Typography variant="h6" component="h2" textAlign="center" mb={1}>
+          Catatan
+        </Typography>
+        <TextField
+          sx={{ '& .MuiInputBase-root': { padding: 1 } }}
+          multiline
+          fullWidth
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          rows={3}
+          variant="filled"
+          placeholder="Tulis catatan untuk menu ini..."
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button variant="contained" onClick={() => onSave(value)} size="small">
+          Konfirmasi
+        </Button>
+        <Button variant="contained" color="error" onClick={onClose} size="small">
+          Batal
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+});
 import { useNavigate } from 'react-router-dom';
 import Container from '@mui/material/Container';
 import Dialog from '@mui/material/Dialog';
@@ -258,19 +308,37 @@ export default function BQOHome() {
     }
   };
 
-  // List - Search
-  const handleChangeSearch = async (event) => {
+  // List - Search — dengan debounce 500ms agar tidak fetch setiap keystroke
+  const searchTimerRef = React.useRef(null);
+  const handleChangeSearch = (event) => {
     const keyword = (event.target.value || '').trim();
-    setIsLoading(true);
-    const resJson = await getDatas({ query: { freefilter: { search: '!LDISCONT' }, textfilter: { search: keyword } } });
-    setIsLoading(false);
-    if (!resJson || !resJson.datas) return;
-    // Fallback filter client-side jika backend tidak support textfilter
-    const datasFilter = keyword
-      ? resJson.datas.filter((data) => data.name.toLowerCase().includes(keyword.toLowerCase()))
-      : resJson.datas;
-    setLists(datasFilter);
-    setTabValue('none');
+    // Clear timer sebelumnya
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    // Jika kosong, langsung reload semua tanpa delay
+    if (!keyword) {
+      setTabValue('all');
+      setIsLoading(true);
+      getDatas().then((resJson) => {
+        setIsLoading(false);
+        if (resJson?.datas) {
+          setLists(resJson.datas);
+          setCategories(resJson.categories ?? []);
+        }
+      });
+      return;
+    }
+    // Fetch setelah 500ms berhenti mengetik
+    searchTimerRef.current = setTimeout(async () => {
+      setIsLoading(true);
+      const resJson = await getDatas({ query: { freefilter: { search: '!LDISCONT' }, textfilter: { search: keyword } } });
+      setIsLoading(false);
+      if (!resJson || !resJson.datas) return;
+      const datasFilter = keyword
+        ? resJson.datas.filter((data) => data.name.toLowerCase().includes(keyword.toLowerCase()))
+        : resJson.datas;
+      setLists(datasFilter);
+      setTabValue('none');
+    }, 500);
   };
 
   // Dialog
@@ -384,44 +452,32 @@ export default function BQOHome() {
     window.localStorage.setItem('QoCart', JSON.stringify(cart));
   }, [cart]);
 
-  // Note Form
-  const [noteValue, setNoteValue] = useState('');
+  // Note Form — noteValue dikelola di dalam NoteDialog (tidak di sini)
+  // agar list tidak re-render setiap keystroke
   const isNoteExist = (id) => {
-    const dataCheck = cart[id].note;
-    return dataCheck ? true : false;
+    return !!cart[id]?.note;
   };
-  const handleChangeNoteValue = (event) => {
-    setNoteValue(event.target.value);
-  };
-  const handleOpenNoteForm = (accessorID) => {
-    isNoteExist(accessorID) && setNoteValue(cart[accessorID].note);
+  const handleOpenNoteForm = useCallback((accessorID) => {
     handleOpenDialog(true, accessorID);
-  };
-  const handleCloseNoteForm = () => {
-    setNoteValue('');
+  }, []);
+  const handleCloseNoteForm = useCallback(() => {
     handleCloseDialog();
-  };
-  const handleSaveNoteForm = () => {
-    if (noteValue !== '') {
-      setCart({
-        ...cart,
-        [showDialog.accessorID]: {
-          item: cart[showDialog.accessorID].item,
-          qty: cart[showDialog.accessorID].qty,
-          note: noteValue,
-        },
-      });
+  }, []);
+  const handleSaveNoteForm = useCallback((value, accessorID) => {
+    if (value !== '') {
+      setCart((prev) => ({
+        ...prev,
+        [accessorID]: { ...prev[accessorID], note: value },
+      }));
     } else {
-      setCart({
-        ...cart,
-        [showDialog.accessorID]: {
-          item: cart[showDialog.accessorID].item,
-          qty: cart[showDialog.accessorID].qty,
-        },
+      setCart((prev) => {
+        const next = { ...prev, [accessorID]: { ...prev[accessorID] } };
+        delete next[accessorID].note;
+        return next;
       });
     }
-    handleCloseNoteForm();
-  };
+    handleCloseDialog();
+  }, []);
 
   return (
     <>
@@ -648,51 +704,13 @@ export default function BQOHome() {
           </Typography>
         </Container>
       </div>
-      {/* Note Form */}
-      <Dialog
-        maxWidth="xs"
-        fullWidth
-        key="NoteFormDlg"
+      {/* Note Form — komponen terpisah agar list tidak re-render saat ketik */}
+      <NoteDialog
         open={showDialog.isShow && showDialog.isForm}
-        onClose={handleCloseDialog}
-        PaperProps={{
-          sx: {
-            // Di HP: posisikan dialog di bagian atas layar supaya tidak tertutup keyboard
-            position: { xs: 'fixed', sm: 'relative' },
-            top:      { xs: 16,     sm: 'auto'      },
-            m:        { xs: 1,      sm: 'auto'      },
-          }
-        }}
-      >
-        {showDialog.isShow && (
-          <>
-            <DialogContent>
-              <Typography variant="h6" component="h2" textAlign="center" mb={1}>
-                Catatan
-              </Typography>
-              <TextField
-                sx={styles.noteForm}
-                multiline
-                fullWidth
-                autoFocus
-                value={noteValue}
-                onChange={handleChangeNoteValue}
-                rows={3}
-                variant="filled"
-                placeholder="Tulis catatan untuk item ini..."
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button mr={2} variant="contained" onClick={handleSaveNoteForm} size="small">
-                Konfirmasi
-              </Button>
-              <Button variant="contained" color="error" onClick={handleCloseNoteForm} size="small">
-                Batal
-              </Button>
-            </DialogActions>
-          </>
-        )}
-      </Dialog>
+        initialValue={showDialog.isShow && showDialog.isForm ? (cart[showDialog.accessorID]?.note || '') : ''}
+        onSave={(value) => handleSaveNoteForm(value, showDialog.accessorID)}
+        onClose={handleCloseNoteForm}
+      />
       {/* Info */}
       <Dialog
         maxWidth="md"
