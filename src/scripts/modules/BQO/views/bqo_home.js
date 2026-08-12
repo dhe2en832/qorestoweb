@@ -650,24 +650,36 @@ export default function BQOHome() {
       </div>
       {/* Note Form */}
       <Dialog
-        maxWidth="md"
+        maxWidth="xs"
+        fullWidth
         key="NoteFormDlg"
         open={showDialog.isShow && showDialog.isForm}
         onClose={handleCloseDialog}
+        PaperProps={{
+          sx: {
+            // Di HP: posisikan dialog di bagian atas layar supaya tidak tertutup keyboard
+            position: { xs: 'fixed', sm: 'relative' },
+            top:      { xs: 16,     sm: 'auto'      },
+            m:        { xs: 1,      sm: 'auto'      },
+          }
+        }}
       >
         {showDialog.isShow && (
           <>
             <DialogContent>
-              <Typography variant="h6" component="h2" textAlign="center">
+              <Typography variant="h6" component="h2" textAlign="center" mb={1}>
                 Catatan
               </Typography>
               <TextField
                 sx={styles.noteForm}
                 multiline
+                fullWidth
+                autoFocus
                 value={noteValue}
                 onChange={handleChangeNoteValue}
-                rows={4}
+                rows={3}
                 variant="filled"
+                placeholder="Tulis catatan untuk item ini..."
               />
             </DialogContent>
             <DialogActions>
