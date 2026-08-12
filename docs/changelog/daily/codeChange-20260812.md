@@ -4,7 +4,82 @@
 
 ### ✨ Features
 
-#### 1. src/scripts/modules/BQO/views/bqo_home.js [20260812_133331]
+#### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260812_140437]
+**Fungsi:** Halaman checkout & submit order  
+**Perubahan:** Import: app-config  
+**Lines:** 37, 499-501, 1018-1029
+
+```javascript
+// Line 34:
++ import { getAppConfig } from '../../../utils/app-config';
+// Line 496:
+-     // Print guard — wajib cetak dulu sebelum bisa pesanan baru (pola trenly)
+-     if (printCount === 0) {
++     const showPrint = getAppConfig().show_print_button !== false; // default true
++     // Print guard hanya berlaku jika tombol print ditampilkan (bukan QR/HP mode)
++     if (showPrint && printCount === 0) {
+// Line 1015:
+-           <Button
+-             fullWidth
+-             variant="contained"
+-             startIcon={<PrintIcon />}
+-             onClick={handlePrint}
+-             color={printCount > 0 ? 'success' : 'primary'}
+-           >
+-             {printCount > 0 ? `Cetak Ulang (${printCount}×)` : 'Cetak Tanda Pesanan'}
+-           </Button>
++           {/* Tombol print — dikontrol via show_print_button di app.cfg */}
++           {getAppConfig().show_print_button !== false && (
++             <Button
++               fullWidth
++               variant="contained"
++               startIcon={<PrintIcon />}
++               onClick={handlePrint}
++               color={printCount > 0 ? 'success' : 'primary'}
++             >
++               {printCount > 0 ? `Cetak Ulang (${printCount}×)` : 'Cetak Tanda Pesanan'}
++             </Button>
++           )}
+```
+
+---
+
+#### 2. src/scripts/modules/BQO/views/bqo_home.js [20260812_140437]
+**Fungsi:** Halaman utama / dashboard  
+**Perubahan:** Import: AuthContext; Tambah fungsi: loadMenu  
+**Lines:** 38, 94, 267, 272-273, 275-284, 295-296
+
+```javascript
+// Line 35:
++ import { useAuth } from '../../../contexts/AuthContext';
+// Line 91:
++   const auth = useAuth();
+// Line 264:
+-     addDebugLog(`mount — tableId:${getTableId()} loggedIn:${!!Config.SESSION_KEY()} key:${Config.SESSION_KEY()?.substring(0,8) ?? 'null'}...`);
++     addDebugLog(`mount — tableId:${getTableId()} key:${Config.SESSION_KEY()?.substring(0,8) ?? 'null'}...`);
+-     async function setDataToList() {
++ 
++     async function loadMenu() {
+-       const resJson = await getDatas();
++       let resJson = await getDatas();
++ 
++       // Jika gagal di QR mode → coba re-login dulu lalu retry sekali
++       if (!resJson && getTableId()) {
++         addDebugLog('getDatas gagal, coba re-login...', true);
++         await new Promise((resolve) => auth.signinAsGuest(resolve));
++         addDebugLog(`re-login selesai, key:${Config.SESSION_KEY()?.substring(0,8) ?? 'null'}...`);
++         resJson = await getDatas();
++       }
++ 
+// Line 292:
+-     isActive && setDataToList();
++ 
++     isActive && loadMenu();
+```
+
+---
+
+#### 3. src/scripts/modules/BQO/views/bqo_home.js [20260812_133331]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Import: react-router-dom; Import: Container; Import: Dialog; Import: DialogContent; Import: DialogActions; Import: AppBar; Import: Grid; Import: Box; Import: Paper; Import: Toolbar; Import: Tabs; Import: Tab; Import: Button; Import: IconButton; Import: InputBase; Import: TextField; Import: Typography; Import: LinearProgress; Import: Skeleton; Import: TableRestaurant; Import: Search; Import: NoteAltOutlined; Import: Edit; Import: Add; Import: Remove; Import: ArrowBackIos; Import: ArrowForwardIos; Import: ShoppingCart; Import: ShoppingCartOutlined; Import: Close; Import: placeholder.png; Import: useResponsive; Import: formatter; Import: bqo_api; Import: Config; Import: app-config; Import: table-session  
 **Lines:** 2-38
@@ -65,7 +140,7 @@
 
 ---
 
-#### 2. src/scripts/modules/BQO/views/bqo_home.js [20260812_132835]
+#### 4. src/scripts/modules/BQO/views/bqo_home.js [20260812_132835]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Import: react; Tambah state management; Tambah side effect; Ubah render/return JSX; Tambah fungsi: handleChangeSearch  
 **Lines:** 1-51, 311-313, 315-341, 455-456, 458, 460, 462-463, 465-471, 473-476, 479-480, 707-708, 710-713
@@ -126,7 +201,7 @@
 
 ---
 
-#### 3. src/scripts/modules/BQO/views/bqo_home.js [20260812_130923]
+#### 5. src/scripts/modules/BQO/views/bqo_home.js [20260812_130923]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Pembaruan kode  
 **Lines:** 653-654, 658-665, 670, 676-677, 680, 682
@@ -155,7 +230,7 @@
 
 ---
 
-#### 4. src/scripts/modules/BQO/views/bqo_home.js [20260812_110833]
+#### 6. src/scripts/modules/BQO/views/bqo_home.js [20260812_110833]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Pembaruan kode  
 **Lines:** 216-217
@@ -168,7 +243,7 @@
 
 ---
 
-#### 5. src/scripts/modules/BQO/controllers/bqo_mock.js [20260812_105050]
+#### 7. src/scripts/modules/BQO/controllers/bqo_mock.js [20260812_105050]
 **Fungsi:** Modul: bqo_mock  
 **Perubahan:** Pembaruan kode  
 **Lines:** 19, 91
@@ -182,7 +257,7 @@
 
 ---
 
-#### 6. src/scripts/modules/BQO/views/bqo_checkout.js [20260812_105050]
+#### 8. src/scripts/modules/BQO/views/bqo_checkout.js [20260812_105050]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Import: CircularProgress  
 **Lines:** 17, 50, 426
@@ -200,7 +275,7 @@
 
 ---
 
-#### 7. src/scripts/modules/BQO/views/bqo_home.js [20260812_105050]
+#### 9. src/scripts/modules/BQO/views/bqo_home.js [20260812_105050]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Pembaruan kode  
 **Lines:** 233
@@ -213,7 +288,7 @@
 
 ---
 
-#### 8. src/scripts/modules/BQO/views/bqo_payment.js [20260812_105050]
+#### 10. src/scripts/modules/BQO/views/bqo_payment.js [20260812_105050]
 **Fungsi:** Modul: bqo_payment  
 **Perubahan:** Import: payment-api  
 **Lines:** 29, 51, 100, 129, 173, 356
@@ -239,7 +314,7 @@
 
 ---
 
-#### 9. src/scripts/modules/BQO/views/bqo_home.js [20260812_103649]
+#### 11. src/scripts/modules/BQO/views/bqo_home.js [20260812_103649]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Import: app-config  
 **Lines:** 38
@@ -251,7 +326,7 @@
 
 ---
 
-#### 10. src/scripts/modules/BQO/views/bqo_home.js [20260812_101813]
+#### 12. src/scripts/modules/BQO/views/bqo_home.js [20260812_101813]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Tambah state management; Tambah fungsi: addDebugLog  
 **Lines:** 100-107, 118, 120-124, 214, 224-226, 425-442
@@ -304,7 +379,7 @@
 
 ---
 
-#### 11. src/scripts/modules/BQO/views/bqo_home.js [20260812_093434]
+#### 13. src/scripts/modules/BQO/views/bqo_home.js [20260812_093434]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Tambah navigasi halaman  
 **Lines:** 415-425
@@ -336,84 +411,76 @@
 
 ---
 
-#### 12. src/scripts/modules/BQO/views/bqo_checkout.js [20260812_140433]
+#### 14. rc/scripts/modules/BQO/views/bqo_checkout.js [20260812_142350]
 **Fungsi:** Halaman checkout & submit order  
-**Perubahan:** Import: app-config  
-**Lines:** 37, 499-501, 1018-1029
-
-```javascript
-// Line 34:
-+ import { getAppConfig } from '../../../utils/app-config';
-// Line 496:
--     // Print guard — wajib cetak dulu sebelum bisa pesanan baru (pola trenly)
--     if (printCount === 0) {
-+     const showPrint = getAppConfig().show_print_button !== false; // default true
-+     // Print guard hanya berlaku jika tombol print ditampilkan (bukan QR/HP mode)
-+     if (showPrint && printCount === 0) {
-// Line 1015:
--           <Button
--             fullWidth
--             variant="contained"
--             startIcon={<PrintIcon />}
--             onClick={handlePrint}
--             color={printCount > 0 ? 'success' : 'primary'}
--           >
--             {printCount > 0 ? `Cetak Ulang (${printCount}×)` : 'Cetak Tanda Pesanan'}
--           </Button>
-+           {/* Tombol print — dikontrol via show_print_button di app.cfg */}
-+           {getAppConfig().show_print_button !== false && (
-+             <Button
-+               fullWidth
-+               variant="contained"
-+               startIcon={<PrintIcon />}
-+               onClick={handlePrint}
-+               color={printCount > 0 ? 'success' : 'primary'}
-+             >
-+               {printCount > 0 ? `Cetak Ulang (${printCount}×)` : 'Cetak Tanda Pesanan'}
-+             </Button>
-+           )}
-```
-
----
-
-#### 13. src/scripts/modules/BQO/views/bqo_home.js [20260812_140433]
-**Fungsi:** Halaman utama / dashboard  
-**Perubahan:** Import: AuthContext; Tambah fungsi: loadMenu  
-**Lines:** 38, 94, 267, 272-273, 275-284, 295-296
-
-```javascript
-// Line 35:
-+ import { useAuth } from '../../../contexts/AuthContext';
-// Line 91:
-+   const auth = useAuth();
-// Line 264:
--     addDebugLog(`mount — tableId:${getTableId()} loggedIn:${!!Config.SESSION_KEY()} key:${Config.SESSION_KEY()?.substring(0,8) ?? 'null'}...`);
-+     addDebugLog(`mount — tableId:${getTableId()} key:${Config.SESSION_KEY()?.substring(0,8) ?? 'null'}...`);
--     async function setDataToList() {
-+ 
-+     async function loadMenu() {
--       const resJson = await getDatas();
-+       let resJson = await getDatas();
-+ 
-+       // Jika gagal di QR mode → coba re-login dulu lalu retry sekali
-+       if (!resJson && getTableId()) {
-+         addDebugLog('getDatas gagal, coba re-login...', true);
-+         await new Promise((resolve) => auth.signinAsGuest(resolve));
-+         addDebugLog(`re-login selesai, key:${Config.SESSION_KEY()?.substring(0,8) ?? 'null'}...`);
-+         resJson = await getDatas();
-+       }
-+ 
-// Line 292:
--     isActive && setDataToList();
-+ 
-+     isActive && loadMenu();
-```
+**Perubahan:** Pembaruan kode  
 
 ---
 
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260812.md [20260812_133331]
+#### 1. docs/changelog/daily/codeChange-20260812.md [20260812_140437]
+**Fungsi:** Implementasi: codeChange-20260812  
+**Perubahan:** Akses localStorage; Tambah state management; Tambah side effect  
+**Lines:** 7-68, 129, 158, 171, 185, 203, 216, 242, 254, 307, 339-379, 381-410, 416-477, 538, 599, 660, 721, 782, 843, 904, 965, 1026, 1087, 1148, 1727-1746, 1748-1749, 1752-1754
+
+```javascript
+// Line 4:
+- #### 1. src/scripts/modules/BQO/views/bqo_home.js [20260812_132835]
++ #### 1. src/scripts/modules/BQO/views/bqo_home.js [20260812_133331]
++ **Fungsi:** Halaman utama / dashboard  
++ **Perubahan:** Import: react-router-dom; Import: Container; Import: Dialog; Import: DialogContent; Import: DialogActions; Import: AppBar; Import: Grid; Import: Box; Import: Paper; Import: Toolbar; Import: Tabs; Import: Tab; Import: Button; Import: IconButton; Import: InputBase; Import: TextField; Import: Typography; Import: LinearProgress; Import: Skeleton; Import: TableRestaurant; Import: Search; Import: NoteAltOutlined; Import: Edit; Import: Add; Import: Remove; Import: ArrowBackIos; Import: ArrowForwardIos; Import: ShoppingCart; Import: ShoppingCartOutlined; Import: Close; Import: placeholder.png; Import: useResponsive; Import: formatter; Import: bqo_api; Import: Config; Import: app-config; Import: table-session  
++ **Lines:** 2-38
++ 
++ ```javascript
++ // Line 1:
++ + import { useNavigate } from 'react-router-dom';
++ + import Container from '@mui/material/Container';
++ + import Dialog from '@mui/material/Dialog';
++ + import DialogContent from '@mui/material/DialogContent';
++ + import DialogActions from '@mui/material/DialogActions';
++ + import AppBar from '@mui/material/AppBar';
++ + import Grid from '@mui/material/Grid';
++ + import Box from '@mui/material/Box';
++ + import Paper from '@mui/material/Paper';
++ + import Toolbar from '@mui/material/Toolbar';
++ + import Tabs from '@mui/material/Tabs';
++ + import Tab from '@mui/material/Tab';
++ + import Button from '@mui/material/Button';
++ + import IconButton from '@mui/material/IconButton';
++ + import InputBase from '@mui/material/InputBase';
++ + import TextField from '@mui/material/TextField';
+  // ... (truncated)
++ 
++ #### 13. src/scripts/utils/app-config.js [20260812_140433]
++ **Fungsi:** Entry point aplikasi React  
++ **Perubahan:** Pembaruan kode  
++ **Lines:** 28-29
++ 
++ ```javascript
++ // Line 25:
++ -   debug_screen:                  false, // true = tampilkan debug panel di layar
++ +   debug_screen:                  false,
++ +   show_print_button:             true,  // false = sembunyikan tombol print di struk kasir
++ ```
++ 
++ ---
++ 
+- - **✨ Features:** 11 items
+- - **📖 Documentation:** 12 items
++ - **✨ Features:** 13 items
++ - **📖 Documentation:** 13 items
+- - **⚙️ Others:** 11 items
+- - **Total Files Modified:** 40
+- - **Main Focus:** 📖 Documentation
++ - **⚙️ Others:** 13 items
++ - **Total Files Modified:** 45
++ - **Main Focus:** Features
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260812.md [20260812_133331]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage; Tambah state management; Tambah side effect; Ubah render/return JSX  
 **Lines:** 278-283, 286-347, 408, 469, 530, 591, 652, 713, 774, 835, 896, 957, 1537-1538, 1542
@@ -474,7 +541,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260812.md [20260812_132926]
+#### 3. docs/changelog/daily/codeChange-20260812.md [20260812_132926]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Tambah state management; Tambah side effect; Ubah render/return JSX; Akses localStorage  
 **Lines:** 7-68, 97, 110, 124, 142, 155, 181, 193, 246, 278, 280-283, 285-339, 341, 402, 463, 524, 585, 646, 707, 768, 829, 890, 1471, 1475-1476
@@ -535,7 +602,7 @@
 
 ---
 
-#### 3. docs/changelog/daily/codeChange-20260812.md [20260812_132835]
+#### 4. docs/changelog/daily/codeChange-20260812.md [20260812_132835]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage  
 **Lines:** 7-36, 49, 63, 81, 94, 120, 132, 185, 217, 225-286, 347, 408, 469, 530, 591, 652, 713, 774, 1354-1355, 1359
@@ -596,7 +663,7 @@
 
 ---
 
-#### 4. docs/changelog/daily/codeChange-20260812.md [20260812_130923]
+#### 5. docs/changelog/daily/codeChange-20260812.md [20260812_130923]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage  
 **Lines:** 188-193, 196-257, 318, 379, 440, 501, 562, 623, 684, 997-1014, 1075, 1089, 1105, 1119, 1142, 1154, 1215, 1230, 1250, 1264-1265, 1269
@@ -657,7 +724,7 @@
 
 ---
 
-#### 5. docs/changelog/daily/codeChange-20260812.md [20260812_114806]
+#### 6. docs/changelog/daily/codeChange-20260812.md [20260812_114806]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage  
 **Lines:** 7-20, 34, 52, 65, 91, 103, 156, 188-193, 196-246, 251, 312, 373, 434, 495, 556, 617, 680-697, 758, 773, 1179-1184, 1187, 1190-1191
@@ -718,7 +785,7 @@
 
 ---
 
-#### 6. docs/changelog/daily/codeChange-20260812.md [20260812_110833]
+#### 7. docs/changelog/daily/codeChange-20260812.md [20260812_110833]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage; Tambah side effect; Tambah state management  
 **Lines:** 175-187, 190-251, 312, 373, 434, 495, 556, 756-761, 764-810, 1108-1110, 1113
@@ -779,7 +846,7 @@
 
 ---
 
-#### 7. docs/changelog/daily/codeChange-20260812.md [20260812_105611]
+#### 8. docs/changelog/daily/codeChange-20260812.md [20260812_105611]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage  
 **Lines:** 7-78, 90, 143, 175, 177-180, 183-233, 238, 299, 360, 421, 482, 730-735, 989, 991, 993
@@ -840,7 +907,7 @@
 
 ---
 
-#### 8. docs/changelog/daily/codeChange-20260812.md [20260812_105050]
+#### 9. docs/changelog/daily/codeChange-20260812.md [20260812_105050]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage; Tambah navigasi halaman  
 **Lines:** 7-19, 72, 104-128, 130-131, 134-162, 169-230, 291, 352, 413, 663-724, 738, 754, 768, 791, 803, 864, 879, 899, 913-914, 918
@@ -901,7 +968,7 @@
 
 ---
 
-#### 9. docs/changelog/daily/codeChange-20260812.md [20260812_103649]
+#### 10. docs/changelog/daily/codeChange-20260812.md [20260812_103649]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Tambah navigasi halaman; Akses localStorage; Tambah state management  
 **Lines:** 7, 60-103, 106-167, 228, 289, 539-569, 583, 606, 618, 679, 694, 714, 727-728, 734-735, 738-739
@@ -962,7 +1029,7 @@
 
 ---
 
-#### 10. docs/changelog/daily/codeChange-20260812.md [20260812_101813]
+#### 11. docs/changelog/daily/codeChange-20260812.md [20260812_101813]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Tambah state management; Akses localStorage; Tambah navigasi halaman  
 **Lines:** 7, 39-91, 94-155, 216, 279, 340, 355-415, 466-515, 576, 591, 611, 624, 630, 633, 636-641, 647-648, 651-652
@@ -1023,7 +1090,7 @@
 
 ---
 
-#### 11. docs/changelog/daily/codeChange-20260812.md [20260812_093434]
+#### 12. docs/changelog/daily/codeChange-20260812.md [20260812_093434]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Tambah navigasi halaman; Akses localStorage  
 **Lines:** 5-38, 41-102, 226-301, 352-413, 428, 448, 461-462, 467-501, 503-505, 507-508
@@ -1084,7 +1151,7 @@
 
 ---
 
-#### 12. docs/changelog/daily/codeChange-20260812.md [20260812_091046]
+#### 13. docs/changelog/daily/codeChange-20260812.md [20260812_091046]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage  
 **Lines:** 5-67, 70, 133, 181, 184-192, 196, 216, 229-234, 236, 239-240
@@ -1145,7 +1212,7 @@
 
 ---
 
-#### 13. docs/changelog/daily/codeChange-20260812.md [20260812_090252]
+#### 14. docs/changelog/daily/codeChange-20260812.md [20260812_090252]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage; Tambah side effect; Tambah navigasi halaman  
 **Lines:** 1-162
@@ -1458,7 +1525,35 @@
 
 ### ⚙️ Others
 
-#### 1. public/app.cfg [20260812_114806]
+#### 1. public/app.cfg [20260812_140437]
+**Fungsi:** Entry point aplikasi React  
+**Perubahan:** Pembaruan kode  
+**Lines:** 13-14
+
+```javascript
+// Line 10:
+-   "debug_screen": true
++   "debug_screen": true,
++   "show_print_button": false
+```
+
+---
+
+#### 2. src/scripts/utils/app-config.js [20260812_140437]
+**Fungsi:** Entry point aplikasi React  
+**Perubahan:** Pembaruan kode  
+**Lines:** 28-29
+
+```javascript
+// Line 25:
+-   debug_screen:                  false, // true = tampilkan debug panel di layar
++   debug_screen:                  false,
++   show_print_button:             true,  // false = sembunyikan tombol print di struk kasir
+```
+
+---
+
+#### 3. public/app.cfg [20260812_114806]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 **Lines:** 10-12
@@ -1475,7 +1570,7 @@
 
 ---
 
-#### 2. public/qr-tables.html [20260812_103649]
+#### 4. public/qr-tables.html [20260812_103649]
 **Fungsi:** Fungsi: setMode  
 **Perubahan:** Tambah fungsi: setMode  
 **Lines:** 31-78, 84, 146-163, 171, 203, 213-215, 238-246, 250, 273-307, 313-318, 333, 335, 346-351
@@ -1536,7 +1631,7 @@
 
 ---
 
-#### 3. public/app.cfg [20260812_101813]
+#### 5. public/app.cfg [20260812_101813]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 **Lines:** 12-13
@@ -1550,7 +1645,7 @@
 
 ---
 
-#### 4. src/scripts/utils/app-config.js [20260812_101813]
+#### 6. src/scripts/utils/app-config.js [20260812_101813]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 **Lines:** 25, 27-28
@@ -1566,7 +1661,7 @@
 
 ---
 
-#### 5. public/app.cfg [20260812_093434]
+#### 7. public/app.cfg [20260812_093434]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 **Lines:** 11-12
@@ -1580,7 +1675,7 @@
 
 ---
 
-#### 6. src/scripts/App.js [20260812_093434]
+#### 8. src/scripts/App.js [20260812_093434]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Akses localStorage  
 **Lines:** 24-34
@@ -1603,7 +1698,7 @@
 
 ---
 
-#### 7. src/scripts/utils/app-config.js [20260812_093434]
+#### 9. src/scripts/utils/app-config.js [20260812_093434]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 **Lines:** 27
@@ -1615,7 +1710,7 @@
 
 ---
 
-#### 8. public/qr-tables.html [20260812_091046]
+#### 10. public/qr-tables.html [20260812_091046]
 **Fungsi:** Fungsi: padNum  
 **Perubahan:** Tambah fungsi: padNum; Tambah fungsi: generate  
 **Lines:** 1-245
@@ -1676,7 +1771,7 @@
 
 ---
 
-#### 9. public/app.cfg [20260812_090252]
+#### 11. public/app.cfg [20260812_090252]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 **Lines:** 9-11
@@ -1691,7 +1786,7 @@
 
 ---
 
-#### 10. src/scripts/App.js [20260812_090252]
+#### 12. src/scripts/App.js [20260812_090252]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Import: table-session  
 **Lines:** 12, 50-54
@@ -1711,7 +1806,7 @@
 
 ---
 
-#### 11. src/scripts/utils/app-config.js [20260812_090252]
+#### 13. src/scripts/utils/app-config.js [20260812_090252]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 **Lines:** 25-26
@@ -1724,31 +1819,11 @@
 
 ---
 
-#### 12. ublic/app.cfg [20260812_140433]
-**Fungsi:** Entry point aplikasi React  
-**Perubahan:** Pembaruan kode  
-
----
-
-#### 13. src/scripts/utils/app-config.js [20260812_140433]
-**Fungsi:** Entry point aplikasi React  
-**Perubahan:** Pembaruan kode  
-**Lines:** 28-29
-
-```javascript
-// Line 25:
--   debug_screen:                  false, // true = tampilkan debug panel di layar
-+   debug_screen:                  false,
-+   show_print_button:             true,  // false = sembunyikan tombol print di struk kasir
-```
-
----
-
 ## 📊 **Summary**
-- **✨ Features:** 13 items
-- **📖 Documentation:** 13 items
+- **✨ Features:** 14 items
+- **📖 Documentation:** 14 items
 - **🔐 Auth/Session:** 4 items
 - **🔌 API:** 2 items
 - **⚙️ Others:** 13 items
-- **Total Files Modified:** 45
+- **Total Files Modified:** 47
 - **Main Focus:** Features

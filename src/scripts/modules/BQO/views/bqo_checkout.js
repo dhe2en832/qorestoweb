@@ -25,6 +25,7 @@ import CashierIcon from '@mui/icons-material/PointOfSale';
 import SelfPayIcon from '@mui/icons-material/PhoneAndroid';
 import PrintIcon from '@mui/icons-material/Print';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import DownloadIcon from '@mui/icons-material/Download';
 import Placeholder from '../../../../images/placeholder.png';
 import useResponsive from '../../../hooks/useResponsive';
 import { toCurrencyIDR } from '../../../utils/formatter';
@@ -493,6 +494,113 @@ export default function BQOCheckout() {
     } finally {
       setIsSubmittingKasir(false);
     }
+  };
+
+  // ── Download bukti order sebagai gambar ──────────────────────────────────
+  const handleDownloadReceipt = () => {
+    if (!kasirResult) return;
+    const { cartItems, subtotal, taxAmount, total, nomorBon, cqonum } = kasirResult;
+    const noPesanan = cqonum || nomorBon || '-';
+    const meja = info.seatNumber || '-';
+    const nama = info.orderByName || '-';
+    const waktu = new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+
+    // Hitung dimensi canvas
+    const padding = 24;
+    const lineH = 22;
+    const headerH = 100;
+    const itemH = cartItems.length * lineH;
+    const footerH = 120;
+    const canvasW = 380;
+    const canvasH = headerH + itemH + footerH + padding * 2;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = canvasW * 2;   // retina
+    canvas.height = canvasH * 2;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(2, 2);
+
+    // Background
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, canvasW, canvasH);
+
+    let y = padding;
+
+    // Header
+    ctx.fillStyle = '#3f50b5';
+    ctx.font = 'bold 16px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('BUKTI PESANAN', canvasW / 2, y + 16);
+    y += 30;
+    ctx.fillStyle = '#333';
+    ctx.font = '12px sans-serif';
+    ctx.fillText(`No: ${noPesanan}`, canvasW / 2, y + 12);
+    y += 20;
+    ctx.fillText(`Meja: ${meja} · ${nama}`, canvasW / 2, y + 12);
+    y += 20;
+    ctx.fillStyle = '#888';
+    ctx.font = '11px sans-serif';
+    ctx.fillText(waktu, canvasW / 2, y + 12);
+    y += 24;
+
+    // Garis
+    ctx.strokeStyle = '#ddd';
+    ctx.beginPath(); ctx.moveTo(padding, y); ctx.lineTo(canvasW - padding, y); ctx.stroke();
+    y += 10;
+
+    // Items
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#333';
+    ctx.font = '12px sans-serif';
+    cartItems.forEach((d) => {
+      const itemName = `${d.qty}× ${d.item.name}${d.note ? ' (' + d.note + ')' : ''}`;
+      const price = `Rp ${toCurrencyIDR(parseFloat(d.item.sellPrice) * d.qty)}`;
+      ctx.fillText(itemName.length > 35 ? itemName.substring(0, 35) + '...' : itemName, padding, y + 14);
+      ctx.textAlign = 'right';
+      ctx.fillText(price, canvasW - padding, y + 14);
+      ctx.textAlign = 'left';
+      y += lineH;
+    });
+
+    // Garis
+    y += 4;
+    ctx.beginPath(); ctx.moveTo(padding, y); ctx.lineTo(canvasW - padding, y); ctx.stroke();
+    y += 14;
+
+    // Subtotal, pajak, total
+    ctx.font = '12px sans-serif';
+    ctx.fillStyle = '#666';
+    ctx.fillText('Subtotal', padding, y + 12);
+    ctx.textAlign = 'right';
+    ctx.fillText(`Rp ${toCurrencyIDR(subtotal)}`, canvasW - padding, y + 12);
+    ctx.textAlign = 'left';
+    y += lineH;
+
+    ctx.fillText(`Pajak (${TAX_PERCENT}%)`, padding, y + 12);
+    ctx.textAlign = 'right';
+    ctx.fillText(`Rp ${toCurrencyIDR(taxAmount)}`, canvasW - padding, y + 12);
+    ctx.textAlign = 'left';
+    y += lineH + 4;
+
+    ctx.font = 'bold 14px sans-serif';
+    ctx.fillStyle = '#333';
+    ctx.fillText('Total', padding, y + 14);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#3f50b5';
+    ctx.fillText(`Rp ${toCurrencyIDR(total)}`, canvasW - padding, y + 14);
+    y += lineH + 10;
+
+    // Footer
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#aaa';
+    ctx.font = '10px sans-serif';
+    ctx.fillText('Tunjukkan bukti ini ke kasir saat pembayaran', canvasW / 2, y + 10);
+
+    // Download
+    const link = document.createElement('a');
+    link.download = `pesanan-${meja}-${noPesanan}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
   };
 
   const handleNewOrderAfterKasir = () => {
@@ -1015,6 +1123,16 @@ export default function BQOCheckout() {
           </Typography>
         </DialogContent>
         <DialogActions sx={{ px: 2, pb: 2, pt: 1.5, flexDirection: 'column', gap: 1 }}>
+          {/* Tombol download bukti pesanan */}
+          <Button
+            fullWidth
+            variant="contained"
+            color="primary"
+            startIcon={<DownloadIcon />}
+            onClick={handleDownloadReceipt}
+          >
+            Download Bukti Pesanan
+          </Button>
           {/* Tombol print — dikontrol via show_print_button di app.cfg */}
           {getAppConfig().show_print_button !== false && (
             <Button
