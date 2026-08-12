@@ -172,9 +172,83 @@
 
 ---
 
+#### 8. src/scripts/modules/BQO/views/bqo_home.js [20260812_110829]
+**Fungsi:** Halaman utama / dashboard  
+**Perubahan:** Pembaruan kode  
+**Lines:** 216-217
+
+```javascript
+// Line 213:
++     const loginErr = window.sessionStorage.getItem('qoGuestLoginError');
++     if (loginErr) addDebugLog(`LOGIN ERR: ${loginErr}`, true);
+```
+
+---
+
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260812.md [20260812_105050]
+#### 1. docs/changelog/daily/codeChange-20260812.md [20260812_105611]
+**Fungsi:** Implementasi: codeChange-20260812  
+**Perubahan:** Akses localStorage  
+**Lines:** 7-78, 90, 143, 175, 177-180, 183-233, 238, 299, 360, 421, 482, 730-735, 989, 991, 993
+
+```javascript
+// Line 4:
+- #### 1. src/scripts/modules/BQO/views/bqo_home.js [20260812_103649]
++ #### 1. src/scripts/modules/BQO/controllers/bqo_mock.js [20260812_105050]
++ **Fungsi:** Modul: bqo_mock  
++ **Perubahan:** Pembaruan kode  
++ **Lines:** 19, 91
++ 
++ ```javascript
++ // Line 16:
++ + /* eslint-disable no-unused-vars */
++ // Line 88:
++ + /* eslint-enable no-unused-vars */
++ ```
++ 
++ ---
++ 
++ #### 2. src/scripts/modules/BQO/views/bqo_checkout.js [20260812_105050]
++ **Fungsi:** Halaman checkout & submit order  
++ **Perubahan:** Import: CircularProgress  
++ **Lines:** 17, 50, 426
++ 
++ ```javascript
++ // Line 14:
++ - import CircularProgress from '@mui/material/CircularProgress';
++ + import CircularProgress from '@mui/material/CircularProgress'; // eslint-disable-line no-unused-vars
+  // ... (truncated)
+- #### 2. docs/changelog/daily/codeChange-20260812.md [20260812_101813]
++ #### 3. docs/changelog/daily/codeChange-20260812.md [20260812_101813]
+// Line 357:
+- #### 3. docs/changelog/daily/codeChange-20260812.md [20260812_093434]
++ #### 4. docs/changelog/daily/codeChange-20260812.md [20260812_093434]
+// Line 418:
+- #### 4. docs/changelog/daily/codeChange-20260812.md [20260812_091046]
++ #### 5. docs/changelog/daily/codeChange-20260812.md [20260812_091046]
+// Line 479:
+- #### 5. docs/changelog/daily/codeChange-20260812.md [20260812_090252]
++ #### 6. docs/changelog/daily/codeChange-20260812.md [20260812_090252]
+// Line 727:
++ #### 2. rc/scripts/routes/PrivateRoute.js [20260812_105608]
++ **Fungsi:** Route: PrivateRoute  
++ **Perubahan:** Pembaruan kode  
++ 
++ ---
++ 
+// Line 986:
+- - **📖 Documentation:** 5 items
++ - **📖 Documentation:** 6 items
+- - **🔌 API:** 1 item
++ - **🔌 API:** 2 items
+- - **Total Files Modified:** 26
++ - **Total Files Modified:** 28
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260812.md [20260812_105050]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage; Tambah navigasi halaman  
 **Lines:** 7-19, 72, 104-128, 130-131, 134-162, 169-230, 291, 352, 413, 663-724, 738, 754, 768, 791, 803, 864, 879, 899, 913-914, 918
@@ -235,7 +309,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260812.md [20260812_103649]
+#### 3. docs/changelog/daily/codeChange-20260812.md [20260812_103649]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Tambah navigasi halaman; Akses localStorage; Tambah state management  
 **Lines:** 7, 60-103, 106-167, 228, 289, 539-569, 583, 606, 618, 679, 694, 714, 727-728, 734-735, 738-739
@@ -296,7 +370,7 @@
 
 ---
 
-#### 3. docs/changelog/daily/codeChange-20260812.md [20260812_101813]
+#### 4. docs/changelog/daily/codeChange-20260812.md [20260812_101813]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Tambah state management; Akses localStorage; Tambah navigasi halaman  
 **Lines:** 7, 39-91, 94-155, 216, 279, 340, 355-415, 466-515, 576, 591, 611, 624, 630, 633, 636-641, 647-648, 651-652
@@ -357,7 +431,7 @@
 
 ---
 
-#### 4. docs/changelog/daily/codeChange-20260812.md [20260812_093434]
+#### 5. docs/changelog/daily/codeChange-20260812.md [20260812_093434]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Tambah navigasi halaman; Akses localStorage  
 **Lines:** 5-38, 41-102, 226-301, 352-413, 428, 448, 461-462, 467-501, 503-505, 507-508
@@ -418,7 +492,7 @@
 
 ---
 
-#### 5. docs/changelog/daily/codeChange-20260812.md [20260812_091046]
+#### 6. docs/changelog/daily/codeChange-20260812.md [20260812_091046]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage  
 **Lines:** 5-67, 70, 133, 181, 184-192, 196, 216, 229-234, 236, 239-240
@@ -479,7 +553,7 @@
 
 ---
 
-#### 6. docs/changelog/daily/codeChange-20260812.md [20260812_090252]
+#### 7. docs/changelog/daily/codeChange-20260812.md [20260812_090252]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage; Tambah side effect; Tambah navigasi halaman  
 **Lines:** 1-162
@@ -679,9 +753,61 @@
 
 ---
 
+#### 4. rc/scripts/contexts/AuthContext.js [20260812_110829]
+**Fungsi:** Context autentikasi global  
+**Perubahan:** Pembaruan kode  
+
+---
+
 ### 🔌 API
 
-#### 1. src/scripts/routes/PrivateRoute.js [20260812_090252]
+#### 1. src/scripts/routes/PrivateRoute.js [20260812_105611]
+**Fungsi:** Route: PrivateRoute  
+**Perubahan:** Import: react; Tambah state management; Tambah side effect; Import: ProgressLoader  
+**Lines:** 1, 5, 8-16, 19-21, 23-24, 28-32, 34-35
+
+```javascript
+// Line 1:
+- import { useEffect } from 'react';
++ import { useEffect, useState } from 'react';
++ import ProgressLoader from '../components/ProgressLoader';
+-   const auth         = useAuth();
+-   const location     = useLocation();
+-   const navigate     = useNavigate();
+-   const tableId      = getTableId();
+-   const isQRMode     = tableId !== '';
++   const auth        = useAuth();
++   const location    = useLocation();
++   const navigate    = useNavigate();
++   const tableId     = getTableId();
++   const isQRMode    = tableId !== '';
++ 
++   // State untuk track proses auto-login yang sedang berjalan
++   const [isSigningIn, setIsSigningIn] = useState(false);
++   const [signInDone,  setSignInDone]  = useState(false);
+-     // Jika ada ?table= di URL (mode QR) dan belum login → auto-login sebagai guest
+-     if (isQRMode && !auth.loggedIn) {
++     // Jika mode QR dan belum login dan belum pernah dicoba → jalankan auto-login
++     if (isQRMode && !auth.loggedIn && !isSigningIn && !signInDone) {
++       setIsSigningIn(true);
+-         // Setelah auto-login, lanjut ke tujuan semula
++         setIsSigningIn(false);
++         setSignInDone(true);
+-   }, [isQRMode, auth, location.pathname, navigate]);
++   // eslint-disable-next-line react-hooks/exhaustive-deps
++   }, [isQRMode, auth.loggedIn]);
++ 
++   // Sedang proses login → tampilkan loader
++   if (isSigningIn) return <ProgressLoader />;
+-   // Mode QR: sedang proses auto-login → render null (tunggu sebentar)
+-   if (isQRMode && !auth.loggedIn) return null;
++   // Mode QR: belum login dan belum dicoba → loader sementara
++   if (isQRMode && !auth.loggedIn && !signInDone) return <ProgressLoader />;
+```
+
+---
+
+#### 2. src/scripts/routes/PrivateRoute.js [20260812_090252]
 **Fungsi:** Route: PrivateRoute  
 **Perubahan:** Import: react; Tambah side effect; Import: react-router-dom; Import: table-session; Tambah navigasi halaman  
 **Lines:** 1-2, 4, 7-31
@@ -724,12 +850,6 @@
 + 
 +   return children;
 ```
-
----
-
-#### 2. rc/scripts/routes/PrivateRoute.js [20260812_105608]
-**Fungsi:** Route: PrivateRoute  
-**Perubahan:** Pembaruan kode  
 
 ---
 
@@ -985,10 +1105,10 @@
 ---
 
 ## 📊 **Summary**
-- **✨ Features:** 7 items
-- **📖 Documentation:** 6 items
-- **🔐 Auth/Session:** 3 items
+- **✨ Features:** 8 items
+- **📖 Documentation:** 7 items
+- **🔐 Auth/Session:** 4 items
 - **🔌 API:** 2 items
 - **⚙️ Others:** 10 items
-- **Total Files Modified:** 28
+- **Total Files Modified:** 31
 - **Main Focus:** ⚙️ Others

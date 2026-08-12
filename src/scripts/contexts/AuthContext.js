@@ -76,7 +76,11 @@ function useProvideAuth() {
         setSessionID(resSessionID);
         if (typeof cb === 'function') cb();
       } else {
-        // Login gagal — tetap masuk tapi dengan static key sebagai fallback
+        // Login gagal — log error ke console dan sessionStorage untuk debugging
+        const errMsg = resJson.onfail?.cerror || resJson.message || JSON.stringify(resJson);
+        console.error('[signinAsGuest] Login gagal:', errMsg);
+        window.sessionStorage.setItem('qoGuestLoginError', errMsg);
+        // Fallback ke static key
         const staticKey = cfg.qr_session_key || '';
         setLoggedIn(true);
         setUserID('GUEST');

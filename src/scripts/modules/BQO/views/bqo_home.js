@@ -213,6 +213,8 @@ export default function BQOHome() {
     // Re-init table ID dari URL setiap kali halaman menu dimount
     initTableId();
     addDebugLog(`mount — tableId:${getTableId()} loggedIn:${!!Config.SESSION_KEY()} key:${Config.SESSION_KEY()?.substring(0,8) ?? 'null'}...`);
+    const loginErr = window.sessionStorage.getItem('qoGuestLoginError');
+    if (loginErr) addDebugLog(`LOGIN ERR: ${loginErr}`, true);
 
     let isActive = true;
     async function setDataToList() {
