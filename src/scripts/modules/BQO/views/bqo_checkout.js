@@ -369,10 +369,6 @@ export default function BQOCheckout() {
       showValidation('Nama Pemesan');
       return;
     }
-    if (info.phoneNumber === '') {
-      showValidation('Nomor Telepon');
-      return;
-    }
     // Refresh data meja tepat sebelum submit — cegah race condition antar device
     await fetchOccupiedTables();
     if (occupiedTablesRef.current.has(info.seatNumber)) {

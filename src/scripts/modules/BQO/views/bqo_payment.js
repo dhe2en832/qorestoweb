@@ -601,38 +601,51 @@ export default function BQOPayment() {
     </Container>
   );
 
-  const renderChooseView = () => (
-    <Container maxWidth="sm" sx={{ mt: 1 }}>
-      {renderSummary()}
-      <Typography variant="body2" color="text.secondary" textAlign="center" mb={1}>
-        Pilih metode pembayaran:
-      </Typography>
-      <Grid container spacing={2} justifyContent="center">
-        <Grid item xs={USE_XENDIT ? 6 : 12}>
-          <Button
-            fullWidth variant="contained" size="large" color="success"
-            startIcon={<MoneyIcon />}
-            onClick={() => { setActiveView('tunai'); }}
-            sx={{ py: 2 }}
-          >
-            Tunai
-          </Button>
+  const renderChooseView = () => {
+    const showTunai = getAppConfig().show_tunai_button !== false; // default true
+    // Jika tunai di-hide dan xendit aktif, langsung skip ke xendit-channel
+    if (!showTunai && USE_XENDIT) {
+      // Auto-redirect ke xendit channel saat view ini dirender
+      if (activeView === 'choose') {
+        setTimeout(() => setActiveView('xendit-channel'), 0);
+      }
+      return null;
+    }
+    return (
+      <Container maxWidth="sm" sx={{ mt: 1 }}>
+        {renderSummary()}
+        <Typography variant="body2" color="text.secondary" textAlign="center" mb={1}>
+          Pilih metode pembayaran:
+        </Typography>
+        <Grid container spacing={2} justifyContent="center">
+          {showTunai && (
+            <Grid item xs={USE_XENDIT ? 6 : 12}>
+              <Button
+                fullWidth variant="contained" size="large" color="success"
+                startIcon={<MoneyIcon />}
+                onClick={() => { setActiveView('tunai'); }}
+                sx={{ py: 2 }}
+              >
+                Tunai
+              </Button>
+            </Grid>
+          )}
+          {USE_XENDIT && (
+            <Grid item xs={showTunai ? 6 : 12}>
+              <Button
+                fullWidth variant="contained" size="large" color="primary"
+                startIcon={<QrCodeIcon />}
+                onClick={() => setActiveView('xendit-channel')}
+                sx={{ py: 2 }}
+              >
+                Bayar Digital
+              </Button>
+            </Grid>
+          )}
         </Grid>
-        {USE_XENDIT && (
-          <Grid item xs={6}>
-            <Button
-              fullWidth variant="contained" size="large" color="primary"
-              startIcon={<QrCodeIcon />}
-              onClick={() => setActiveView('xendit-channel')}
-              sx={{ py: 2 }}
-            >
-              Bayar Digital
-            </Button>
-          </Grid>
-        )}
-      </Grid>
-    </Container>
-  );
+      </Container>
+    );
+  };
 
   const renderTunaiView = () => (
     <Container maxWidth="sm" sx={{ mt: 1 }}>
@@ -1058,7 +1071,7 @@ export default function BQOPayment() {
             Pesanan Baru
           </Button>
         </Grid>
-        {enableFailDownload && !isManuallyCompleted && (
+        {enableFailDownload && !isManuallyCompleted && getAppConfig().show_print_button !== false && (
           <Grid item>
             <Button
               variant="outlined" color="warning" size="small"

@@ -27,6 +27,7 @@ const DEFAULT_CONFIG = {
   qr_guest_pass:                 '',
   debug_screen:                  false,
   show_print_button:             true,  // false = sembunyikan tombol print di struk kasir
+  show_tunai_button:             true,  // false = sembunyikan opsi bayar tunai
 };
 
 let _cachedConfig = null;
