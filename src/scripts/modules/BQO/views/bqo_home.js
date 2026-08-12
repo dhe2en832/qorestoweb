@@ -35,6 +35,7 @@ import useResponsive from '../../../hooks/useResponsive';
 import { toCurrencyIDR } from '../../../utils/formatter';
 import bqo_api from '../controllers/bqo_api';
 import Config from '../../../Config';
+import { getAppConfig } from '../../../utils/app-config';
 
 export default function BQOHome() {
   const { smUp } = useResponsive();

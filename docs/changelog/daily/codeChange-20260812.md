@@ -4,39 +4,7 @@
 
 ### ✨ Features
 
-#### 1. src/scripts/modules/BQO/views/bqo_home.js [20260812_093434]
-**Fungsi:** Halaman utama / dashboard  
-**Perubahan:** Tambah navigasi halaman  
-**Lines:** 415-425
-
-```javascript
-// Line 412:
--               <Grid item xs={1}>
--                 <IconButton
--                   sx={styles.appBarIcon}
--                   onClick={() => {
--                     navigate('/');
--                   }}
--                 >
--                   <BackIcon />
--                 </IconButton>
--               </Grid>
-+               {/* Tombol back hanya tampil di mode non-QR (akses via login biasa) */}
-+               {!getTableId() && (
-+                 <Grid item xs={1}>
-+                   <IconButton
-+                     sx={styles.appBarIcon}
-+                     onClick={() => { navigate('/'); }}
-+                   >
-+                     <BackIcon />
-+                   </IconButton>
-+                 </Grid>
-+               )}
-```
-
----
-
-#### 2. src/scripts/modules/BQO/views/bqo_home.js [20260812_101811]
+#### 1. src/scripts/modules/BQO/views/bqo_home.js [20260812_101813]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Tambah state management; Tambah fungsi: addDebugLog  
 **Lines:** 100-107, 118, 120-124, 214, 224-226, 425-442
@@ -89,9 +57,114 @@
 
 ---
 
+#### 2. src/scripts/modules/BQO/views/bqo_home.js [20260812_093434]
+**Fungsi:** Halaman utama / dashboard  
+**Perubahan:** Tambah navigasi halaman  
+**Lines:** 415-425
+
+```javascript
+// Line 412:
+-               <Grid item xs={1}>
+-                 <IconButton
+-                   sx={styles.appBarIcon}
+-                   onClick={() => {
+-                     navigate('/');
+-                   }}
+-                 >
+-                   <BackIcon />
+-                 </IconButton>
+-               </Grid>
++               {/* Tombol back hanya tampil di mode non-QR (akses via login biasa) */}
++               {!getTableId() && (
++                 <Grid item xs={1}>
++                   <IconButton
++                     sx={styles.appBarIcon}
++                     onClick={() => { navigate('/'); }}
++                   >
++                     <BackIcon />
++                   </IconButton>
++                 </Grid>
++               )}
+```
+
+---
+
+#### 3. src/scripts/modules/BQO/views/bqo_home.js [20260812_103647]
+**Fungsi:** Halaman utama / dashboard  
+**Perubahan:** Import: app-config  
+**Lines:** 38
+
+```javascript
+// Line 35:
++ import { getAppConfig } from '../../../utils/app-config';
+```
+
+---
+
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260812.md [20260812_093434]
+#### 1. docs/changelog/daily/codeChange-20260812.md [20260812_101813]
+**Fungsi:** Implementasi: codeChange-20260812  
+**Perubahan:** Tambah state management; Akses localStorage; Tambah navigasi halaman  
+**Lines:** 7, 39-91, 94-155, 216, 279, 340, 355-415, 466-515, 576, 591, 611, 624, 630, 633, 636-641, 647-648, 651-652
+
+```javascript
+// Line 4:
+- #### 1. src/scripts/modules/BQO/views/bqo_home.js [20260812_093433]
++ #### 1. src/scripts/modules/BQO/views/bqo_home.js [20260812_093434]
+// Line 36:
++ #### 2. src/scripts/modules/BQO/views/bqo_home.js [20260812_101811]
++ **Fungsi:** Halaman utama / dashboard  
++ **Perubahan:** Tambah state management; Tambah fungsi: addDebugLog  
++ **Lines:** 100-107, 118, 120-124, 214, 224-226, 425-442
++ 
++ ```javascript
++ // Line 97:
++ +   const [debugLog, setDebugLog] = useState([]);
++ + 
++ +   const debugEnabled = getAppConfig().debug_screen === true;
++ + 
++ +   const addDebugLog = (msg, isError = false) => {
++ +     const time = new Date().toLocaleTimeString('id-ID');
++ +     setDebugLog((prev) => [...prev.slice(-19), { time, msg, isError }]);
++ +   };
++ // Line 115:
++ +     addDebugLog(`getList start — useBrwDef:${useBrwDef} key:${Config.SESSION_KEY()?.substring(0,8)}...`);
++ -     if (!res || !res.result || !res.data) return null;
++ +     if (!res || !res.result || !res.data) {
++ +       addDebugLog(`getList FAIL — result:${res?.result} msg:${res?.onfail?.cerror || JSON.stringify(res)?.substring(0,60)}`, true);
++ +       return null;
+  // ... (truncated)
+- +       window.localStorage.removeItem('userID');
+- +     }
+- ```
+- 
+- 
+- #### 7. src/scripts/utils/app-config.js [20260812_093433]
++ #### 9. src/scripts/utils/app-config.js [20260812_101811]
+- **Lines:** 27
++ **Lines:** 25, 27-28
+- // Line 24:
+- +   qr_guest_pass:                 '',    // password untuk login guest via QR
++ // Line 22:
++ -   qr_session_key:                '',    // secret key untuk akses via QR (tanpa login)
++ +   qr_session_key:                '',
++ -   qr_guest_pass:                 '',    // password untuk login guest via QR
++ +   qr_guest_pass:                 '',
++ +   debug_screen:                  false, // true = tampilkan debug panel di layar
+- - **✨ Features:** 1 item
+- - **📖 Documentation:** 2 items
++ - **✨ Features:** 2 items
++ - **📖 Documentation:** 3 items
+- - **⚙️ Others:** 7 items
+- - **Total Files Modified:** 14
++ - **⚙️ Others:** 9 items
++ - **Total Files Modified:** 18
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260812.md [20260812_093434]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Tambah navigasi halaman; Akses localStorage  
 **Lines:** 5-38, 41-102, 226-301, 352-413, 428, 448, 461-462, 467-501, 503-505, 507-508
@@ -152,7 +225,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260812.md [20260812_091046]
+#### 3. docs/changelog/daily/codeChange-20260812.md [20260812_091046]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage  
 **Lines:** 5-67, 70, 133, 181, 184-192, 196, 216, 229-234, 236, 239-240
@@ -213,7 +286,7 @@
 
 ---
 
-#### 3. docs/changelog/daily/codeChange-20260812.md [20260812_090252]
+#### 4. docs/changelog/daily/codeChange-20260812.md [20260812_090252]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage; Tambah side effect; Tambah navigasi halaman  
 **Lines:** 1-162
@@ -463,7 +536,37 @@
 
 ### ⚙️ Others
 
-#### 1. public/app.cfg [20260812_093434]
+#### 1. public/app.cfg [20260812_101813]
+**Fungsi:** Entry point aplikasi React  
+**Perubahan:** Pembaruan kode  
+**Lines:** 12-13
+
+```javascript
+// Line 9:
+-   "qr_guest_pass": "xsv4"
++   "qr_guest_pass": "xsv4",
++   "debug_screen": true
+```
+
+---
+
+#### 2. src/scripts/utils/app-config.js [20260812_101813]
+**Fungsi:** Entry point aplikasi React  
+**Perubahan:** Pembaruan kode  
+**Lines:** 25, 27-28
+
+```javascript
+// Line 22:
+-   qr_session_key:                '',    // secret key untuk akses via QR (tanpa login)
++   qr_session_key:                '',
+-   qr_guest_pass:                 '',    // password untuk login guest via QR
++   qr_guest_pass:                 '',
++   debug_screen:                  false, // true = tampilkan debug panel di layar
+```
+
+---
+
+#### 3. public/app.cfg [20260812_093434]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 **Lines:** 11-12
@@ -477,7 +580,7 @@
 
 ---
 
-#### 2. src/scripts/App.js [20260812_093434]
+#### 4. src/scripts/App.js [20260812_093434]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Akses localStorage  
 **Lines:** 24-34
@@ -500,7 +603,7 @@
 
 ---
 
-#### 3. src/scripts/utils/app-config.js [20260812_093434]
+#### 5. src/scripts/utils/app-config.js [20260812_093434]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 **Lines:** 27
@@ -512,7 +615,7 @@
 
 ---
 
-#### 4. public/qr-tables.html [20260812_091046]
+#### 6. public/qr-tables.html [20260812_091046]
 **Fungsi:** Fungsi: padNum  
 **Perubahan:** Tambah fungsi: padNum; Tambah fungsi: generate  
 **Lines:** 1-245
@@ -573,7 +676,7 @@
 
 ---
 
-#### 5. public/app.cfg [20260812_090252]
+#### 7. public/app.cfg [20260812_090252]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 **Lines:** 9-11
@@ -588,7 +691,7 @@
 
 ---
 
-#### 6. src/scripts/App.js [20260812_090252]
+#### 8. src/scripts/App.js [20260812_090252]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Import: table-session  
 **Lines:** 12, 50-54
@@ -608,7 +711,7 @@
 
 ---
 
-#### 7. src/scripts/utils/app-config.js [20260812_090252]
+#### 9. src/scripts/utils/app-config.js [20260812_090252]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 **Lines:** 25-26
@@ -621,33 +724,17 @@
 
 ---
 
-#### 8. ublic/app.cfg [20260812_101811]
-**Fungsi:** Entry point aplikasi React  
+#### 10. ublic/qr-tables.html [20260812_103647]
+**Fungsi:** Implementasi: qr-tables  
 **Perubahan:** Pembaruan kode  
-
----
-
-#### 9. src/scripts/utils/app-config.js [20260812_101811]
-**Fungsi:** Entry point aplikasi React  
-**Perubahan:** Pembaruan kode  
-**Lines:** 25, 27-28
-
-```javascript
-// Line 22:
--   qr_session_key:                '',    // secret key untuk akses via QR (tanpa login)
-+   qr_session_key:                '',
--   qr_guest_pass:                 '',    // password untuk login guest via QR
-+   qr_guest_pass:                 '',
-+   debug_screen:                  false, // true = tampilkan debug panel di layar
-```
 
 ---
 
 ## 📊 **Summary**
-- **✨ Features:** 2 items
-- **📖 Documentation:** 3 items
+- **✨ Features:** 3 items
+- **📖 Documentation:** 4 items
 - **🔐 Auth/Session:** 3 items
 - **🔌 API:** 1 item
-- **⚙️ Others:** 9 items
-- **Total Files Modified:** 18
+- **⚙️ Others:** 10 items
+- **Total Files Modified:** 21
 - **Main Focus:** ⚙️ Others

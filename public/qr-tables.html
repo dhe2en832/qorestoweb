@@ -28,12 +28,60 @@
       margin-bottom: 20px;
     }
 
+    /* ── Mode Toggle ──────────────────────────────────────────────── */
+    .mode-toggle {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .mode-toggle button {
+      padding: 6px 18px;
+      border: 2px solid #3f50b5;
+      border-radius: 20px;
+      background: #fff;
+      color: #3f50b5;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all .15s;
+    }
+
+    .mode-toggle button.active {
+      background: #3f50b5;
+      color: #fff;
+    }
+
+    .mode-toggle button.dev-btn {
+      border-color: #e67e22;
+      color: #e67e22;
+    }
+
+    .mode-toggle button.dev-btn.active {
+      background: #e67e22;
+      color: #fff;
+    }
+
+    .mode-badge {
+      text-align: center;
+      font-size: 0.78rem;
+      margin-bottom: 12px;
+      padding: 4px 12px;
+      border-radius: 12px;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .mode-badge.prod { color: #27ae60; }
+    .mode-badge.dev  { color: #e67e22; }
+
     /* ── Config Panel ─────────────────────────────────────────────── */
     .config-panel {
       background: #fff;
       border-radius: 8px;
       padding: 16px 20px;
-      max-width: 600px;
+      max-width: 640px;
       margin: 0 auto 24px;
       box-shadow: 0 2px 8px rgba(0,0,0,.1);
       display: flex;
@@ -95,6 +143,24 @@
       break-inside: avoid;
     }
 
+    .card.dev-card {
+      border: 2px dashed #e67e22;
+    }
+
+    .card .mode-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 2px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .card .mode-label.prod { background: #eafaf1; color: #27ae60; }
+    .card .mode-label.dev  { background: #fef5e7; color: #e67e22; }
+
     .card .resto-name {
       font-size: 0.7rem;
       font-weight: 600;
@@ -102,6 +168,7 @@
       text-transform: uppercase;
       letter-spacing: 1px;
       margin-bottom: 4px;
+      margin-top: 4px;
     }
 
     .card .table-label {
@@ -133,7 +200,7 @@
     /* ── Print ────────────────────────────────────────────────────── */
     @media print {
       body { background: #fff; padding: 0; }
-      h1, .subtitle, .config-panel, .print-btn { display: none !important; }
+      h1, .subtitle, .mode-toggle, .mode-badge, .config-panel, .print-btn { display: none !important; }
       .grid {
         grid-template-columns: repeat(4, 1fr);
         gap: 8px;
@@ -142,6 +209,9 @@
         box-shadow: none;
         border: 1px solid #ddd;
         padding: 12px;
+      }
+      .card.dev-card {
+        border: 2px dashed #e67e22;
       }
     }
 
@@ -165,10 +235,19 @@
   <h1>🍽️ QR Code Meja — Qoresto</h1>
   <p class="subtitle">Tempel QR code ini di masing-masing meja. Customer cukup scan untuk memesan.</p>
 
+  <!-- Mode Toggle -->
+  <div class="mode-toggle">
+    <button class="prod-btn active" onclick="setMode('prod')">🏪 Production</button>
+    <button class="dev-btn"         onclick="setMode('dev')">🛠️ Development</button>
+  </div>
+  <div class="mode-badge prod" id="modeBadge">
+    ✅ Mode: <b>Production</b> — QR mengarah ke server production
+  </div>
+
   <!-- Config Panel -->
   <div class="config-panel">
     <label>
-      Base URL Server
+      URL Server
       <input type="text" id="baseUrl" value="http://192.168.100.13/qorestoweb/menu" />
     </label>
     <label>
@@ -191,16 +270,52 @@
   <div class="grid" id="qrGrid"></div>
 
   <script>
+    // ── Preset URL per mode ──────────────────────────────────────────
+    // Dev: pakai hostname/IP dari browser yang sedang membuka halaman ini
+    // (otomatis sesuai IP laptop, tidak perlu diubah manual)
+    const devHost = window.location.hostname; // localhost atau IP LAN laptop
+    const PRESETS = {
+      prod: 'http://192.168.100.13/qorestoweb/menu',
+      dev:  `http://${devHost}:3000/menu`,
+    };
+
+    let currentMode = 'prod';
+
+    function setMode(mode) {
+      currentMode = mode;
+
+      // Update tombol aktif
+      document.querySelector('.prod-btn').classList.toggle('active', mode === 'prod');
+      document.querySelector('.dev-btn').classList.toggle('active', mode === 'dev');
+
+      // Update badge
+      const badge = document.getElementById('modeBadge');
+      if (mode === 'prod') {
+        badge.className = 'mode-badge prod';
+        badge.innerHTML = '✅ Mode: <b>Production</b> — QR mengarah ke server production';
+      } else {
+        badge.className = 'mode-badge dev';
+        badge.innerHTML = `🛠️ Mode: <b>Development</b> — URL: <code>${PRESETS.dev}</code><br>
+          <small style="color:#999">Untuk scan dari HP: ganti hostname dengan IP LAN laptop kamu</small>`;
+      }
+
+      // Update URL field dengan preset, tapi izinkan edit manual
+      document.getElementById('baseUrl').value = PRESETS[mode];
+
+      generate();
+    }
+
     function padNum(n, len) {
       return String(n).padStart(len, '0');
     }
 
     function generate() {
-      const baseUrl    = document.getElementById('baseUrl').value.trim();
-      const restoName  = document.getElementById('restoName').value.trim() || 'Qoresto';
-      const count      = parseInt(document.getElementById('tableCount').value) || 10;
-      const startNum   = parseInt(document.getElementById('tableStart').value) || 1;
-      const grid       = document.getElementById('qrGrid');
+      const baseUrl   = document.getElementById('baseUrl').value.trim();
+      const restoName = document.getElementById('restoName').value.trim() || 'Qoresto';
+      const count     = parseInt(document.getElementById('tableCount').value) || 10;
+      const startNum  = parseInt(document.getElementById('tableStart').value) || 1;
+      const grid      = document.getElementById('qrGrid');
+      const isDev     = currentMode === 'dev';
 
       // Tentukan padding — misal 20 meja → pad 2 digit (01..20)
       const padLen = String(startNum + count - 1).length;
@@ -215,8 +330,9 @@
 
         // Buat card
         const card = document.createElement('div');
-        card.className = 'card';
+        card.className = isDev ? 'card dev-card' : 'card';
         card.innerHTML = `
+          <div class="mode-label ${isDev ? 'dev' : 'prod'}">${isDev ? '🛠 DEV' : '🏪 PROD'}</div>
           <div class="resto-name">${restoName}</div>
           <div class="table-label">Meja ${tableId}</div>
           <div class="qr-wrapper" id="qr-${tableId}"></div>
@@ -227,12 +343,12 @@
 
         // Generate QR
         new QRCode(document.getElementById(`qr-${tableId}`), {
-          text:          url,
-          width:         150,
-          height:        150,
-          colorDark:     '#222222',
-          colorLight:    '#ffffff',
-          correctLevel:  QRCode.CorrectLevel.M,
+          text:         url,
+          width:        150,
+          height:       150,
+          colorDark:    isDev ? '#c0390b' : '#222222',  // merah untuk dev, hitam untuk prod
+          colorLight:   '#ffffff',
+          correctLevel: QRCode.CorrectLevel.M,
         });
       }
     }
