@@ -4,7 +4,19 @@
 
 ### ✨ Features
 
-#### 1. src/scripts/modules/BQO/views/bqo_home.js [20260812_101813]
+#### 1. src/scripts/modules/BQO/views/bqo_home.js [20260812_103649]
+**Fungsi:** Halaman utama / dashboard  
+**Perubahan:** Import: app-config  
+**Lines:** 38
+
+```javascript
+// Line 35:
++ import { getAppConfig } from '../../../utils/app-config';
+```
+
+---
+
+#### 2. src/scripts/modules/BQO/views/bqo_home.js [20260812_101813]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Tambah state management; Tambah fungsi: addDebugLog  
 **Lines:** 100-107, 118, 120-124, 214, 224-226, 425-442
@@ -57,7 +69,7 @@
 
 ---
 
-#### 2. src/scripts/modules/BQO/views/bqo_home.js [20260812_093434]
+#### 3. src/scripts/modules/BQO/views/bqo_home.js [20260812_093434]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Tambah navigasi halaman  
 **Lines:** 415-425
@@ -89,21 +101,133 @@
 
 ---
 
-#### 3. src/scripts/modules/BQO/views/bqo_home.js [20260812_103647]
-**Fungsi:** Halaman utama / dashboard  
-**Perubahan:** Import: app-config  
-**Lines:** 38
+#### 4. rc/scripts/modules/BQO/controllers/bqo_mock.js [20260812_105047]
+**Fungsi:** Modul: bqo_mock  
+**Perubahan:** Pembaruan kode  
+
+---
+
+#### 5. src/scripts/modules/BQO/views/bqo_checkout.js [20260812_105047]
+**Fungsi:** Halaman checkout & submit order  
+**Perubahan:** Import: CircularProgress  
+**Lines:** 17, 50, 426
 
 ```javascript
-// Line 35:
-+ import { getAppConfig } from '../../../utils/app-config';
+// Line 14:
+- import CircularProgress from '@mui/material/CircularProgress';
++ import CircularProgress from '@mui/material/CircularProgress'; // eslint-disable-line no-unused-vars
+// Line 47:
+-   ? eval(TAX_RATE_STR) // "11/12" → 0.9166...
++   ? (() => { const [a, b] = TAX_RATE_STR.split('/'); return parseFloat(a) / parseFloat(b); })() // "11/12" → 0.9166...
+// Line 423:
++           cremark2: d.note || '',
+```
+
+---
+
+#### 6. src/scripts/modules/BQO/views/bqo_home.js [20260812_105047]
+**Fungsi:** Halaman utama / dashboard  
+**Perubahan:** Pembaruan kode  
+**Lines:** 233
+
+```javascript
+// Line 230:
+-   }, []);
++   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+```
+
+---
+
+#### 7. src/scripts/modules/BQO/views/bqo_payment.js [20260812_105047]
+**Fungsi:** Modul: bqo_payment  
+**Perubahan:** Import: payment-api  
+**Lines:** 29, 51, 100, 129, 173, 356
+
+```javascript
+// Line 26:
+- import { fetchPaymentAPI, getPaymentAPIUrl, PRIMARY_BASE_URL, LOCAL_BASE_URL } from '../../../utils/payment-api';
++ import { fetchPaymentAPI, getPaymentAPIUrl, PRIMARY_BASE_URL, LOCAL_BASE_URL } from '../../../utils/payment-api'; // eslint-disable-line no-unused-vars
+// Line 48:
+-   ? eval(TAX_RATE_STR) // "11/12" → 0.9166...
++   ? (() => { const [a, b] = TAX_RATE_STR.split('/'); return parseFloat(a) / parseFloat(b); })() // "11/12" → 0.9166...
+// Line 97:
+-   const prevUserRef = useRef(null);
++   const prevUserRef = useRef(null); // eslint-disable-line no-unused-vars
+// Line 126:
+-   const { isDownloaded, downloadFailedTrx } = useFailedTrxDownload();
++   const { isDownloaded, downloadFailedTrx } = useFailedTrxDownload(); // eslint-disable-line no-unused-vars
+// Line 170:
++         cremark2: d.note || '',
+// Line 353:
++   // eslint-disable-next-line no-unused-vars
 ```
 
 ---
 
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260812.md [20260812_101813]
+#### 1. docs/changelog/daily/codeChange-20260812.md [20260812_103649]
+**Fungsi:** Implementasi: codeChange-20260812  
+**Perubahan:** Tambah navigasi halaman; Akses localStorage; Tambah state management  
+**Lines:** 7, 60-103, 106-167, 228, 289, 539-569, 583, 606, 618, 679, 694, 714, 727-728, 734-735, 738-739
+
+```javascript
+// Line 4:
+- #### 1. src/scripts/modules/BQO/views/bqo_home.js [20260812_093434]
+- **Fungsi:** Halaman utama / dashboard  
+- **Perubahan:** Tambah navigasi halaman  
+- **Lines:** 415-425
+- 
+- ```javascript
+- // Line 412:
+- -               <Grid item xs={1}>
+- -                 <IconButton
+- -                   sx={styles.appBarIcon}
+- -                   onClick={() => {
+- -                     navigate('/');
+- -                   }}
+- -                 >
+- -                   <BackIcon />
+- -                 </IconButton>
+- -               </Grid>
+- +               {/* Tombol back hanya tampil di mode non-QR (akses via login biasa) */}
+- +               {!getTableId() && (
+- +                 <Grid item xs={1}>
+- +                   <IconButton
+- +                     sx={styles.appBarIcon}
+- +                     onClick={() => { navigate('/'); }}
+- +                   >
+  // ... (truncated)
++ #### 10. ublic/qr-tables.html [20260812_103647]
++ **Fungsi:** Implementasi: qr-tables  
+- #### 9. src/scripts/utils/app-config.js [20260812_101811]
+- **Fungsi:** Entry point aplikasi React  
+- **Perubahan:** Pembaruan kode  
+- **Lines:** 25, 27-28
+- 
+- ```javascript
+- // Line 22:
+- -   qr_session_key:                '',    // secret key untuk akses via QR (tanpa login)
+- +   qr_session_key:                '',
+- -   qr_guest_pass:                 '',    // password untuk login guest via QR
+- +   qr_guest_pass:                 '',
+- +   debug_screen:                  false, // true = tampilkan debug panel di layar
+- ```
+- 
+- 
+- - **✨ Features:** 2 items
+- - **📖 Documentation:** 3 items
++ - **✨ Features:** 3 items
++ - **📖 Documentation:** 4 items
+- - **⚙️ Others:** 9 items
+- - **Total Files Modified:** 18
++ - **⚙️ Others:** 10 items
++ - **Total Files Modified:** 21
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260812.md [20260812_101813]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Tambah state management; Akses localStorage; Tambah navigasi halaman  
 **Lines:** 7, 39-91, 94-155, 216, 279, 340, 355-415, 466-515, 576, 591, 611, 624, 630, 633, 636-641, 647-648, 651-652
@@ -164,7 +288,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260812.md [20260812_093434]
+#### 3. docs/changelog/daily/codeChange-20260812.md [20260812_093434]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Tambah navigasi halaman; Akses localStorage  
 **Lines:** 5-38, 41-102, 226-301, 352-413, 428, 448, 461-462, 467-501, 503-505, 507-508
@@ -225,7 +349,7 @@
 
 ---
 
-#### 3. docs/changelog/daily/codeChange-20260812.md [20260812_091046]
+#### 4. docs/changelog/daily/codeChange-20260812.md [20260812_091046]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage  
 **Lines:** 5-67, 70, 133, 181, 184-192, 196, 216, 229-234, 236, 239-240
@@ -286,7 +410,7 @@
 
 ---
 
-#### 4. docs/changelog/daily/codeChange-20260812.md [20260812_090252]
+#### 5. docs/changelog/daily/codeChange-20260812.md [20260812_090252]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage; Tambah side effect; Tambah navigasi halaman  
 **Lines:** 1-162
@@ -536,7 +660,68 @@
 
 ### ⚙️ Others
 
-#### 1. public/app.cfg [20260812_101813]
+#### 1. public/qr-tables.html [20260812_103649]
+**Fungsi:** Fungsi: setMode  
+**Perubahan:** Tambah fungsi: setMode  
+**Lines:** 31-78, 84, 146-163, 171, 203, 213-215, 238-246, 250, 273-307, 313-318, 333, 335, 346-351
+
+```javascript
+// Line 28:
++     /* ── Mode Toggle ──────────────────────────────────────────────── */
++     .mode-toggle {
++       display: flex;
++       justify-content: center;
++       gap: 8px;
++       margin-bottom: 16px;
++     }
++ 
++     .mode-toggle button {
++       padding: 6px 18px;
++       border: 2px solid #3f50b5;
++       border-radius: 20px;
++       background: #fff;
++       color: #3f50b5;
++       cursor: pointer;
++       font-size: 0.85rem;
++       font-weight: 600;
++       transition: all .15s;
++     }
++ 
++     .mode-toggle button.active {
++       background: #3f50b5;
++       color: #fff;
++     }
+  // ... (truncated)
+-       const startNum   = parseInt(document.getElementById('tableStart').value) || 1;
+-       const grid       = document.getElementById('qrGrid');
++       const baseUrl   = document.getElementById('baseUrl').value.trim();
++       const restoName = document.getElementById('restoName').value.trim() || 'Qoresto';
++       const count     = parseInt(document.getElementById('tableCount').value) || 10;
++       const startNum  = parseInt(document.getElementById('tableStart').value) || 1;
++       const grid      = document.getElementById('qrGrid');
++       const isDev     = currentMode === 'dev';
+// Line 330:
+-         card.className = 'card';
++         card.className = isDev ? 'card dev-card' : 'card';
++           <div class="mode-label ${isDev ? 'dev' : 'prod'}">${isDev ? '🛠 DEV' : '🏪 PROD'}</div>
+// Line 343:
+-           text:          url,
+-           width:         150,
+-           height:        150,
+-           colorDark:     '#222222',
+-           colorLight:    '#ffffff',
+-           correctLevel:  QRCode.CorrectLevel.M,
++           text:         url,
++           width:        150,
++           height:       150,
++           colorDark:    isDev ? '#c0390b' : '#222222',  // merah untuk dev, hitam untuk prod
++           colorLight:   '#ffffff',
++           correctLevel: QRCode.CorrectLevel.M,
+```
+
+---
+
+#### 2. public/app.cfg [20260812_101813]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 **Lines:** 12-13
@@ -550,7 +735,7 @@
 
 ---
 
-#### 2. src/scripts/utils/app-config.js [20260812_101813]
+#### 3. src/scripts/utils/app-config.js [20260812_101813]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 **Lines:** 25, 27-28
@@ -566,7 +751,7 @@
 
 ---
 
-#### 3. public/app.cfg [20260812_093434]
+#### 4. public/app.cfg [20260812_093434]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 **Lines:** 11-12
@@ -580,7 +765,7 @@
 
 ---
 
-#### 4. src/scripts/App.js [20260812_093434]
+#### 5. src/scripts/App.js [20260812_093434]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Akses localStorage  
 **Lines:** 24-34
@@ -603,7 +788,7 @@
 
 ---
 
-#### 5. src/scripts/utils/app-config.js [20260812_093434]
+#### 6. src/scripts/utils/app-config.js [20260812_093434]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 **Lines:** 27
@@ -615,7 +800,7 @@
 
 ---
 
-#### 6. public/qr-tables.html [20260812_091046]
+#### 7. public/qr-tables.html [20260812_091046]
 **Fungsi:** Fungsi: padNum  
 **Perubahan:** Tambah fungsi: padNum; Tambah fungsi: generate  
 **Lines:** 1-245
@@ -676,7 +861,7 @@
 
 ---
 
-#### 7. public/app.cfg [20260812_090252]
+#### 8. public/app.cfg [20260812_090252]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 **Lines:** 9-11
@@ -691,7 +876,7 @@
 
 ---
 
-#### 8. src/scripts/App.js [20260812_090252]
+#### 9. src/scripts/App.js [20260812_090252]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Import: table-session  
 **Lines:** 12, 50-54
@@ -711,7 +896,7 @@
 
 ---
 
-#### 9. src/scripts/utils/app-config.js [20260812_090252]
+#### 10. src/scripts/utils/app-config.js [20260812_090252]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 **Lines:** 25-26
@@ -724,17 +909,11 @@
 
 ---
 
-#### 10. ublic/qr-tables.html [20260812_103647]
-**Fungsi:** Implementasi: qr-tables  
-**Perubahan:** Pembaruan kode  
-
----
-
 ## 📊 **Summary**
-- **✨ Features:** 3 items
-- **📖 Documentation:** 4 items
+- **✨ Features:** 7 items
+- **📖 Documentation:** 5 items
 - **🔐 Auth/Session:** 3 items
 - **🔌 API:** 1 item
 - **⚙️ Others:** 10 items
-- **Total Files Modified:** 21
+- **Total Files Modified:** 26
 - **Main Focus:** ⚙️ Others

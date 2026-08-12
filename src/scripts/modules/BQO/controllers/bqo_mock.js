@@ -16,6 +16,7 @@
  */
 
 // ── Data menu dummy ──────────────────────────────────────────────────────────
+/* eslint-disable no-unused-vars */
 const MOCK_CATEGORIES = [
   { id: 'all',       label: 'Semua' },
   { id: 'promos',    label: '🏷️ Promo' },
@@ -87,6 +88,7 @@ const MOCK_MENU = [
     picture: 'https://placehold.co/300x200/7d3c98/white?text=Pudding',
   },
 ];
+/* eslint-enable no-unused-vars */
 
 // ── Counter nomor bon ─────────────────────────────────────────────────────────
 let _orderCounter = parseInt(window.sessionStorage.getItem('mock_order_counter') || '0', 10);

@@ -26,7 +26,7 @@ import useXenditPayment from '../hooks/useXenditPayment';
 import usePrintReceipt from '../hooks/usePrintReceipt';
 import useFailedTrxDownload from '../../../utils/failed-trx-download';
 import { getAppConfig, isFeatureEnabled } from '../../../utils/app-config';
-import { fetchPaymentAPI, getPaymentAPIUrl, PRIMARY_BASE_URL, LOCAL_BASE_URL } from '../../../utils/payment-api';
+import { fetchPaymentAPI, getPaymentAPIUrl, PRIMARY_BASE_URL, LOCAL_BASE_URL } from '../../../utils/payment-api'; // eslint-disable-line no-unused-vars
 import { toCurrencyIDR } from '../../../utils/formatter';
 import BQOReceipt from '../reports/BQOReceipt';
 import BQOXenditChannelView from '../components/BQOXenditChannelView';
@@ -48,7 +48,7 @@ const BQO_DEFAULT_CPCODE   = (process.env.REACT_APP_BQO_DEFAULT_CPCODE   || 'STD
 const TAX_BASE = parseFloat(process.env.REACT_APP_TAX_BASE || '12');
 const TAX_RATE_STR = (process.env.REACT_APP_TAX_EFFECTIVE_RATE || '11/12').trim();
 const TAX_RATE = TAX_RATE_STR.includes('/')
-  ? eval(TAX_RATE_STR) // "11/12" → 0.9166...
+  ? (() => { const [a, b] = TAX_RATE_STR.split('/'); return parseFloat(a) / parseFloat(b); })() // "11/12" → 0.9166...
   : parseFloat(TAX_RATE_STR);
 const TAX_PERCENT = TAX_BASE * TAX_RATE; // 12 * (11/12) = 11
 
@@ -97,7 +97,7 @@ export default function BQOPayment() {
   const [activeView,          setActiveView]          = useState('choose'); // 'choose'|'tunai'|'xendit-channel'|'xendit-waiting'
   const [isSimulating,        setIsSimulating]        = useState(false);
   const [simulationSent,      setSimulationSent]      = useState(false);
-  const prevUserRef = useRef(null);
+  const prevUserRef = useRef(null); // eslint-disable-line no-unused-vars
 
   const isPaid = paymentStatus === STATUS.PAID;
 
@@ -126,7 +126,7 @@ export default function BQOPayment() {
   });
 
   // ── Failed trx download ───────────────────────────────────────────────────
-  const { isDownloaded, downloadFailedTrx } = useFailedTrxDownload();
+  const { isDownloaded, downloadFailedTrx } = useFailedTrxDownload(); // eslint-disable-line no-unused-vars
 
   const handleDownloadAndComplete = (errorType) => {
     if (!failedPayload) return;
@@ -170,6 +170,7 @@ export default function BQOPayment() {
         ndisc:    discPct > 0 ? discPct : 0,
         nrpdisc,
         cremark:  d.note || '',
+        cremark2: d.note || '',
       };
     });
 
@@ -352,6 +353,7 @@ export default function BQOPayment() {
   };
 
   // ── handleSaveToLocal (legacy — tidak lagi dipakai langsung) ─────────────
+  // eslint-disable-next-line no-unused-vars
   const handleSaveToLocal = (payload, isXenditMode = false) =>
     isXenditMode ? handleXenditSaveToLocal() : handleTunaiSaveToLocal();
 

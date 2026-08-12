@@ -14,7 +14,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
-import CircularProgress from '@mui/material/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress'; // eslint-disable-line no-unused-vars
 import NoteIcon from '@mui/icons-material/NoteAltOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
@@ -47,7 +47,7 @@ const isSessionExpired = (msg) =>
 const TAX_BASE = parseFloat(process.env.REACT_APP_TAX_BASE || '12');
 const TAX_RATE_STR = (process.env.REACT_APP_TAX_EFFECTIVE_RATE || '11/12').trim();
 const TAX_RATE = TAX_RATE_STR.includes('/')
-  ? eval(TAX_RATE_STR) // "11/12" → 0.9166...
+  ? (() => { const [a, b] = TAX_RATE_STR.split('/'); return parseFloat(a) / parseFloat(b); })() // "11/12" → 0.9166...
   : parseFloat(TAX_RATE_STR);
 const TAX_PERCENT = TAX_BASE * TAX_RATE; // 12 * (11/12) = 11
 
@@ -423,6 +423,7 @@ export default function BQOCheckout() {
           ndisc:    discPct > 0 ? discPct : 0,
           nrpdisc,
           cremark:  d.note || '',
+          cremark2: d.note || '',
         };
       });
 

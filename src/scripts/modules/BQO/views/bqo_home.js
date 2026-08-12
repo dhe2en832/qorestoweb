@@ -230,7 +230,7 @@ export default function BQOHome() {
     }
     isActive && setDataToList();
     return () => (isActive = false);
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // List -> Category
   const [tabValue, setTabValue] = useState('all');
