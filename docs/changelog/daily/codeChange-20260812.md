@@ -4,7 +4,68 @@
 
 ### ✨ Features
 
-#### 1. src/scripts/modules/BQO/views/bqo_home.js [20260812_130923]
+#### 1. src/scripts/modules/BQO/views/bqo_home.js [20260812_132835]
+**Fungsi:** Halaman utama / dashboard  
+**Perubahan:** Import: react; Tambah state management; Tambah side effect; Ubah render/return JSX; Tambah fungsi: handleChangeSearch  
+**Lines:** 1-51, 311-313, 315-341, 455-456, 458, 460, 462-463, 465-471, 473-476, 479-480, 707-708, 710-713
+
+```javascript
+// Line 1:
+- import React, { useState, useEffect } from 'react';
++ import React, { useState, useEffect, useCallback, memo } from 'react';
++ 
++ // ── Komponen Dialog Catatan — dipisah agar tidak memicu re-render list saat ketik ──
++ const NoteDialog = memo(function NoteDialog({ open, initialValue, onSave, onClose }) {
++   const [value, setValue] = useState(initialValue || '');
++ 
++   // Sync nilai awal saat dialog dibuka
++   useEffect(() => {
++     if (open) setValue(initialValue || '');
++   }, [open, initialValue]);
++ 
++   return (
++     <Dialog
++       maxWidth="xs"
++       fullWidth
++       open={open}
++       onClose={onClose}
++       PaperProps={{
++         sx: {
++           position: { xs: 'fixed', sm: 'relative' },
++           top:      { xs: 16,     sm: 'auto'      },
++           m:        { xs: 1,      sm: 'auto'      },
++         }
+  // ... (truncated)
+-                 multiline
+-                 fullWidth
+-                 autoFocus
+-                 value={noteValue}
+-                 onChange={handleChangeNoteValue}
+-                 rows={3}
+-                 variant="filled"
+-                 placeholder="Tulis catatan untuk item ini..."
+-               />
+-             </DialogContent>
+-             <DialogActions>
+-               <Button mr={2} variant="contained" onClick={handleSaveNoteForm} size="small">
+-                 Konfirmasi
+-               </Button>
+-               <Button variant="contained" color="error" onClick={handleCloseNoteForm} size="small">
+-                 Batal
+-               </Button>
+-             </DialogActions>
+-           </>
+-         )}
+-       </Dialog>
++         initialValue={showDialog.isShow && showDialog.isForm ? (cart[showDialog.accessorID]?.note || '') : ''}
++         onSave={(value) => handleSaveNoteForm(value, showDialog.accessorID)}
++         onClose={handleCloseNoteForm}
++       />
+```
+
+---
+
+#### 2. src/scripts/modules/BQO/views/bqo_home.js [20260812_130923]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Pembaruan kode  
 **Lines:** 653-654, 658-665, 670, 676-677, 680, 682
@@ -33,7 +94,7 @@
 
 ---
 
-#### 2. src/scripts/modules/BQO/views/bqo_home.js [20260812_110833]
+#### 3. src/scripts/modules/BQO/views/bqo_home.js [20260812_110833]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Pembaruan kode  
 **Lines:** 216-217
@@ -46,7 +107,7 @@
 
 ---
 
-#### 3. src/scripts/modules/BQO/controllers/bqo_mock.js [20260812_105050]
+#### 4. src/scripts/modules/BQO/controllers/bqo_mock.js [20260812_105050]
 **Fungsi:** Modul: bqo_mock  
 **Perubahan:** Pembaruan kode  
 **Lines:** 19, 91
@@ -60,7 +121,7 @@
 
 ---
 
-#### 4. src/scripts/modules/BQO/views/bqo_checkout.js [20260812_105050]
+#### 5. src/scripts/modules/BQO/views/bqo_checkout.js [20260812_105050]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Import: CircularProgress  
 **Lines:** 17, 50, 426
@@ -78,7 +139,7 @@
 
 ---
 
-#### 5. src/scripts/modules/BQO/views/bqo_home.js [20260812_105050]
+#### 6. src/scripts/modules/BQO/views/bqo_home.js [20260812_105050]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Pembaruan kode  
 **Lines:** 233
@@ -91,7 +152,7 @@
 
 ---
 
-#### 6. src/scripts/modules/BQO/views/bqo_payment.js [20260812_105050]
+#### 7. src/scripts/modules/BQO/views/bqo_payment.js [20260812_105050]
 **Fungsi:** Modul: bqo_payment  
 **Perubahan:** Import: payment-api  
 **Lines:** 29, 51, 100, 129, 173, 356
@@ -117,7 +178,7 @@
 
 ---
 
-#### 7. src/scripts/modules/BQO/views/bqo_home.js [20260812_103649]
+#### 8. src/scripts/modules/BQO/views/bqo_home.js [20260812_103649]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Import: app-config  
 **Lines:** 38
@@ -129,7 +190,7 @@
 
 ---
 
-#### 8. src/scripts/modules/BQO/views/bqo_home.js [20260812_101813]
+#### 9. src/scripts/modules/BQO/views/bqo_home.js [20260812_101813]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Tambah state management; Tambah fungsi: addDebugLog  
 **Lines:** 100-107, 118, 120-124, 214, 224-226, 425-442
@@ -182,7 +243,7 @@
 
 ---
 
-#### 9. src/scripts/modules/BQO/views/bqo_home.js [20260812_093434]
+#### 10. src/scripts/modules/BQO/views/bqo_home.js [20260812_093434]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Tambah navigasi halaman  
 **Lines:** 415-425
@@ -214,15 +275,70 @@
 
 ---
 
-#### 10. rc/scripts/modules/BQO/views/bqo_home.js [20260812_132831]
-**Fungsi:** Halaman utama / dashboard  
-**Perubahan:** Pembaruan kode  
+### 📖 Documentation
+
+#### 1. docs/changelog/daily/codeChange-20260812.md [20260812_132835]
+**Fungsi:** Implementasi: codeChange-20260812  
+**Perubahan:** Akses localStorage  
+**Lines:** 7-36, 49, 63, 81, 94, 120, 132, 185, 217, 225-286, 347, 408, 469, 530, 591, 652, 713, 774, 1354-1355, 1359
+
+```javascript
+// Line 4:
+- #### 1. src/scripts/modules/BQO/views/bqo_home.js [20260812_110833]
++ #### 1. src/scripts/modules/BQO/views/bqo_home.js [20260812_130923]
++ **Fungsi:** Halaman utama / dashboard  
++ **Perubahan:** Pembaruan kode  
++ **Lines:** 653-654, 658-665, 670, 676-677, 680, 682
++ 
++ ```javascript
++ // Line 650:
++ -         maxWidth="md"
++ +         maxWidth="xs"
++ +         fullWidth
++ +         PaperProps={{
++ +           sx: {
++ +             // Di HP: posisikan dialog di bagian atas layar supaya tidak tertutup keyboard
++ +             position: { xs: 'fixed', sm: 'relative' },
++ +             top:      { xs: 16,     sm: 'auto'      },
++ +             m:        { xs: 1,      sm: 'auto'      },
++ +           }
++ +         }}
++ -               <Typography variant="h6" component="h2" textAlign="center">
++ +               <Typography variant="h6" component="h2" textAlign="center" mb={1}>
++ +                 fullWidth
++ +                 autoFocus
++ -                 rows={4}
+  // ... (truncated)
+// Line 466:
+- #### 4. docs/changelog/daily/codeChange-20260812.md [20260812_105050]
++ #### 5. docs/changelog/daily/codeChange-20260812.md [20260812_105050]
+// Line 527:
+- #### 5. docs/changelog/daily/codeChange-20260812.md [20260812_103649]
++ #### 6. docs/changelog/daily/codeChange-20260812.md [20260812_103649]
+// Line 588:
+- #### 6. docs/changelog/daily/codeChange-20260812.md [20260812_101813]
++ #### 7. docs/changelog/daily/codeChange-20260812.md [20260812_101813]
+// Line 649:
+- #### 7. docs/changelog/daily/codeChange-20260812.md [20260812_093434]
++ #### 8. docs/changelog/daily/codeChange-20260812.md [20260812_093434]
+// Line 710:
+- #### 8. docs/changelog/daily/codeChange-20260812.md [20260812_091046]
++ #### 9. docs/changelog/daily/codeChange-20260812.md [20260812_091046]
+// Line 771:
+- #### 9. docs/changelog/daily/codeChange-20260812.md [20260812_090252]
++ #### 10. docs/changelog/daily/codeChange-20260812.md [20260812_090252]
+// Line 1351:
+- - **✨ Features:** 9 items
+- - **📖 Documentation:** 9 items
++ - **✨ Features:** 10 items
++ - **📖 Documentation:** 10 items
+- - **Total Files Modified:** 35
++ - **Total Files Modified:** 37
+```
 
 ---
 
-### 📖 Documentation
-
-#### 1. docs/changelog/daily/codeChange-20260812.md [20260812_130923]
+#### 2. docs/changelog/daily/codeChange-20260812.md [20260812_130923]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage  
 **Lines:** 188-193, 196-257, 318, 379, 440, 501, 562, 623, 684, 997-1014, 1075, 1089, 1105, 1119, 1142, 1154, 1215, 1230, 1250, 1264-1265, 1269
@@ -283,7 +399,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260812.md [20260812_114806]
+#### 3. docs/changelog/daily/codeChange-20260812.md [20260812_114806]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage  
 **Lines:** 7-20, 34, 52, 65, 91, 103, 156, 188-193, 196-246, 251, 312, 373, 434, 495, 556, 617, 680-697, 758, 773, 1179-1184, 1187, 1190-1191
@@ -344,7 +460,7 @@
 
 ---
 
-#### 3. docs/changelog/daily/codeChange-20260812.md [20260812_110833]
+#### 4. docs/changelog/daily/codeChange-20260812.md [20260812_110833]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage; Tambah side effect; Tambah state management  
 **Lines:** 175-187, 190-251, 312, 373, 434, 495, 556, 756-761, 764-810, 1108-1110, 1113
@@ -405,7 +521,7 @@
 
 ---
 
-#### 4. docs/changelog/daily/codeChange-20260812.md [20260812_105611]
+#### 5. docs/changelog/daily/codeChange-20260812.md [20260812_105611]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage  
 **Lines:** 7-78, 90, 143, 175, 177-180, 183-233, 238, 299, 360, 421, 482, 730-735, 989, 991, 993
@@ -466,7 +582,7 @@
 
 ---
 
-#### 5. docs/changelog/daily/codeChange-20260812.md [20260812_105050]
+#### 6. docs/changelog/daily/codeChange-20260812.md [20260812_105050]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage; Tambah navigasi halaman  
 **Lines:** 7-19, 72, 104-128, 130-131, 134-162, 169-230, 291, 352, 413, 663-724, 738, 754, 768, 791, 803, 864, 879, 899, 913-914, 918
@@ -527,7 +643,7 @@
 
 ---
 
-#### 6. docs/changelog/daily/codeChange-20260812.md [20260812_103649]
+#### 7. docs/changelog/daily/codeChange-20260812.md [20260812_103649]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Tambah navigasi halaman; Akses localStorage; Tambah state management  
 **Lines:** 7, 60-103, 106-167, 228, 289, 539-569, 583, 606, 618, 679, 694, 714, 727-728, 734-735, 738-739
@@ -588,7 +704,7 @@
 
 ---
 
-#### 7. docs/changelog/daily/codeChange-20260812.md [20260812_101813]
+#### 8. docs/changelog/daily/codeChange-20260812.md [20260812_101813]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Tambah state management; Akses localStorage; Tambah navigasi halaman  
 **Lines:** 7, 39-91, 94-155, 216, 279, 340, 355-415, 466-515, 576, 591, 611, 624, 630, 633, 636-641, 647-648, 651-652
@@ -649,7 +765,7 @@
 
 ---
 
-#### 8. docs/changelog/daily/codeChange-20260812.md [20260812_093434]
+#### 9. docs/changelog/daily/codeChange-20260812.md [20260812_093434]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Tambah navigasi halaman; Akses localStorage  
 **Lines:** 5-38, 41-102, 226-301, 352-413, 428, 448, 461-462, 467-501, 503-505, 507-508
@@ -710,7 +826,7 @@
 
 ---
 
-#### 9. docs/changelog/daily/codeChange-20260812.md [20260812_091046]
+#### 10. docs/changelog/daily/codeChange-20260812.md [20260812_091046]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage  
 **Lines:** 5-67, 70, 133, 181, 184-192, 196, 216, 229-234, 236, 239-240
@@ -771,7 +887,7 @@
 
 ---
 
-#### 10. docs/changelog/daily/codeChange-20260812.md [20260812_090252]
+#### 11. docs/changelog/daily/codeChange-20260812.md [20260812_090252]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage; Tambah side effect; Tambah navigasi halaman  
 **Lines:** 1-162
@@ -1352,9 +1468,9 @@
 
 ## 📊 **Summary**
 - **✨ Features:** 10 items
-- **📖 Documentation:** 10 items
+- **📖 Documentation:** 11 items
 - **🔐 Auth/Session:** 4 items
 - **🔌 API:** 2 items
 - **⚙️ Others:** 11 items
-- **Total Files Modified:** 37
-- **Main Focus:** ⚙️ Others
+- **Total Files Modified:** 38
+- **Main Focus:** 📖 Documentation
