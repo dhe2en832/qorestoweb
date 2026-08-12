@@ -35,6 +35,7 @@ import { toCurrencyIDR } from '../../../utils/formatter';
 import bqo_api from '../controllers/bqo_api';
 import Config from '../../../Config';
 import { getAppConfig } from '../../../utils/app-config';
+import { useAuth } from '../../../contexts/AuthContext';
 import { getTableId, initTableId } from '../../../utils/table-session';
 
 // ── Komponen Dialog Catatan — dipisah agar tidak memicu re-render list saat ketik ──
@@ -90,6 +91,7 @@ const NoteDialog = memo(function NoteDialog({ open, initialValue, onSave, onClos
 export default function BQOHome() {
   const { smUp } = useResponsive();
   const navigate = useNavigate();
+  const auth = useAuth();
   const styles = {
     container: {
       background: '#eee',
@@ -262,14 +264,24 @@ export default function BQOHome() {
   useEffect(() => {
     // Re-init table ID dari URL setiap kali halaman menu dimount
     initTableId();
-    addDebugLog(`mount — tableId:${getTableId()} loggedIn:${!!Config.SESSION_KEY()} key:${Config.SESSION_KEY()?.substring(0,8) ?? 'null'}...`);
+    addDebugLog(`mount — tableId:${getTableId()} key:${Config.SESSION_KEY()?.substring(0,8) ?? 'null'}...`);
     const loginErr = window.sessionStorage.getItem('qoGuestLoginError');
     if (loginErr) addDebugLog(`LOGIN ERR: ${loginErr}`, true);
 
     let isActive = true;
-    async function setDataToList() {
+
+    async function loadMenu() {
       setIsLoading(true);
-      const resJson = await getDatas();
+      let resJson = await getDatas();
+
+      // Jika gagal di QR mode → coba re-login dulu lalu retry sekali
+      if (!resJson && getTableId()) {
+        addDebugLog('getDatas gagal, coba re-login...', true);
+        await new Promise((resolve) => auth.signinAsGuest(resolve));
+        addDebugLog(`re-login selesai, key:${Config.SESSION_KEY()?.substring(0,8) ?? 'null'}...`);
+        resJson = await getDatas();
+      }
+
       if (!isActive) return;
       if (resJson && resJson.datas) {
         setLists(resJson.datas);
@@ -280,7 +292,8 @@ export default function BQOHome() {
       }
       setIsLoading(false);
     }
-    isActive && setDataToList();
+
+    isActive && loadMenu();
     return () => (isActive = false);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 

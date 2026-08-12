@@ -25,7 +25,8 @@ const DEFAULT_CONFIG = {
   qr_session_key:                '',
   qr_guest_user:                 'GUEST',
   qr_guest_pass:                 '',
-  debug_screen:                  false, // true = tampilkan debug panel di layar
+  debug_screen:                  false,
+  show_print_button:             true,  // false = sembunyikan tombol print di struk kasir
 };
 
 let _cachedConfig = null;

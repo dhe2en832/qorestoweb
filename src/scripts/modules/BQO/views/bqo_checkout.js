@@ -34,6 +34,7 @@ import bqo_api from '../controllers/bqo_api';
 import usePrintReceipt from '../hooks/usePrintReceipt';
 import BQOOrderSlip from '../reports/BQOOrderSlip';
 import { getTableId } from '../../../utils/table-session';
+import { getAppConfig } from '../../../utils/app-config';
 
 /** Deteksi apakah error dari backend adalah session expired */
 const isSessionExpired = (msg) =>
@@ -495,8 +496,9 @@ export default function BQOCheckout() {
   };
 
   const handleNewOrderAfterKasir = () => {
-    // Print guard — wajib cetak dulu sebelum bisa pesanan baru (pola trenly)
-    if (printCount === 0) {
+    const showPrint = getAppConfig().show_print_button !== false; // default true
+    // Print guard hanya berlaku jika tombol print ditampilkan (bukan QR/HP mode)
+    if (showPrint && printCount === 0) {
       AlertDialog('warning', 'Belum Cetak Tanda Pesanan',
         'Silakan cetak tanda pesanan terlebih dahulu sebelum membuat pesanan baru.',
         () => handlePrint());
@@ -1013,15 +1015,18 @@ export default function BQOCheckout() {
           </Typography>
         </DialogContent>
         <DialogActions sx={{ px: 2, pb: 2, pt: 1.5, flexDirection: 'column', gap: 1 }}>
-          <Button
-            fullWidth
-            variant="contained"
-            startIcon={<PrintIcon />}
-            onClick={handlePrint}
-            color={printCount > 0 ? 'success' : 'primary'}
-          >
-            {printCount > 0 ? `Cetak Ulang (${printCount}×)` : 'Cetak Tanda Pesanan'}
-          </Button>
+          {/* Tombol print — dikontrol via show_print_button di app.cfg */}
+          {getAppConfig().show_print_button !== false && (
+            <Button
+              fullWidth
+              variant="contained"
+              startIcon={<PrintIcon />}
+              onClick={handlePrint}
+              color={printCount > 0 ? 'success' : 'primary'}
+            >
+              {printCount > 0 ? `Cetak Ulang (${printCount}×)` : 'Cetak Tanda Pesanan'}
+            </Button>
+          )}
           <Button
             fullWidth
             variant="outlined"
