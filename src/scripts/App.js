@@ -9,7 +9,7 @@ import ThemeContext from './contexts/ThemeContext';
 import ModuleContext from './contexts/ModuleContext';
 import PrivateRoute from './routes/PrivateRoute';
 import { loadAppConfig } from './utils/app-config';
-import { initTableId } from './utils/table-session';
+import { initTableId, getTableId } from './utils/table-session';
 
 const Home = lazy(() => import('./modules/HOME'));
 const Login = lazy(() => import('./modules/LOGIN'));
@@ -47,7 +47,11 @@ export default function App() {
                     )
                 )
               )}
-              <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
+              <Route path="/" element={
+                getTableId()
+                  ? <Navigate to="/menu" replace />        // QR scan → langsung ke menu
+                  : <PrivateRoute><Home /></PrivateRoute>  // akses biasa → home (butuh login)
+              } />
               <Route path="/404" element={<NotFound />} />
               <Route path="*" element={<Navigate to="/404" />} />
             </Routes>

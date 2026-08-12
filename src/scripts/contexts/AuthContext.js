@@ -7,6 +7,7 @@ import AlertDialogNested from '../components/AlertDialogNested';
 import useLocalStorage from '../hooks/useLocalStorage';
 import { typesError } from '../utils/types-error';
 import ApiRoute from '../routes/ApiRoute';
+import { getAppConfig } from '../utils/app-config';
 
 const authContext = createContext();
 
@@ -20,20 +21,32 @@ export function useAuth() {
 }
 
 function useProvideAuth() {
-  const [loggedIn, setLoggedIn] = useLocalStorage('loggedIn', false);
-  const [userID, setUserID] = useLocalStorage('userID', null);
+  const [loggedIn, setLoggedIn]           = useLocalStorage('loggedIn', false);
+  const [userID, setUserID]               = useLocalStorage('userID', null);
   const [sessionTimeout, setSessionTimeout] = useLocalStorage('sessionTimeout', false);
-  const [sessionKey, setSessionKey] = useLocalStorage('sessionKey', null);
-  const [sessionID, setSessionID] = useLocalStorage('sessionID', null);
+  const [sessionKey, setSessionKey]       = useLocalStorage('sessionKey', null);
+  const [sessionID, setSessionID]         = useLocalStorage('sessionID', null);
 
-  // const signin = async (data, cb, isForm) => {
-  //   setLoggedIn(true);
-  //   setUserID(data.cuserid);
-  //   setSessionTimeout(false);
-  //   setSessionKey('CSAComputerKeyword');
-  //   setSessionID('CSAComputerID');
-  //   cb();
-  // };
+  /**
+   * signinAsGuest — auto-login untuk pelanggan via QR scan.
+   * Tidak butuh form login. Gunakan secretkey dan user dari app.cfg.
+   * Dipanggil otomatis dari PrivateRoute saat URL punya ?table=XX.
+   */
+  const signinAsGuest = (cb) => {
+    const cfg        = getAppConfig();
+    const guestKey   = cfg.qr_session_key || '';
+    const guestUser  = cfg.qr_guest_user  || 'GUEST';
+    // Reset data order lama — pelanggan baru mulai fresh
+    window.localStorage.removeItem('QoCart');
+    window.localStorage.removeItem('QoOrderInfo');
+    window.localStorage.removeItem('QoReturnPath');
+    setLoggedIn(true);
+    setUserID(guestUser);
+    setSessionTimeout(false);
+    setSessionKey(guestKey);
+    setSessionID(guestKey);
+    if (typeof cb === 'function') cb();
+  };
 
   const signin = async (data, cb, isForm, setLoading) => {
     try {
@@ -44,21 +57,16 @@ function useProvideAuth() {
           'x-user': data.cuserid,
           'x-password': data.cpassw,
         },
-        body: JSON.stringify({
-          action: 'login',
-        }),
+        body: JSON.stringify({ action: 'login' }),
       });
-      const resSessionKey = await res.headers.get('secretkey');
-      const resSessionID = await res.headers.get('sessionid');
+      const resSessionKey = res.headers.get('secretkey');
+      const resSessionID  = res.headers.get('sessionid');
       const resJson = await res.json();
       if (resJson.result === true) {
-        // [trenly pattern] Simpan credential untuk fallback login ke server lokal
-        // Hanya aktif jika REACT_APP_API_LOCAL_ENDPOINT di-set
         if (process.env.REACT_APP_API_LOCAL_ENDPOINT) {
           window.localStorage.setItem('auth_local_user', data.cuserid);
           window.localStorage.setItem('auth_local_pass', data.cpassw);
         }
-        // Saat login fresh (bukan re-login dari session expired), clear BQO data
         const isRelogin = window.localStorage.getItem('QoReturnPath') !== null;
         if (!isRelogin) {
           window.localStorage.removeItem('QoCart');
@@ -66,8 +74,8 @@ function useProvideAuth() {
         }
         if (isForm) {
           window.localStorage.setItem('sessionKey', JSON.stringify(resSessionKey));
-          window.localStorage.setItem('sessionID', JSON.stringify(resSessionID));
-          window.localStorage.setItem('userID', JSON.stringify(data.cuserid));
+          window.localStorage.setItem('sessionID',  JSON.stringify(resSessionID));
+          window.localStorage.setItem('userID',     JSON.stringify(data.cuserid));
         } else {
           setLoggedIn(true);
           setUserID(data.cuserid);
@@ -88,11 +96,11 @@ function useProvideAuth() {
         case typesError.LOGIN.EMPTY_USER.msg:
           messageError = typesError.LOGIN.EMPTY_USER.res;
           break;
-        default: {
-          if (error.message === typesError.FETCH.msg) messageError = typesError.FETCH.res;
-          else messageError = error;
+        default:
+          messageError = error.message === typesError.FETCH.msg
+            ? typesError.FETCH.res
+            : error;
           break;
-        }
       }
       isForm
         ? AlertDialogNested('LoginForm', 'error', 'Salah', messageError)
@@ -100,25 +108,14 @@ function useProvideAuth() {
     }
   };
 
-  // const signout = (cb) => {
-  //   setLoggedIn(false);
-  //   setSessionTimeout(false);
-  //   setUserID(null);
-  //   setSessionKey(null);
-  //   setSessionID(null);
-  //   cb();
-  // };
-
   const handleLogout = (cb) => {
     setLoggedIn(false);
     setSessionTimeout(false);
     setUserID(null);
     setSessionKey(null);
     setSessionID(null);
-    // Bersihkan credential fallback saat logout
     window.localStorage.removeItem('auth_local_user');
     window.localStorage.removeItem('auth_local_pass');
-    // Bersihkan data BQO saat logout — pelanggan berikutnya mulai fresh
     window.localStorage.removeItem('QoCart');
     window.localStorage.removeItem('QoOrderInfo');
     window.localStorage.removeItem('QoReturnPath');
@@ -131,13 +128,11 @@ function useProvideAuth() {
         method: 'POST',
         headers: {
           'content-type': 'application/json',
-          'x-user': Config.SESSION_USER(),
-          secretkey: Config.SESSION_KEY(),
-          sessionid: Config.SESSION_ID(),
+          'x-user':    Config.SESSION_USER(),
+          secretkey:   Config.SESSION_KEY(),
+          sessionid:   Config.SESSION_ID(),
         },
-        body: JSON.stringify({
-          action: 'logout',
-        }),
+        body: JSON.stringify({ action: 'logout' }),
       });
       const resJson = await res.json();
       if (resJson.result === true)
@@ -167,7 +162,7 @@ function useProvideAuth() {
 
   useIdleTimer({
     timeout: Config.IDLE_TIMEOUT,
-    onIdle: handleOnIdle,
+    onIdle:  handleOnIdle,
     debounce: 500,
   });
 
@@ -178,6 +173,7 @@ function useProvideAuth() {
     sessionKey,
     sessionID,
     signin,
+    signinAsGuest,
     signout,
   };
 }
