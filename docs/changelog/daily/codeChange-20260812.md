@@ -275,9 +275,76 @@
 
 ---
 
+#### 11. rc/scripts/modules/BQO/views/bqo_home.js [20260812_133329]
+**Fungsi:** Halaman utama / dashboard  
+**Perubahan:** Pembaruan kode  
+
+---
+
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260812.md [20260812_132835]
+#### 1. docs/changelog/daily/codeChange-20260812.md [20260812_132926]
+**Fungsi:** Implementasi: codeChange-20260812  
+**Perubahan:** Tambah state management; Tambah side effect; Ubah render/return JSX; Akses localStorage  
+**Lines:** 7-68, 97, 110, 124, 142, 155, 181, 193, 246, 278, 280-283, 285-339, 341, 402, 463, 524, 585, 646, 707, 768, 829, 890, 1471, 1475-1476
+
+```javascript
+// Line 4:
+- #### 1. src/scripts/modules/BQO/views/bqo_home.js [20260812_130923]
++ #### 1. src/scripts/modules/BQO/views/bqo_home.js [20260812_132835]
++ **Fungsi:** Halaman utama / dashboard  
++ **Perubahan:** Import: react; Tambah state management; Tambah side effect; Ubah render/return JSX; Tambah fungsi: handleChangeSearch  
++ **Lines:** 1-51, 311-313, 315-341, 455-456, 458, 460, 462-463, 465-471, 473-476, 479-480, 707-708, 710-713
++ 
++ ```javascript
++ // Line 1:
++ - import React, { useState, useEffect } from 'react';
++ + import React, { useState, useEffect, useCallback, memo } from 'react';
++ + 
++ + // ── Komponen Dialog Catatan — dipisah agar tidak memicu re-render list saat ketik ──
++ + const NoteDialog = memo(function NoteDialog({ open, initialValue, onSave, onClose }) {
++ +   const [value, setValue] = useState(initialValue || '');
++ + 
++ +   // Sync nilai awal saat dialog dibuka
++ +   useEffect(() => {
++ +     if (open) setValue(initialValue || '');
++ +   }, [open, initialValue]);
++ + 
++ +   return (
++ +     <Dialog
++ +       maxWidth="xs"
++ +       fullWidth
+  // ... (truncated)
+// Line 582:
+- #### 5. docs/changelog/daily/codeChange-20260812.md [20260812_105050]
++ #### 6. docs/changelog/daily/codeChange-20260812.md [20260812_105050]
+// Line 643:
+- #### 6. docs/changelog/daily/codeChange-20260812.md [20260812_103649]
++ #### 7. docs/changelog/daily/codeChange-20260812.md [20260812_103649]
+// Line 704:
+- #### 7. docs/changelog/daily/codeChange-20260812.md [20260812_101813]
++ #### 8. docs/changelog/daily/codeChange-20260812.md [20260812_101813]
+// Line 765:
+- #### 8. docs/changelog/daily/codeChange-20260812.md [20260812_093434]
++ #### 9. docs/changelog/daily/codeChange-20260812.md [20260812_093434]
+// Line 826:
+- #### 9. docs/changelog/daily/codeChange-20260812.md [20260812_091046]
++ #### 10. docs/changelog/daily/codeChange-20260812.md [20260812_091046]
+// Line 887:
+- #### 10. docs/changelog/daily/codeChange-20260812.md [20260812_090252]
++ #### 11. docs/changelog/daily/codeChange-20260812.md [20260812_090252]
+// Line 1468:
+- - **📖 Documentation:** 10 items
++ - **📖 Documentation:** 11 items
+- - **Total Files Modified:** 37
+- - **Main Focus:** ⚙️ Others
++ - **Total Files Modified:** 38
++ - **Main Focus:** 📖 Documentation
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260812.md [20260812_132835]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage  
 **Lines:** 7-36, 49, 63, 81, 94, 120, 132, 185, 217, 225-286, 347, 408, 469, 530, 591, 652, 713, 774, 1354-1355, 1359
@@ -338,7 +405,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260812.md [20260812_130923]
+#### 3. docs/changelog/daily/codeChange-20260812.md [20260812_130923]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage  
 **Lines:** 188-193, 196-257, 318, 379, 440, 501, 562, 623, 684, 997-1014, 1075, 1089, 1105, 1119, 1142, 1154, 1215, 1230, 1250, 1264-1265, 1269
@@ -399,7 +466,7 @@
 
 ---
 
-#### 3. docs/changelog/daily/codeChange-20260812.md [20260812_114806]
+#### 4. docs/changelog/daily/codeChange-20260812.md [20260812_114806]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage  
 **Lines:** 7-20, 34, 52, 65, 91, 103, 156, 188-193, 196-246, 251, 312, 373, 434, 495, 556, 617, 680-697, 758, 773, 1179-1184, 1187, 1190-1191
@@ -460,7 +527,7 @@
 
 ---
 
-#### 4. docs/changelog/daily/codeChange-20260812.md [20260812_110833]
+#### 5. docs/changelog/daily/codeChange-20260812.md [20260812_110833]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage; Tambah side effect; Tambah state management  
 **Lines:** 175-187, 190-251, 312, 373, 434, 495, 556, 756-761, 764-810, 1108-1110, 1113
@@ -521,7 +588,7 @@
 
 ---
 
-#### 5. docs/changelog/daily/codeChange-20260812.md [20260812_105611]
+#### 6. docs/changelog/daily/codeChange-20260812.md [20260812_105611]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage  
 **Lines:** 7-78, 90, 143, 175, 177-180, 183-233, 238, 299, 360, 421, 482, 730-735, 989, 991, 993
@@ -582,7 +649,7 @@
 
 ---
 
-#### 6. docs/changelog/daily/codeChange-20260812.md [20260812_105050]
+#### 7. docs/changelog/daily/codeChange-20260812.md [20260812_105050]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage; Tambah navigasi halaman  
 **Lines:** 7-19, 72, 104-128, 130-131, 134-162, 169-230, 291, 352, 413, 663-724, 738, 754, 768, 791, 803, 864, 879, 899, 913-914, 918
@@ -643,7 +710,7 @@
 
 ---
 
-#### 7. docs/changelog/daily/codeChange-20260812.md [20260812_103649]
+#### 8. docs/changelog/daily/codeChange-20260812.md [20260812_103649]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Tambah navigasi halaman; Akses localStorage; Tambah state management  
 **Lines:** 7, 60-103, 106-167, 228, 289, 539-569, 583, 606, 618, 679, 694, 714, 727-728, 734-735, 738-739
@@ -704,7 +771,7 @@
 
 ---
 
-#### 8. docs/changelog/daily/codeChange-20260812.md [20260812_101813]
+#### 9. docs/changelog/daily/codeChange-20260812.md [20260812_101813]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Tambah state management; Akses localStorage; Tambah navigasi halaman  
 **Lines:** 7, 39-91, 94-155, 216, 279, 340, 355-415, 466-515, 576, 591, 611, 624, 630, 633, 636-641, 647-648, 651-652
@@ -765,7 +832,7 @@
 
 ---
 
-#### 9. docs/changelog/daily/codeChange-20260812.md [20260812_093434]
+#### 10. docs/changelog/daily/codeChange-20260812.md [20260812_093434]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Tambah navigasi halaman; Akses localStorage  
 **Lines:** 5-38, 41-102, 226-301, 352-413, 428, 448, 461-462, 467-501, 503-505, 507-508
@@ -826,7 +893,7 @@
 
 ---
 
-#### 10. docs/changelog/daily/codeChange-20260812.md [20260812_091046]
+#### 11. docs/changelog/daily/codeChange-20260812.md [20260812_091046]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage  
 **Lines:** 5-67, 70, 133, 181, 184-192, 196, 216, 229-234, 236, 239-240
@@ -887,7 +954,7 @@
 
 ---
 
-#### 11. docs/changelog/daily/codeChange-20260812.md [20260812_090252]
+#### 12. docs/changelog/daily/codeChange-20260812.md [20260812_090252]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage; Tambah side effect; Tambah navigasi halaman  
 **Lines:** 1-162
@@ -1467,10 +1534,10 @@
 ---
 
 ## 📊 **Summary**
-- **✨ Features:** 10 items
-- **📖 Documentation:** 11 items
+- **✨ Features:** 11 items
+- **📖 Documentation:** 12 items
 - **🔐 Auth/Session:** 4 items
 - **🔌 API:** 2 items
 - **⚙️ Others:** 11 items
-- **Total Files Modified:** 38
+- **Total Files Modified:** 40
 - **Main Focus:** 📖 Documentation
