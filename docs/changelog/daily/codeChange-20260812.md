@@ -4,7 +4,7 @@
 
 ### ✨ Features
 
-#### 1. src/scripts/modules/BQO/views/bqo_home.js [20260812_093433]
+#### 1. src/scripts/modules/BQO/views/bqo_home.js [20260812_093434]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Tambah navigasi halaman  
 **Lines:** 415-425
@@ -36,9 +36,123 @@
 
 ---
 
+#### 2. src/scripts/modules/BQO/views/bqo_home.js [20260812_101811]
+**Fungsi:** Halaman utama / dashboard  
+**Perubahan:** Tambah state management; Tambah fungsi: addDebugLog  
+**Lines:** 100-107, 118, 120-124, 214, 224-226, 425-442
+
+```javascript
+// Line 97:
++   const [debugLog, setDebugLog] = useState([]);
++ 
++   const debugEnabled = getAppConfig().debug_screen === true;
++ 
++   const addDebugLog = (msg, isError = false) => {
++     const time = new Date().toLocaleTimeString('id-ID');
++     setDebugLog((prev) => [...prev.slice(-19), { time, msg, isError }]);
++   };
+// Line 115:
++     addDebugLog(`getList start — useBrwDef:${useBrwDef} key:${Config.SESSION_KEY()?.substring(0,8)}...`);
+-     if (!res || !res.result || !res.data) return null;
++     if (!res || !res.result || !res.data) {
++       addDebugLog(`getList FAIL — result:${res?.result} msg:${res?.onfail?.cerror || JSON.stringify(res)?.substring(0,60)}`, true);
++       return null;
++     }
++     addDebugLog(`getList OK — ${res.data?.length ?? 0} items`);
+// Line 210:
+-     // (handle kasus: customer sudah login, lalu scan QR meja baru)
++     addDebugLog(`mount — tableId:${getTableId()} loggedIn:${!!Config.SESSION_KEY()} key:${Config.SESSION_KEY()?.substring(0,8) ?? 'null'}...`);
+// Line 221:
++         addDebugLog(`lists loaded: ${resJson.datas.length} items`);
++       } else {
++         addDebugLog('lists empty or null', true);
+// Line 422:
++       {/* Debug Panel — hanya tampil jika debug_screen: true di app.cfg */}
++       {debugEnabled && (
++         <div style={{
++           position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 9999,
++           background: 'rgba(0,0,0,0.85)', color: '#0f0', fontFamily: 'monospace',
++           fontSize: '11px', padding: '6px 8px', maxHeight: '200px', overflowY: 'auto',
++         }}>
++           <div style={{ color: '#ff0', fontWeight: 'bold', marginBottom: 4 }}>
++             🐛 DEBUG — tableId: {getTableId() || '(none)'} | key: {Config.SESSION_KEY()?.substring(0,10) ?? 'null'}...
++           </div>
++           {debugLog.length === 0 && <div style={{ color: '#aaa' }}>Menunggu log...</div>}
++           {debugLog.map((l, i) => (
++             <div key={i} style={{ color: l.isError ? '#f66' : '#0f0', lineHeight: 1.5 }}>
++               [{l.time}] {l.msg}
++             </div>
++           ))}
++         </div>
++       )}
+```
+
+---
+
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260812.md [20260812_091046]
+#### 1. docs/changelog/daily/codeChange-20260812.md [20260812_093434]
+**Fungsi:** Implementasi: codeChange-20260812  
+**Perubahan:** Tambah navigasi halaman; Akses localStorage  
+**Lines:** 5-38, 41-102, 226-301, 352-413, 428, 448, 461-462, 467-501, 503-505, 507-508
+
+```javascript
+// Line 2:
++ ### ✨ Features
++ 
++ #### 1. src/scripts/modules/BQO/views/bqo_home.js [20260812_093433]
++ **Fungsi:** Halaman utama / dashboard  
++ **Perubahan:** Tambah navigasi halaman  
++ **Lines:** 415-425
++ 
++ ```javascript
++ // Line 412:
++ -               <Grid item xs={1}>
++ -                 <IconButton
++ -                   sx={styles.appBarIcon}
++ -                   onClick={() => {
++ -                     navigate('/');
++ -                   }}
++ -                 >
++ -                   <BackIcon />
++ -                 </IconButton>
++ -               </Grid>
++ +               {/* Tombol back hanya tampil di mode non-QR (akses via login biasa) */}
++ +               {!getTableId() && (
++ +                 <Grid item xs={1}>
++ +                   <IconButton
++ +                     sx={styles.appBarIcon}
+  // ... (truncated)
++ ```
++ 
++ ---
++ 
++ #### 7. src/scripts/utils/app-config.js [20260812_093433]
++ **Fungsi:** Entry point aplikasi React  
++ **Perubahan:** Pembaruan kode  
++ **Lines:** 27
++ 
++ ```javascript
++ // Line 24:
++ +   qr_guest_pass:                 '',    // password untuk login guest via QR
++ ```
++ 
++ ---
++ 
+- - **📖 Documentation:** 1 item
+- - **🔐 Auth/Session:** 1 item
++ - **✨ Features:** 1 item
++ - **📖 Documentation:** 2 items
++ - **🔐 Auth/Session:** 3 items
+- - **⚙️ Others:** 4 items
+- - **Total Files Modified:** 7
++ - **⚙️ Others:** 7 items
++ - **Total Files Modified:** 14
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260812.md [20260812_091046]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage  
 **Lines:** 5-67, 70, 133, 181, 184-192, 196, 216, 229-234, 236, 239-240
@@ -99,7 +213,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260812.md [20260812_090252]
+#### 3. docs/changelog/daily/codeChange-20260812.md [20260812_090252]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage; Tambah side effect; Tambah navigasi halaman  
 **Lines:** 1-162
@@ -162,68 +276,7 @@
 
 ### 🔐 Auth/Session
 
-#### 1. src/scripts/contexts/AuthContext.js [20260812_090252]
-**Fungsi:** Context autentikasi global  
-**Perubahan:** Import: app-config; Tambah fungsi: signinAsGuest; Akses localStorage  
-**Lines:** 10, 24-25, 27-28, 30-49, 60, 62-63, 77-78, 99-102, 131-133, 135, 165, 176
-
-```javascript
-// Line 7:
-+ import { getAppConfig } from '../utils/app-config';
-// Line 21:
--   const [loggedIn, setLoggedIn] = useLocalStorage('loggedIn', false);
--   const [userID, setUserID] = useLocalStorage('userID', null);
-+   const [loggedIn, setLoggedIn]           = useLocalStorage('loggedIn', false);
-+   const [userID, setUserID]               = useLocalStorage('userID', null);
--   const [sessionKey, setSessionKey] = useLocalStorage('sessionKey', null);
--   const [sessionID, setSessionID] = useLocalStorage('sessionID', null);
-+   const [sessionKey, setSessionKey]       = useLocalStorage('sessionKey', null);
-+   const [sessionID, setSessionID]         = useLocalStorage('sessionID', null);
--   // const signin = async (data, cb, isForm) => {
--   //   setLoggedIn(true);
--   //   setUserID(data.cuserid);
--   //   setSessionTimeout(false);
--   //   setSessionKey('CSAComputerKeyword');
--   //   setSessionID('CSAComputerID');
--   //   cb();
--   // };
-+   /**
-+    * signinAsGuest — auto-login untuk pelanggan via QR scan.
-+    * Tidak butuh form login. Gunakan secretkey dan user dari app.cfg.
-+    * Dipanggil otomatis dari PrivateRoute saat URL punya ?table=XX.
-+    */
-+   const signinAsGuest = (cb) => {
-  // ... (truncated)
--   //   setSessionTimeout(false);
--   //   setUserID(null);
--   //   setSessionKey(null);
--   //   setSessionID(null);
--   //   cb();
--   // };
-- 
--     // Bersihkan credential fallback saat logout
--     // Bersihkan data BQO saat logout — pelanggan berikutnya mulai fresh
-// Line 128:
--           'x-user': Config.SESSION_USER(),
--           secretkey: Config.SESSION_KEY(),
--           sessionid: Config.SESSION_ID(),
-+           'x-user':    Config.SESSION_USER(),
-+           secretkey:   Config.SESSION_KEY(),
-+           sessionid:   Config.SESSION_ID(),
--         body: JSON.stringify({
--           action: 'logout',
--         }),
-+         body: JSON.stringify({ action: 'logout' }),
-// Line 162:
--     onIdle: handleOnIdle,
-+     onIdle:  handleOnIdle,
-// Line 173:
-+     signinAsGuest,
-```
-
----
-
-#### 2. src/scripts/contexts/AuthContext.js [20260812_093433]
+#### 1. src/scripts/contexts/AuthContext.js [20260812_093434]
 **Fungsi:** Context autentikasi global  
 **Perubahan:** Tambah fungsi: signinAsGuest; Tambah error handling; Tambah HTTP request  
 **Lines:** 32-33, 35-39, 44-97
@@ -284,7 +337,7 @@
 
 ---
 
-#### 3. src/scripts/utils/table-session.js [20260812_093433]
+#### 2. src/scripts/utils/table-session.js [20260812_093434]
 **Fungsi:** Utility: table-session  
 **Perubahan:** Pembaruan kode  
 **Lines:** 21-22, 29, 31
@@ -295,6 +348,67 @@
 +  * @returns {boolean} true jika URL punya ?table= (scan baru), false jika tidak
 +     return true; // scan baru dari URL
 +   return false; // reload biasa, tidak ada ?table= di URL
+```
+
+---
+
+#### 3. src/scripts/contexts/AuthContext.js [20260812_090252]
+**Fungsi:** Context autentikasi global  
+**Perubahan:** Import: app-config; Tambah fungsi: signinAsGuest; Akses localStorage  
+**Lines:** 10, 24-25, 27-28, 30-49, 60, 62-63, 77-78, 99-102, 131-133, 135, 165, 176
+
+```javascript
+// Line 7:
++ import { getAppConfig } from '../utils/app-config';
+// Line 21:
+-   const [loggedIn, setLoggedIn] = useLocalStorage('loggedIn', false);
+-   const [userID, setUserID] = useLocalStorage('userID', null);
++   const [loggedIn, setLoggedIn]           = useLocalStorage('loggedIn', false);
++   const [userID, setUserID]               = useLocalStorage('userID', null);
+-   const [sessionKey, setSessionKey] = useLocalStorage('sessionKey', null);
+-   const [sessionID, setSessionID] = useLocalStorage('sessionID', null);
++   const [sessionKey, setSessionKey]       = useLocalStorage('sessionKey', null);
++   const [sessionID, setSessionID]         = useLocalStorage('sessionID', null);
+-   // const signin = async (data, cb, isForm) => {
+-   //   setLoggedIn(true);
+-   //   setUserID(data.cuserid);
+-   //   setSessionTimeout(false);
+-   //   setSessionKey('CSAComputerKeyword');
+-   //   setSessionID('CSAComputerID');
+-   //   cb();
+-   // };
++   /**
++    * signinAsGuest — auto-login untuk pelanggan via QR scan.
++    * Tidak butuh form login. Gunakan secretkey dan user dari app.cfg.
++    * Dipanggil otomatis dari PrivateRoute saat URL punya ?table=XX.
++    */
++   const signinAsGuest = (cb) => {
+  // ... (truncated)
+-   //   setSessionTimeout(false);
+-   //   setUserID(null);
+-   //   setSessionKey(null);
+-   //   setSessionID(null);
+-   //   cb();
+-   // };
+- 
+-     // Bersihkan credential fallback saat logout
+-     // Bersihkan data BQO saat logout — pelanggan berikutnya mulai fresh
+// Line 128:
+-           'x-user': Config.SESSION_USER(),
+-           secretkey: Config.SESSION_KEY(),
+-           sessionid: Config.SESSION_ID(),
++           'x-user':    Config.SESSION_USER(),
++           secretkey:   Config.SESSION_KEY(),
++           sessionid:   Config.SESSION_ID(),
+-         body: JSON.stringify({
+-           action: 'logout',
+-         }),
++         body: JSON.stringify({ action: 'logout' }),
+// Line 162:
+-     onIdle: handleOnIdle,
++     onIdle:  handleOnIdle,
+// Line 173:
++     signinAsGuest,
 ```
 
 ---
@@ -349,7 +463,56 @@
 
 ### ⚙️ Others
 
-#### 1. public/qr-tables.html [20260812_091046]
+#### 1. public/app.cfg [20260812_093434]
+**Fungsi:** Entry point aplikasi React  
+**Perubahan:** Pembaruan kode  
+**Lines:** 11-12
+
+```javascript
+// Line 8:
+-   "qr_guest_user": "GUEST"
++   "qr_guest_user": "xsv4",
++   "qr_guest_pass": "xsv4"
+```
+
+---
+
+#### 2. src/scripts/App.js [20260812_093434]
+**Fungsi:** Entry point aplikasi React  
+**Perubahan:** Akses localStorage  
+**Lines:** 24-34
+
+```javascript
+// Line 21:
+-     initTableId(); // baca ?table=XX dari URL, simpan ke sessionStorage
++     const isNewScan = initTableId(); // baca ?table=XX dari URL, simpan ke sessionStorage
++     if (isNewScan) {
++       // Scan QR baru — reset semua data sesi pelanggan sebelumnya agar mulai fresh
++       window.localStorage.removeItem('QoCart');
++       window.localStorage.removeItem('QoOrderInfo');
++       window.localStorage.removeItem('QoReturnPath');
++       window.localStorage.removeItem('loggedIn');
++       window.localStorage.removeItem('sessionKey');
++       window.localStorage.removeItem('sessionID');
++       window.localStorage.removeItem('userID');
++     }
+```
+
+---
+
+#### 3. src/scripts/utils/app-config.js [20260812_093434]
+**Fungsi:** Entry point aplikasi React  
+**Perubahan:** Pembaruan kode  
+**Lines:** 27
+
+```javascript
+// Line 24:
++   qr_guest_pass:                 '',    // password untuk login guest via QR
+```
+
+---
+
+#### 4. public/qr-tables.html [20260812_091046]
 **Fungsi:** Fungsi: padNum  
 **Perubahan:** Tambah fungsi: padNum; Tambah fungsi: generate  
 **Lines:** 1-245
@@ -410,7 +573,7 @@
 
 ---
 
-#### 2. public/app.cfg [20260812_090252]
+#### 5. public/app.cfg [20260812_090252]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 **Lines:** 9-11
@@ -425,7 +588,7 @@
 
 ---
 
-#### 3. src/scripts/App.js [20260812_090252]
+#### 6. src/scripts/App.js [20260812_090252]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Import: table-session  
 **Lines:** 12, 50-54
@@ -445,7 +608,7 @@
 
 ---
 
-#### 4. src/scripts/utils/app-config.js [20260812_090252]
+#### 7. src/scripts/utils/app-config.js [20260812_090252]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 **Lines:** 25-26
@@ -458,52 +621,33 @@
 
 ---
 
-#### 5. ublic/app.cfg [20260812_093433]
+#### 8. ublic/app.cfg [20260812_101811]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
 
 ---
 
-#### 6. src/scripts/App.js [20260812_093433]
-**Fungsi:** Entry point aplikasi React  
-**Perubahan:** Akses localStorage  
-**Lines:** 24-34
-
-```javascript
-// Line 21:
--     initTableId(); // baca ?table=XX dari URL, simpan ke sessionStorage
-+     const isNewScan = initTableId(); // baca ?table=XX dari URL, simpan ke sessionStorage
-+     if (isNewScan) {
-+       // Scan QR baru — reset semua data sesi pelanggan sebelumnya agar mulai fresh
-+       window.localStorage.removeItem('QoCart');
-+       window.localStorage.removeItem('QoOrderInfo');
-+       window.localStorage.removeItem('QoReturnPath');
-+       window.localStorage.removeItem('loggedIn');
-+       window.localStorage.removeItem('sessionKey');
-+       window.localStorage.removeItem('sessionID');
-+       window.localStorage.removeItem('userID');
-+     }
-```
-
----
-
-#### 7. src/scripts/utils/app-config.js [20260812_093433]
+#### 9. src/scripts/utils/app-config.js [20260812_101811]
 **Fungsi:** Entry point aplikasi React  
 **Perubahan:** Pembaruan kode  
-**Lines:** 27
+**Lines:** 25, 27-28
 
 ```javascript
-// Line 24:
-+   qr_guest_pass:                 '',    // password untuk login guest via QR
+// Line 22:
+-   qr_session_key:                '',    // secret key untuk akses via QR (tanpa login)
++   qr_session_key:                '',
+-   qr_guest_pass:                 '',    // password untuk login guest via QR
++   qr_guest_pass:                 '',
++   debug_screen:                  false, // true = tampilkan debug panel di layar
 ```
 
 ---
 
 ## 📊 **Summary**
-- **✨ Features:** 1 item
-- **📖 Documentation:** 2 items
+- **✨ Features:** 2 items
+- **📖 Documentation:** 3 items
 - **🔐 Auth/Session:** 3 items
 - **🔌 API:** 1 item
-- **⚙️ Others:** 7 items
-- **Total Files Modified:** 14
+- **⚙️ Others:** 9 items
+- **Total Files Modified:** 18
 - **Main Focus:** ⚙️ Others

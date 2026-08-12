@@ -97,6 +97,14 @@ export default function BQOHome() {
   const [lists, setLists] = useState([]);
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [debugLog, setDebugLog] = useState([]);
+
+  const debugEnabled = getAppConfig().debug_screen === true;
+
+  const addDebugLog = (msg, isError = false) => {
+    const time = new Date().toLocaleTimeString('id-ID');
+    setDebugLog((prev) => [...prev.slice(-19), { time, msg, isError }]);
+  };
 
   /**
    * getDatas — ambil menu dari bstock_x.
@@ -107,8 +115,13 @@ export default function BQOHome() {
    */
   async function getDatas(overrides = {}) {
     const useBrwDef = Config.USE_BRWDEF;
+    addDebugLog(`getList start — useBrwDef:${useBrwDef} key:${Config.SESSION_KEY()?.substring(0,8)}...`);
     const res = await bqo_api.getList(overrides);
-    if (!res || !res.result || !res.data) return null;
+    if (!res || !res.result || !res.data) {
+      addDebugLog(`getList FAIL — result:${res?.result} msg:${res?.onfail?.cerror || JSON.stringify(res)?.substring(0,60)}`, true);
+      return null;
+    }
+    addDebugLog(`getList OK — ${res.data?.length ?? 0} items`);
 
     let datas;
 
@@ -197,8 +210,8 @@ export default function BQOHome() {
 
   useEffect(() => {
     // Re-init table ID dari URL setiap kali halaman menu dimount
-    // (handle kasus: customer sudah login, lalu scan QR meja baru)
     initTableId();
+    addDebugLog(`mount — tableId:${getTableId()} loggedIn:${!!Config.SESSION_KEY()} key:${Config.SESSION_KEY()?.substring(0,8) ?? 'null'}...`);
 
     let isActive = true;
     async function setDataToList() {
@@ -208,6 +221,9 @@ export default function BQOHome() {
       if (resJson && resJson.datas) {
         setLists(resJson.datas);
         setCategories(resJson.categories ?? []);
+        addDebugLog(`lists loaded: ${resJson.datas.length} items`);
+      } else {
+        addDebugLog('lists empty or null', true);
       }
       setIsLoading(false);
     }
@@ -406,6 +422,24 @@ export default function BQOHome() {
 
   return (
     <>
+      {/* Debug Panel — hanya tampil jika debug_screen: true di app.cfg */}
+      {debugEnabled && (
+        <div style={{
+          position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 9999,
+          background: 'rgba(0,0,0,0.85)', color: '#0f0', fontFamily: 'monospace',
+          fontSize: '11px', padding: '6px 8px', maxHeight: '200px', overflowY: 'auto',
+        }}>
+          <div style={{ color: '#ff0', fontWeight: 'bold', marginBottom: 4 }}>
+            🐛 DEBUG — tableId: {getTableId() || '(none)'} | key: {Config.SESSION_KEY()?.substring(0,10) ?? 'null'}...
+          </div>
+          {debugLog.length === 0 && <div style={{ color: '#aaa' }}>Menunggu log...</div>}
+          {debugLog.map((l, i) => (
+            <div key={i} style={{ color: l.isError ? '#f66' : '#0f0', lineHeight: 1.5 }}>
+              [{l.time}] {l.msg}
+            </div>
+          ))}
+        </div>
+      )}
       {/* List */}
       <div style={styles.container}>
         {/* List -> Search Bar */}

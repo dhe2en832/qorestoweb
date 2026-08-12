@@ -22,9 +22,10 @@ const DEFAULT_CONFIG = {
   xendit_payment_timeout_minutes: 5,
   xendit_show_simulate:          false,
   use_mock_bqo:                  false, // true = pakai data mock (tanpa backend)
-  qr_session_key:                '',    // secret key untuk akses via QR (tanpa login)
+  qr_session_key:                '',
   qr_guest_user:                 'GUEST',
-  qr_guest_pass:                 '',    // password untuk login guest via QR
+  qr_guest_pass:                 '',
+  debug_screen:                  false, // true = tampilkan debug panel di layar
 };
 
 let _cachedConfig = null;
