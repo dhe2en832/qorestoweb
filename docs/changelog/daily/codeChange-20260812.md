@@ -4,7 +4,68 @@
 
 ### ✨ Features
 
-#### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260812_140437]
+#### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260812_142353]
+**Fungsi:** Halaman checkout & submit order  
+**Perubahan:** Import: Download; Tambah fungsi: handleDownloadReceipt  
+**Lines:** 28, 499-605, 1126-1135
+
+```javascript
+// Line 25:
++ import DownloadIcon from '@mui/icons-material/Download';
+// Line 496:
++   // ── Download bukti order sebagai gambar ──────────────────────────────────
++   const handleDownloadReceipt = () => {
++     if (!kasirResult) return;
++     const { cartItems, subtotal, taxAmount, total, nomorBon, cqonum } = kasirResult;
++     const noPesanan = cqonum || nomorBon || '-';
++     const meja = info.seatNumber || '-';
++     const nama = info.orderByName || '-';
++     const waktu = new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
++ 
++     // Hitung dimensi canvas
++     const padding = 24;
++     const lineH = 22;
++     const headerH = 100;
++     const itemH = cartItems.length * lineH;
++     const footerH = 120;
++     const canvasW = 380;
++     const canvasH = headerH + itemH + footerH + padding * 2;
++ 
++     const canvas = document.createElement('canvas');
++     canvas.width = canvasW * 2;   // retina
++     canvas.height = canvasH * 2;
++     const ctx = canvas.getContext('2d');
+  // ... (truncated)
++ 
++     // Footer
++     ctx.textAlign = 'center';
++     ctx.fillStyle = '#aaa';
++     ctx.font = '10px sans-serif';
++     ctx.fillText('Tunjukkan bukti ini ke kasir saat pembayaran', canvasW / 2, y + 10);
++ 
++     // Download
++     const link = document.createElement('a');
++     link.download = `pesanan-${meja}-${noPesanan}.png`;
++     link.href = canvas.toDataURL('image/png');
++     link.click();
++   };
++ 
+// Line 1123:
++           {/* Tombol download bukti pesanan */}
++           <Button
++             fullWidth
++             variant="contained"
++             color="primary"
++             startIcon={<DownloadIcon />}
++             onClick={handleDownloadReceipt}
++           >
++             Download Bukti Pesanan
++           </Button>
+```
+
+---
+
+#### 2. src/scripts/modules/BQO/views/bqo_checkout.js [20260812_140437]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Import: app-config  
 **Lines:** 37, 499-501, 1018-1029
@@ -44,7 +105,7 @@
 
 ---
 
-#### 2. src/scripts/modules/BQO/views/bqo_home.js [20260812_140437]
+#### 3. src/scripts/modules/BQO/views/bqo_home.js [20260812_140437]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Import: AuthContext; Tambah fungsi: loadMenu  
 **Lines:** 38, 94, 267, 272-273, 275-284, 295-296
@@ -79,7 +140,7 @@
 
 ---
 
-#### 3. src/scripts/modules/BQO/views/bqo_home.js [20260812_133331]
+#### 4. src/scripts/modules/BQO/views/bqo_home.js [20260812_133331]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Import: react-router-dom; Import: Container; Import: Dialog; Import: DialogContent; Import: DialogActions; Import: AppBar; Import: Grid; Import: Box; Import: Paper; Import: Toolbar; Import: Tabs; Import: Tab; Import: Button; Import: IconButton; Import: InputBase; Import: TextField; Import: Typography; Import: LinearProgress; Import: Skeleton; Import: TableRestaurant; Import: Search; Import: NoteAltOutlined; Import: Edit; Import: Add; Import: Remove; Import: ArrowBackIos; Import: ArrowForwardIos; Import: ShoppingCart; Import: ShoppingCartOutlined; Import: Close; Import: placeholder.png; Import: useResponsive; Import: formatter; Import: bqo_api; Import: Config; Import: app-config; Import: table-session  
 **Lines:** 2-38
@@ -140,7 +201,7 @@
 
 ---
 
-#### 4. src/scripts/modules/BQO/views/bqo_home.js [20260812_132835]
+#### 5. src/scripts/modules/BQO/views/bqo_home.js [20260812_132835]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Import: react; Tambah state management; Tambah side effect; Ubah render/return JSX; Tambah fungsi: handleChangeSearch  
 **Lines:** 1-51, 311-313, 315-341, 455-456, 458, 460, 462-463, 465-471, 473-476, 479-480, 707-708, 710-713
@@ -201,7 +262,7 @@
 
 ---
 
-#### 5. src/scripts/modules/BQO/views/bqo_home.js [20260812_130923]
+#### 6. src/scripts/modules/BQO/views/bqo_home.js [20260812_130923]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Pembaruan kode  
 **Lines:** 653-654, 658-665, 670, 676-677, 680, 682
@@ -230,7 +291,7 @@
 
 ---
 
-#### 6. src/scripts/modules/BQO/views/bqo_home.js [20260812_110833]
+#### 7. src/scripts/modules/BQO/views/bqo_home.js [20260812_110833]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Pembaruan kode  
 **Lines:** 216-217
@@ -243,7 +304,7 @@
 
 ---
 
-#### 7. src/scripts/modules/BQO/controllers/bqo_mock.js [20260812_105050]
+#### 8. src/scripts/modules/BQO/controllers/bqo_mock.js [20260812_105050]
 **Fungsi:** Modul: bqo_mock  
 **Perubahan:** Pembaruan kode  
 **Lines:** 19, 91
@@ -257,7 +318,7 @@
 
 ---
 
-#### 8. src/scripts/modules/BQO/views/bqo_checkout.js [20260812_105050]
+#### 9. src/scripts/modules/BQO/views/bqo_checkout.js [20260812_105050]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Import: CircularProgress  
 **Lines:** 17, 50, 426
@@ -275,7 +336,7 @@
 
 ---
 
-#### 9. src/scripts/modules/BQO/views/bqo_home.js [20260812_105050]
+#### 10. src/scripts/modules/BQO/views/bqo_home.js [20260812_105050]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Pembaruan kode  
 **Lines:** 233
@@ -288,7 +349,7 @@
 
 ---
 
-#### 10. src/scripts/modules/BQO/views/bqo_payment.js [20260812_105050]
+#### 11. src/scripts/modules/BQO/views/bqo_payment.js [20260812_105050]
 **Fungsi:** Modul: bqo_payment  
 **Perubahan:** Import: payment-api  
 **Lines:** 29, 51, 100, 129, 173, 356
@@ -314,7 +375,7 @@
 
 ---
 
-#### 11. src/scripts/modules/BQO/views/bqo_home.js [20260812_103649]
+#### 12. src/scripts/modules/BQO/views/bqo_home.js [20260812_103649]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Import: app-config  
 **Lines:** 38
@@ -326,7 +387,7 @@
 
 ---
 
-#### 12. src/scripts/modules/BQO/views/bqo_home.js [20260812_101813]
+#### 13. src/scripts/modules/BQO/views/bqo_home.js [20260812_101813]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Tambah state management; Tambah fungsi: addDebugLog  
 **Lines:** 100-107, 118, 120-124, 214, 224-226, 425-442
@@ -379,7 +440,7 @@
 
 ---
 
-#### 13. src/scripts/modules/BQO/views/bqo_home.js [20260812_093434]
+#### 14. src/scripts/modules/BQO/views/bqo_home.js [20260812_093434]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Tambah navigasi halaman  
 **Lines:** 415-425
@@ -411,15 +472,76 @@
 
 ---
 
-#### 14. rc/scripts/modules/BQO/views/bqo_checkout.js [20260812_142350]
-**Fungsi:** Halaman checkout & submit order  
+#### 15. rc/scripts/modules/BQO/views/bqo_payment.js [20260812_151622]
+**Fungsi:** Modul: bqo_payment  
 **Perubahan:** Pembaruan kode  
 
 ---
 
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260812.md [20260812_140437]
+#### 1. docs/changelog/daily/codeChange-20260812.md [20260812_142353]
+**Fungsi:** Implementasi: codeChange-20260812  
+**Perubahan:** Akses localStorage  
+**Lines:** 7-82, 143, 204, 233, 246, 260, 278, 291, 317, 329, 382, 414, 416, 420-425, 428-433, 435-453, 455-458, 460-465, 467-478, 483, 544, 605, 666, 727, 788, 849, 910, 971, 1032, 1093, 1154, 1215, 1528-1556, 1573, 1634, 1648, 1664, 1678, 1701, 1713, 1774, 1789, 1809, 1823-1824, 1828
+
+```javascript
+// Line 4:
+- #### 1. src/scripts/modules/BQO/views/bqo_home.js [20260812_133331]
++ #### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260812_140437]
++ **Fungsi:** Halaman checkout & submit order  
++ **Perubahan:** Import: app-config  
++ **Lines:** 37, 499-501, 1018-1029
++ 
++ ```javascript
++ // Line 34:
++ + import { getAppConfig } from '../../../utils/app-config';
++ // Line 496:
++ -     // Print guard — wajib cetak dulu sebelum bisa pesanan baru (pola trenly)
++ -     if (printCount === 0) {
++ +     const showPrint = getAppConfig().show_print_button !== false; // default true
++ +     // Print guard hanya berlaku jika tombol print ditampilkan (bukan QR/HP mode)
++ +     if (showPrint && printCount === 0) {
++ // Line 1015:
++ -           <Button
++ -             fullWidth
++ -             variant="contained"
++ -             startIcon={<PrintIcon />}
++ -             onClick={handlePrint}
++ -             color={printCount > 0 ? 'success' : 'primary'}
++ -           >
++ -             {printCount > 0 ? `Cetak Ulang (${printCount}×)` : 'Cetak Tanda Pesanan'}
+  // ... (truncated)
+// Line 1819:
+- #### 12. ublic/app.cfg [20260812_140433]
+- **Fungsi:** Entry point aplikasi React  
+- **Perubahan:** Pembaruan kode  
+- 
+- 
+- #### 13. src/scripts/utils/app-config.js [20260812_140433]
+- **Fungsi:** Entry point aplikasi React  
+- **Perubahan:** Pembaruan kode  
+- **Lines:** 28-29
+- 
+- ```javascript
+- // Line 25:
+- -   debug_screen:                  false, // true = tampilkan debug panel di layar
+- +   debug_screen:                  false,
+- +   show_print_button:             true,  // false = sembunyikan tombol print di struk kasir
+- ```
+- 
+- 
+- - **✨ Features:** 13 items
+- - **📖 Documentation:** 13 items
++ - **✨ Features:** 14 items
++ - **📖 Documentation:** 14 items
+- - **Total Files Modified:** 45
++ - **Total Files Modified:** 47
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260812.md [20260812_140437]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage; Tambah state management; Tambah side effect  
 **Lines:** 7-68, 129, 158, 171, 185, 203, 216, 242, 254, 307, 339-379, 381-410, 416-477, 538, 599, 660, 721, 782, 843, 904, 965, 1026, 1087, 1148, 1727-1746, 1748-1749, 1752-1754
@@ -480,7 +602,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260812.md [20260812_133331]
+#### 3. docs/changelog/daily/codeChange-20260812.md [20260812_133331]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage; Tambah state management; Tambah side effect; Ubah render/return JSX  
 **Lines:** 278-283, 286-347, 408, 469, 530, 591, 652, 713, 774, 835, 896, 957, 1537-1538, 1542
@@ -541,7 +663,7 @@
 
 ---
 
-#### 3. docs/changelog/daily/codeChange-20260812.md [20260812_132926]
+#### 4. docs/changelog/daily/codeChange-20260812.md [20260812_132926]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Tambah state management; Tambah side effect; Ubah render/return JSX; Akses localStorage  
 **Lines:** 7-68, 97, 110, 124, 142, 155, 181, 193, 246, 278, 280-283, 285-339, 341, 402, 463, 524, 585, 646, 707, 768, 829, 890, 1471, 1475-1476
@@ -602,7 +724,7 @@
 
 ---
 
-#### 4. docs/changelog/daily/codeChange-20260812.md [20260812_132835]
+#### 5. docs/changelog/daily/codeChange-20260812.md [20260812_132835]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage  
 **Lines:** 7-36, 49, 63, 81, 94, 120, 132, 185, 217, 225-286, 347, 408, 469, 530, 591, 652, 713, 774, 1354-1355, 1359
@@ -663,7 +785,7 @@
 
 ---
 
-#### 5. docs/changelog/daily/codeChange-20260812.md [20260812_130923]
+#### 6. docs/changelog/daily/codeChange-20260812.md [20260812_130923]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage  
 **Lines:** 188-193, 196-257, 318, 379, 440, 501, 562, 623, 684, 997-1014, 1075, 1089, 1105, 1119, 1142, 1154, 1215, 1230, 1250, 1264-1265, 1269
@@ -724,7 +846,7 @@
 
 ---
 
-#### 6. docs/changelog/daily/codeChange-20260812.md [20260812_114806]
+#### 7. docs/changelog/daily/codeChange-20260812.md [20260812_114806]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage  
 **Lines:** 7-20, 34, 52, 65, 91, 103, 156, 188-193, 196-246, 251, 312, 373, 434, 495, 556, 617, 680-697, 758, 773, 1179-1184, 1187, 1190-1191
@@ -785,7 +907,7 @@
 
 ---
 
-#### 7. docs/changelog/daily/codeChange-20260812.md [20260812_110833]
+#### 8. docs/changelog/daily/codeChange-20260812.md [20260812_110833]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage; Tambah side effect; Tambah state management  
 **Lines:** 175-187, 190-251, 312, 373, 434, 495, 556, 756-761, 764-810, 1108-1110, 1113
@@ -846,7 +968,7 @@
 
 ---
 
-#### 8. docs/changelog/daily/codeChange-20260812.md [20260812_105611]
+#### 9. docs/changelog/daily/codeChange-20260812.md [20260812_105611]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage  
 **Lines:** 7-78, 90, 143, 175, 177-180, 183-233, 238, 299, 360, 421, 482, 730-735, 989, 991, 993
@@ -907,7 +1029,7 @@
 
 ---
 
-#### 9. docs/changelog/daily/codeChange-20260812.md [20260812_105050]
+#### 10. docs/changelog/daily/codeChange-20260812.md [20260812_105050]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage; Tambah navigasi halaman  
 **Lines:** 7-19, 72, 104-128, 130-131, 134-162, 169-230, 291, 352, 413, 663-724, 738, 754, 768, 791, 803, 864, 879, 899, 913-914, 918
@@ -968,7 +1090,7 @@
 
 ---
 
-#### 10. docs/changelog/daily/codeChange-20260812.md [20260812_103649]
+#### 11. docs/changelog/daily/codeChange-20260812.md [20260812_103649]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Tambah navigasi halaman; Akses localStorage; Tambah state management  
 **Lines:** 7, 60-103, 106-167, 228, 289, 539-569, 583, 606, 618, 679, 694, 714, 727-728, 734-735, 738-739
@@ -1029,7 +1151,7 @@
 
 ---
 
-#### 11. docs/changelog/daily/codeChange-20260812.md [20260812_101813]
+#### 12. docs/changelog/daily/codeChange-20260812.md [20260812_101813]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Tambah state management; Akses localStorage; Tambah navigasi halaman  
 **Lines:** 7, 39-91, 94-155, 216, 279, 340, 355-415, 466-515, 576, 591, 611, 624, 630, 633, 636-641, 647-648, 651-652
@@ -1090,7 +1212,7 @@
 
 ---
 
-#### 12. docs/changelog/daily/codeChange-20260812.md [20260812_093434]
+#### 13. docs/changelog/daily/codeChange-20260812.md [20260812_093434]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Tambah navigasi halaman; Akses localStorage  
 **Lines:** 5-38, 41-102, 226-301, 352-413, 428, 448, 461-462, 467-501, 503-505, 507-508
@@ -1151,7 +1273,7 @@
 
 ---
 
-#### 13. docs/changelog/daily/codeChange-20260812.md [20260812_091046]
+#### 14. docs/changelog/daily/codeChange-20260812.md [20260812_091046]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage  
 **Lines:** 5-67, 70, 133, 181, 184-192, 196, 216, 229-234, 236, 239-240
@@ -1212,7 +1334,7 @@
 
 ---
 
-#### 14. docs/changelog/daily/codeChange-20260812.md [20260812_090252]
+#### 15. docs/changelog/daily/codeChange-20260812.md [20260812_090252]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage; Tambah side effect; Tambah navigasi halaman  
 **Lines:** 1-162
@@ -1820,10 +1942,10 @@
 ---
 
 ## 📊 **Summary**
-- **✨ Features:** 14 items
-- **📖 Documentation:** 14 items
+- **✨ Features:** 15 items
+- **📖 Documentation:** 15 items
 - **🔐 Auth/Session:** 4 items
 - **🔌 API:** 2 items
 - **⚙️ Others:** 13 items
-- **Total Files Modified:** 47
+- **Total Files Modified:** 49
 - **Main Focus:** Features

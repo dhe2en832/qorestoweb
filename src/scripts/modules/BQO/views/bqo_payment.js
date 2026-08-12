@@ -12,6 +12,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import BackIcon from '@mui/icons-material/ArrowBackIos';
 import PrintIcon from '@mui/icons-material/Print';
+import DownloadIcon from '@mui/icons-material/Download';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import MoneyIcon from '@mui/icons-material/Money';
 import QrCodeIcon from '@mui/icons-material/QrCode';
@@ -448,17 +449,124 @@ export default function BQOPayment() {
   };
 
   // ── Reset & New Order ─────────────────────────────────────────────────────
+  const [downloadCount, setDownloadCount] = useState(0);
+
+  // Download bukti struk sebagai gambar PNG (alternatif print untuk HP)
+  const handleDownloadReceipt = () => {
+    const bon = cqonum || nomorBon || '-';
+    const meja = orderInfo.seatNumber || '-';
+    const nama = orderInfo.orderByName || '-';
+    const waktu = new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+
+    const padding = 24;
+    const lineH = 22;
+    const headerH = 110;
+    const itemH = cartItems.length * lineH;
+    const footerH = 120;
+    const canvasW = 380;
+    const canvasH = headerH + itemH + footerH + padding * 2;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = canvasW * 2;
+    canvas.height = canvasH * 2;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(2, 2);
+
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, canvasW, canvasH);
+
+    let y = padding;
+
+    ctx.fillStyle = '#3f50b5';
+    ctx.font = 'bold 16px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('STRUK PEMBAYARAN', canvasW / 2, y + 16);
+    y += 30;
+    ctx.fillStyle = '#27ae60';
+    ctx.font = 'bold 13px sans-serif';
+    ctx.fillText('✓ LUNAS', canvasW / 2, y + 12);
+    y += 22;
+    ctx.fillStyle = '#333';
+    ctx.font = '12px sans-serif';
+    ctx.fillText(`No: ${bon}`, canvasW / 2, y + 12);
+    y += 18;
+    ctx.fillText(`Meja: ${meja} · ${nama}`, canvasW / 2, y + 12);
+    y += 18;
+    ctx.fillStyle = '#888';
+    ctx.font = '11px sans-serif';
+    ctx.fillText(waktu, canvasW / 2, y + 12);
+    y += 20;
+
+    ctx.strokeStyle = '#ddd';
+    ctx.beginPath(); ctx.moveTo(padding, y); ctx.lineTo(canvasW - padding, y); ctx.stroke();
+    y += 10;
+
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#333';
+    ctx.font = '12px sans-serif';
+    cartItems.forEach((d) => {
+      const itemName = `${d.qty}× ${d.item.name}`;
+      const price = `Rp ${toCurrencyIDR(parseFloat(d.item.sellPrice) * d.qty)}`;
+      ctx.fillText(itemName.length > 35 ? itemName.substring(0, 35) + '...' : itemName, padding, y + 14);
+      ctx.textAlign = 'right';
+      ctx.fillText(price, canvasW - padding, y + 14);
+      ctx.textAlign = 'left';
+      y += lineH;
+    });
+
+    y += 4;
+    ctx.beginPath(); ctx.moveTo(padding, y); ctx.lineTo(canvasW - padding, y); ctx.stroke();
+    y += 14;
+
+    ctx.font = '12px sans-serif';
+    ctx.fillStyle = '#666';
+    ctx.fillText('Subtotal', padding, y + 12);
+    ctx.textAlign = 'right';
+    ctx.fillText(`Rp ${toCurrencyIDR(subtotal)}`, canvasW - padding, y + 12);
+    ctx.textAlign = 'left';
+    y += lineH;
+
+    ctx.fillText(`Pajak (${TAX_PERCENT}%)`, padding, y + 12);
+    ctx.textAlign = 'right';
+    ctx.fillText(`Rp ${toCurrencyIDR(taxAmount)}`, canvasW - padding, y + 12);
+    ctx.textAlign = 'left';
+    y += lineH + 4;
+
+    ctx.font = 'bold 14px sans-serif';
+    ctx.fillStyle = '#333';
+    ctx.fillText('Total', padding, y + 14);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#3f50b5';
+    ctx.fillText(`Rp ${toCurrencyIDR(total)}`, canvasW - padding, y + 14);
+
+    const link = document.createElement('a');
+    link.download = `struk-${meja}-${bon}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    setDownloadCount((c) => c + 1);
+  };
+
   const handleNewOrder = () => {
     const doProceed = () => {
       window.localStorage.removeItem('QoCart');
       window.localStorage.removeItem('QoOrderInfo');
       navigate('/menu');
     };
-    if (isPaid && printCount === 0 && !isManuallyCompleted) {
-      AlertDialog('warning', 'Belum Cetak Struk',
-        'Silakan cetak struk terlebih dahulu sebelum pesanan baru.',
-        () => handlePrint());
-      return;
+    const showPrint = getAppConfig().show_print_button !== false;
+    if (isPaid && !isManuallyCompleted) {
+      // Guard: wajib cetak/download dulu sebelum pesanan baru
+      if (showPrint && printCount === 0) {
+        AlertDialog('warning', 'Belum Cetak Struk',
+          'Silakan cetak struk terlebih dahulu sebelum pesanan baru.',
+          () => handlePrint());
+        return;
+      }
+      if (!showPrint && downloadCount === 0) {
+        AlertDialog('warning', 'Belum Download Struk',
+          'Silakan download struk pembayaran terlebih dahulu.',
+          () => handleDownloadReceipt());
+        return;
+      }
     }
     doProceed();
   };
@@ -923,15 +1031,28 @@ export default function BQOPayment() {
       </Box>
       {renderSummary()}
       <Grid container spacing={1} justifyContent="center" mt={1} mb={4}>
-        <Grid item>
-          <Button
-            variant="outlined" startIcon={<PrintIcon />}
-            onClick={handlePrint}
-            color={printCount > 0 ? 'success' : 'primary'}
-          >
-            {printCount > 0 ? `Cetak Ulang (${printCount}x)` : 'Cetak Struk'}
-          </Button>
-        </Grid>
+        {/* Tombol cetak — dikontrol via show_print_button di app.cfg */}
+        {getAppConfig().show_print_button !== false ? (
+          <Grid item>
+            <Button
+              variant="outlined" startIcon={<PrintIcon />}
+              onClick={handlePrint}
+              color={printCount > 0 ? 'success' : 'primary'}
+            >
+              {printCount > 0 ? `Cetak Ulang (${printCount}x)` : 'Cetak Struk'}
+            </Button>
+          </Grid>
+        ) : (
+          <Grid item>
+            <Button
+              variant="outlined" startIcon={<DownloadIcon />}
+              onClick={handleDownloadReceipt}
+              color={downloadCount > 0 ? 'success' : 'primary'}
+            >
+              {downloadCount > 0 ? `Download Ulang (${downloadCount}x)` : 'Download Struk'}
+            </Button>
+          </Grid>
+        )}
         <Grid item>
           <Button variant="contained" color="primary" onClick={handleNewOrder}>
             Pesanan Baru
