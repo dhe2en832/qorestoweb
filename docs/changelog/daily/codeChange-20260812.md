@@ -4,7 +4,78 @@
 
 ### ✨ Features
 
-#### 1. src/scripts/modules/BQO/views/bqo_home.js [20260812_103649]
+#### 1. src/scripts/modules/BQO/controllers/bqo_mock.js [20260812_105050]
+**Fungsi:** Modul: bqo_mock  
+**Perubahan:** Pembaruan kode  
+**Lines:** 19, 91
+
+```javascript
+// Line 16:
++ /* eslint-disable no-unused-vars */
+// Line 88:
++ /* eslint-enable no-unused-vars */
+```
+
+---
+
+#### 2. src/scripts/modules/BQO/views/bqo_checkout.js [20260812_105050]
+**Fungsi:** Halaman checkout & submit order  
+**Perubahan:** Import: CircularProgress  
+**Lines:** 17, 50, 426
+
+```javascript
+// Line 14:
+- import CircularProgress from '@mui/material/CircularProgress';
++ import CircularProgress from '@mui/material/CircularProgress'; // eslint-disable-line no-unused-vars
+// Line 47:
+-   ? eval(TAX_RATE_STR) // "11/12" → 0.9166...
++   ? (() => { const [a, b] = TAX_RATE_STR.split('/'); return parseFloat(a) / parseFloat(b); })() // "11/12" → 0.9166...
+// Line 423:
++           cremark2: d.note || '',
+```
+
+---
+
+#### 3. src/scripts/modules/BQO/views/bqo_home.js [20260812_105050]
+**Fungsi:** Halaman utama / dashboard  
+**Perubahan:** Pembaruan kode  
+**Lines:** 233
+
+```javascript
+// Line 230:
+-   }, []);
++   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+```
+
+---
+
+#### 4. src/scripts/modules/BQO/views/bqo_payment.js [20260812_105050]
+**Fungsi:** Modul: bqo_payment  
+**Perubahan:** Import: payment-api  
+**Lines:** 29, 51, 100, 129, 173, 356
+
+```javascript
+// Line 26:
+- import { fetchPaymentAPI, getPaymentAPIUrl, PRIMARY_BASE_URL, LOCAL_BASE_URL } from '../../../utils/payment-api';
++ import { fetchPaymentAPI, getPaymentAPIUrl, PRIMARY_BASE_URL, LOCAL_BASE_URL } from '../../../utils/payment-api'; // eslint-disable-line no-unused-vars
+// Line 48:
+-   ? eval(TAX_RATE_STR) // "11/12" → 0.9166...
++   ? (() => { const [a, b] = TAX_RATE_STR.split('/'); return parseFloat(a) / parseFloat(b); })() // "11/12" → 0.9166...
+// Line 97:
+-   const prevUserRef = useRef(null);
++   const prevUserRef = useRef(null); // eslint-disable-line no-unused-vars
+// Line 126:
+-   const { isDownloaded, downloadFailedTrx } = useFailedTrxDownload();
++   const { isDownloaded, downloadFailedTrx } = useFailedTrxDownload(); // eslint-disable-line no-unused-vars
+// Line 170:
++         cremark2: d.note || '',
+// Line 353:
++   // eslint-disable-next-line no-unused-vars
+```
+
+---
+
+#### 5. src/scripts/modules/BQO/views/bqo_home.js [20260812_103649]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Import: app-config  
 **Lines:** 38
@@ -16,7 +87,7 @@
 
 ---
 
-#### 2. src/scripts/modules/BQO/views/bqo_home.js [20260812_101813]
+#### 6. src/scripts/modules/BQO/views/bqo_home.js [20260812_101813]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Tambah state management; Tambah fungsi: addDebugLog  
 **Lines:** 100-107, 118, 120-124, 214, 224-226, 425-442
@@ -69,7 +140,7 @@
 
 ---
 
-#### 3. src/scripts/modules/BQO/views/bqo_home.js [20260812_093434]
+#### 7. src/scripts/modules/BQO/views/bqo_home.js [20260812_093434]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Tambah navigasi halaman  
 **Lines:** 415-425
@@ -101,72 +172,70 @@
 
 ---
 
-#### 4. rc/scripts/modules/BQO/controllers/bqo_mock.js [20260812_105047]
-**Fungsi:** Modul: bqo_mock  
-**Perubahan:** Pembaruan kode  
-
----
-
-#### 5. src/scripts/modules/BQO/views/bqo_checkout.js [20260812_105047]
-**Fungsi:** Halaman checkout & submit order  
-**Perubahan:** Import: CircularProgress  
-**Lines:** 17, 50, 426
-
-```javascript
-// Line 14:
-- import CircularProgress from '@mui/material/CircularProgress';
-+ import CircularProgress from '@mui/material/CircularProgress'; // eslint-disable-line no-unused-vars
-// Line 47:
--   ? eval(TAX_RATE_STR) // "11/12" → 0.9166...
-+   ? (() => { const [a, b] = TAX_RATE_STR.split('/'); return parseFloat(a) / parseFloat(b); })() // "11/12" → 0.9166...
-// Line 423:
-+           cremark2: d.note || '',
-```
-
----
-
-#### 6. src/scripts/modules/BQO/views/bqo_home.js [20260812_105047]
-**Fungsi:** Halaman utama / dashboard  
-**Perubahan:** Pembaruan kode  
-**Lines:** 233
-
-```javascript
-// Line 230:
--   }, []);
-+   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-```
-
----
-
-#### 7. src/scripts/modules/BQO/views/bqo_payment.js [20260812_105047]
-**Fungsi:** Modul: bqo_payment  
-**Perubahan:** Import: payment-api  
-**Lines:** 29, 51, 100, 129, 173, 356
-
-```javascript
-// Line 26:
-- import { fetchPaymentAPI, getPaymentAPIUrl, PRIMARY_BASE_URL, LOCAL_BASE_URL } from '../../../utils/payment-api';
-+ import { fetchPaymentAPI, getPaymentAPIUrl, PRIMARY_BASE_URL, LOCAL_BASE_URL } from '../../../utils/payment-api'; // eslint-disable-line no-unused-vars
-// Line 48:
--   ? eval(TAX_RATE_STR) // "11/12" → 0.9166...
-+   ? (() => { const [a, b] = TAX_RATE_STR.split('/'); return parseFloat(a) / parseFloat(b); })() // "11/12" → 0.9166...
-// Line 97:
--   const prevUserRef = useRef(null);
-+   const prevUserRef = useRef(null); // eslint-disable-line no-unused-vars
-// Line 126:
--   const { isDownloaded, downloadFailedTrx } = useFailedTrxDownload();
-+   const { isDownloaded, downloadFailedTrx } = useFailedTrxDownload(); // eslint-disable-line no-unused-vars
-// Line 170:
-+         cremark2: d.note || '',
-// Line 353:
-+   // eslint-disable-next-line no-unused-vars
-```
-
----
-
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260812.md [20260812_103649]
+#### 1. docs/changelog/daily/codeChange-20260812.md [20260812_105050]
+**Fungsi:** Implementasi: codeChange-20260812  
+**Perubahan:** Akses localStorage; Tambah navigasi halaman  
+**Lines:** 7-19, 72, 104-128, 130-131, 134-162, 169-230, 291, 352, 413, 663-724, 738, 754, 768, 791, 803, 864, 879, 899, 913-914, 918
+
+```javascript
+// Line 4:
+- #### 1. src/scripts/modules/BQO/views/bqo_home.js [20260812_101813]
++ #### 1. src/scripts/modules/BQO/views/bqo_home.js [20260812_103649]
++ **Fungsi:** Halaman utama / dashboard  
++ **Perubahan:** Import: app-config  
++ **Lines:** 38
++ 
++ ```javascript
++ // Line 35:
++ + import { getAppConfig } from '../../../utils/app-config';
++ ```
++ 
++ ---
++ 
++ #### 2. src/scripts/modules/BQO/views/bqo_home.js [20260812_101813]
+// Line 69:
+- #### 2. src/scripts/modules/BQO/views/bqo_home.js [20260812_093434]
++ #### 3. src/scripts/modules/BQO/views/bqo_home.js [20260812_093434]
+// Line 101:
+- #### 3. src/scripts/modules/BQO/views/bqo_home.js [20260812_103647]
++ #### 4. rc/scripts/modules/BQO/controllers/bqo_mock.js [20260812_105047]
++ **Fungsi:** Modul: bqo_mock  
++ **Perubahan:** Pembaruan kode  
++ 
++ ---
+  // ... (truncated)
++ #### 6. src/scripts/utils/app-config.js [20260812_093434]
+// Line 800:
+- #### 6. public/qr-tables.html [20260812_091046]
++ #### 7. public/qr-tables.html [20260812_091046]
+// Line 861:
+- #### 7. public/app.cfg [20260812_090252]
++ #### 8. public/app.cfg [20260812_090252]
+// Line 876:
+- #### 8. src/scripts/App.js [20260812_090252]
++ #### 9. src/scripts/App.js [20260812_090252]
+// Line 896:
+- #### 9. src/scripts/utils/app-config.js [20260812_090252]
++ #### 10. src/scripts/utils/app-config.js [20260812_090252]
+// Line 909:
+- #### 10. ublic/qr-tables.html [20260812_103647]
+- **Fungsi:** Implementasi: qr-tables  
+- **Perubahan:** Pembaruan kode  
+- 
+- 
+- - **✨ Features:** 3 items
+- - **📖 Documentation:** 4 items
++ - **✨ Features:** 7 items
++ - **📖 Documentation:** 5 items
+- - **Total Files Modified:** 21
++ - **Total Files Modified:** 26
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260812.md [20260812_103649]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Tambah navigasi halaman; Akses localStorage; Tambah state management  
 **Lines:** 7, 60-103, 106-167, 228, 289, 539-569, 583, 606, 618, 679, 694, 714, 727-728, 734-735, 738-739
@@ -227,7 +296,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260812.md [20260812_101813]
+#### 3. docs/changelog/daily/codeChange-20260812.md [20260812_101813]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Tambah state management; Akses localStorage; Tambah navigasi halaman  
 **Lines:** 7, 39-91, 94-155, 216, 279, 340, 355-415, 466-515, 576, 591, 611, 624, 630, 633, 636-641, 647-648, 651-652
@@ -288,7 +357,7 @@
 
 ---
 
-#### 3. docs/changelog/daily/codeChange-20260812.md [20260812_093434]
+#### 4. docs/changelog/daily/codeChange-20260812.md [20260812_093434]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Tambah navigasi halaman; Akses localStorage  
 **Lines:** 5-38, 41-102, 226-301, 352-413, 428, 448, 461-462, 467-501, 503-505, 507-508
@@ -349,7 +418,7 @@
 
 ---
 
-#### 4. docs/changelog/daily/codeChange-20260812.md [20260812_091046]
+#### 5. docs/changelog/daily/codeChange-20260812.md [20260812_091046]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage  
 **Lines:** 5-67, 70, 133, 181, 184-192, 196, 216, 229-234, 236, 239-240
@@ -410,7 +479,7 @@
 
 ---
 
-#### 5. docs/changelog/daily/codeChange-20260812.md [20260812_090252]
+#### 6. docs/changelog/daily/codeChange-20260812.md [20260812_090252]
 **Fungsi:** Implementasi: codeChange-20260812  
 **Perubahan:** Akses localStorage; Tambah side effect; Tambah navigasi halaman  
 **Lines:** 1-162
@@ -655,6 +724,12 @@
 + 
 +   return children;
 ```
+
+---
+
+#### 2. rc/scripts/routes/PrivateRoute.js [20260812_105608]
+**Fungsi:** Route: PrivateRoute  
+**Perubahan:** Pembaruan kode  
 
 ---
 
@@ -911,9 +986,9 @@
 
 ## 📊 **Summary**
 - **✨ Features:** 7 items
-- **📖 Documentation:** 5 items
+- **📖 Documentation:** 6 items
 - **🔐 Auth/Session:** 3 items
-- **🔌 API:** 1 item
+- **🔌 API:** 2 items
 - **⚙️ Others:** 10 items
-- **Total Files Modified:** 26
+- **Total Files Modified:** 28
 - **Main Focus:** ⚙️ Others

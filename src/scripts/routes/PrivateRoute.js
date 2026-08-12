@@ -1,27 +1,38 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { getTableId } from '../utils/table-session';
+import ProgressLoader from '../components/ProgressLoader';
 
 export default function PrivateRoute({ children }) {
-  const auth         = useAuth();
-  const location     = useLocation();
-  const navigate     = useNavigate();
-  const tableId      = getTableId();
-  const isQRMode     = tableId !== '';
+  const auth        = useAuth();
+  const location    = useLocation();
+  const navigate    = useNavigate();
+  const tableId     = getTableId();
+  const isQRMode    = tableId !== '';
+
+  // State untuk track proses auto-login yang sedang berjalan
+  const [isSigningIn, setIsSigningIn] = useState(false);
+  const [signInDone,  setSignInDone]  = useState(false);
 
   useEffect(() => {
-    // Jika ada ?table= di URL (mode QR) dan belum login → auto-login sebagai guest
-    if (isQRMode && !auth.loggedIn) {
+    // Jika mode QR dan belum login dan belum pernah dicoba → jalankan auto-login
+    if (isQRMode && !auth.loggedIn && !isSigningIn && !signInDone) {
+      setIsSigningIn(true);
       auth.signinAsGuest(() => {
-        // Setelah auto-login, lanjut ke tujuan semula
+        setIsSigningIn(false);
+        setSignInDone(true);
         navigate(location.pathname, { replace: true });
       });
     }
-  }, [isQRMode, auth, location.pathname, navigate]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isQRMode, auth.loggedIn]);
 
-  // Mode QR: sedang proses auto-login → render null (tunggu sebentar)
-  if (isQRMode && !auth.loggedIn) return null;
+  // Sedang proses login → tampilkan loader
+  if (isSigningIn) return <ProgressLoader />;
+
+  // Mode QR: belum login dan belum dicoba → loader sementara
+  if (isQRMode && !auth.loggedIn && !signInDone) return <ProgressLoader />;
 
   // Mode biasa: belum login → redirect ke form login
   if (!auth.loggedIn) {
