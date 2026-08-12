@@ -412,16 +412,17 @@ export default function BQOHome() {
         <AppBar position="fixed" sx={styles.appBar}>
           <Toolbar>
             <Grid container justifyContent="space-between" alignItems="center">
-              <Grid item xs={1}>
-                <IconButton
-                  sx={styles.appBarIcon}
-                  onClick={() => {
-                    navigate('/');
-                  }}
-                >
-                  <BackIcon />
-                </IconButton>
-              </Grid>
+              {/* Tombol back hanya tampil di mode non-QR (akses via login biasa) */}
+              {!getTableId() && (
+                <Grid item xs={1}>
+                  <IconButton
+                    sx={styles.appBarIcon}
+                    onClick={() => { navigate('/'); }}
+                  >
+                    <BackIcon />
+                  </IconButton>
+                </Grid>
+              )}
               <Grid item xs={getTableId() ? 7 : 11}>
                 <InputBase
                   onChange={handleChangeSearch}

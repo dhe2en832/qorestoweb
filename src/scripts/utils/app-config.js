@@ -24,6 +24,7 @@ const DEFAULT_CONFIG = {
   use_mock_bqo:                  false, // true = pakai data mock (tanpa backend)
   qr_session_key:                '',    // secret key untuk akses via QR (tanpa login)
   qr_guest_user:                 'GUEST',
+  qr_guest_pass:                 '',    // password untuk login guest via QR
 };
 
 let _cachedConfig = null;

@@ -29,23 +29,72 @@ function useProvideAuth() {
 
   /**
    * signinAsGuest — auto-login untuk pelanggan via QR scan.
-   * Tidak butuh form login. Gunakan secretkey dan user dari app.cfg.
-   * Dipanggil otomatis dari PrivateRoute saat URL punya ?table=XX.
+   * Melakukan login ke backend dengan credential dari app.cfg,
+   * sehingga secretkey yang dipakai valid untuk akses API.
    */
-  const signinAsGuest = (cb) => {
-    const cfg        = getAppConfig();
-    const guestKey   = cfg.qr_session_key || '';
-    const guestUser  = cfg.qr_guest_user  || 'GUEST';
+  const signinAsGuest = async (cb) => {
+    const cfg       = getAppConfig();
+    const guestUser = cfg.qr_guest_user || '';
+    const guestPass = cfg.qr_guest_pass || '';
+
     // Reset data order lama — pelanggan baru mulai fresh
     window.localStorage.removeItem('QoCart');
     window.localStorage.removeItem('QoOrderInfo');
     window.localStorage.removeItem('QoReturnPath');
-    setLoggedIn(true);
-    setUserID(guestUser);
-    setSessionTimeout(false);
-    setSessionKey(guestKey);
-    setSessionID(guestKey);
-    if (typeof cb === 'function') cb();
+
+    if (!guestUser || !guestPass) {
+      // Fallback: pakai static key jika credential tidak dikonfigurasi
+      const staticKey = cfg.qr_session_key || '';
+      setLoggedIn(true);
+      setUserID('GUEST');
+      setSessionTimeout(false);
+      setSessionKey(staticKey);
+      setSessionID(staticKey);
+      if (typeof cb === 'function') cb();
+      return;
+    }
+
+    try {
+      const res = await fetch(ApiRoute.LOGIN_X, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'x-user':     guestUser,
+          'x-password': guestPass,
+        },
+        body: JSON.stringify({ action: 'login' }),
+      });
+      const resSessionKey = res.headers.get('secretkey');
+      const resSessionID  = res.headers.get('sessionid');
+      const resJson = await res.json();
+
+      if (resJson.result === true) {
+        setLoggedIn(true);
+        setUserID(guestUser);
+        setSessionTimeout(false);
+        setSessionKey(resSessionKey);
+        setSessionID(resSessionID);
+        if (typeof cb === 'function') cb();
+      } else {
+        // Login gagal — tetap masuk tapi dengan static key sebagai fallback
+        const staticKey = cfg.qr_session_key || '';
+        setLoggedIn(true);
+        setUserID('GUEST');
+        setSessionTimeout(false);
+        setSessionKey(staticKey);
+        setSessionID(staticKey);
+        if (typeof cb === 'function') cb();
+      }
+    } catch (_) {
+      // Network error — fallback ke static key
+      const staticKey = cfg.qr_session_key || '';
+      setLoggedIn(true);
+      setUserID('GUEST');
+      setSessionTimeout(false);
+      setSessionKey(staticKey);
+      setSessionID(staticKey);
+      if (typeof cb === 'function') cb();
+    }
   };
 
   const signin = async (data, cb, isForm, setLoading) => {

@@ -21,7 +21,17 @@ export default function App() {
 
   // Load app.cfg dan inisialisasi table ID dari URL — blok render sampai selesai
   useEffect(() => {
-    initTableId(); // baca ?table=XX dari URL, simpan ke sessionStorage
+    const isNewScan = initTableId(); // baca ?table=XX dari URL, simpan ke sessionStorage
+    if (isNewScan) {
+      // Scan QR baru — reset semua data sesi pelanggan sebelumnya agar mulai fresh
+      window.localStorage.removeItem('QoCart');
+      window.localStorage.removeItem('QoOrderInfo');
+      window.localStorage.removeItem('QoReturnPath');
+      window.localStorage.removeItem('loggedIn');
+      window.localStorage.removeItem('sessionKey');
+      window.localStorage.removeItem('sessionID');
+      window.localStorage.removeItem('userID');
+    }
     loadAppConfig().finally(() => setConfigReady(true));
   }, []);
 

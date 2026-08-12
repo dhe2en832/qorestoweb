@@ -18,13 +18,17 @@ const TABLE_SESSION_KEY = 'qoTableId';
  * Inisialisasi table ID dari URL query param.
  * Panggil sekali saat app mount (di App.js).
  * Jika URL tidak punya ?table=, nilai lama di sessionStorage tetap dipakai.
+ *
+ * @returns {boolean} true jika URL punya ?table= (scan baru), false jika tidak
  */
 export const initTableId = () => {
   const params  = new URLSearchParams(window.location.search);
   const fromUrl = params.get('table');
   if (fromUrl && fromUrl.trim() !== '') {
     window.sessionStorage.setItem(TABLE_SESSION_KEY, fromUrl.trim());
+    return true; // scan baru dari URL
   }
+  return false; // reload biasa, tidak ada ?table= di URL
 };
 
 /**
