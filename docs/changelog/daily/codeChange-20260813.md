@@ -4,221 +4,19 @@
 
 ### ✨ Features
 
-#### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_110015]
+#### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_111508]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Pembaruan kode  
-**Lines:** 390-392, 396, 399
+**Lines:** 460
 
 ```javascript
-// Line 387:
-+     // Normalisasi seatNumber agar cocok dengan format di occupiedTables (tanpa leading zero)
-+     const normalizedSeat = String(parseInt(info.seatNumber, 10) || info.seatNumber);
-+ 
--       ToastBar('info', `DEBUG meja terisi: [${occList}] | seatNumber: "${info.seatNumber}"`, 5000);
-+       ToastBar('info', `DEBUG meja terisi: [${occList}] | seatNumber: "${normalizedSeat}"`, 5000);
--     if (occupiedTablesRef.current.has(info.seatNumber)) {
-+     if (occupiedTablesRef.current.has(normalizedSeat)) {
+// Line 457:
++           cremark2: d.note2 || '',
 ```
 
 ---
 
-#### 2. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_105608]
-**Fungsi:** Halaman checkout & submit order  
-**Perubahan:** Pembaruan kode  
-**Lines:** 42, 47-49, 187
-
-```javascript
-// Line 39:
-- /** Deteksi apakah error dari backend adalah session expired */
-+ /** Deteksi apakah error dari backend adalah session expired/invalid */
--    msg.includes('expired'));
-+    msg.includes('expired') ||
-+    msg.includes('di-LOCK') ||
-+    msg.includes('proses lain'));
-// Line 184:
--         if (errMsg.includes('expired') || errMsg.includes('tidak valid')) {
-+         if (errMsg.includes('expired') || errMsg.includes('tidak valid') || errMsg.includes('LOCK') || errMsg.includes('proses lain')) {
-```
-
----
-
-#### 3. src/scripts/modules/BQO/views/bqo_home.js [20260813_105608]
-**Fungsi:** Halaman utama / dashboard  
-**Perubahan:** Pembaruan kode  
-**Lines:** 500, 502-503, 505-506, 508-509
-
-```javascript
-// Line 497:
--           position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 9999,
-+           position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9999,
--           fontSize: '11px', padding: '6px 8px', maxHeight: '200px', overflowY: 'auto',
-+           fontSize: '10px', padding: '4px 8px', maxHeight: '120px', overflowY: 'auto',
-+           pointerEvents: 'none', // tidak menghalangi klik di belakangnya
--           <div style={{ color: '#ff0', fontWeight: 'bold', marginBottom: 4 }}>
--             🐛 DEBUG — tableId: {getTableId() || '(none)'} | key: {Config.SESSION_KEY()?.substring(0,10) ?? 'null'}...
-+           <div style={{ color: '#ff0', fontWeight: 'bold', marginBottom: 2 }}>
-+             🐛 tableId:{getTableId() || '-'} | key:{Config.SESSION_KEY()?.substring(0,8) ?? 'null'}
--           {debugLog.length === 0 && <div style={{ color: '#aaa' }}>Menunggu log...</div>}
--           {debugLog.map((l, i) => (
--             <div key={i} style={{ color: l.isError ? '#f66' : '#0f0', lineHeight: 1.5 }}>
-+           {debugLog.slice(-5).map((l, i) => (
-+             <div key={i} style={{ color: l.isError ? '#f66' : '#0f0', lineHeight: 1.3 }}>
-```
-
----
-
-#### 4. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_104007]
-**Fungsi:** Halaman checkout & submit order  
-**Perubahan:** Pembaruan kode  
-**Lines:** 387-393
-
-```javascript
-// Line 384:
-+ 
-+     // DEBUG: tampilkan data occupied saat checkout
-+     if (getAppConfig().debug_screen) {
-+       const occList = Array.from(occupiedTablesRef.current).join(', ') || '(kosong)';
-+       ToastBar('info', `DEBUG meja terisi: [${occList}] | seatNumber: "${info.seatNumber}"`, 5000);
-+     }
-+ 
-```
-
----
-
-#### 5. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_101423]
-**Fungsi:** Halaman checkout & submit order  
-**Perubahan:** Pembaruan kode  
-**Lines:** 248
-
-```javascript
-// Line 245:
--   }, []);
-+   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-```
-
----
-
-#### 6. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_100856]
-**Fungsi:** Halaman checkout & submit order  
-**Perubahan:** Tambah state management  
-**Lines:** 180-190, 504, 640, 643-644, 647, 654-660, 662
-
-```javascript
-// Line 177:
--       const res = await bqo_api.getActiveOrders();
-+       let res = await bqo_api.getActiveOrders();
-+ 
-+       // Jika session expired di QR mode → silent re-login lalu retry
-+       if (res && res.result === false && getTableId()) {
-+         const errMsg = res.onfail?.cerror || '';
-+         if (errMsg.includes('expired') || errMsg.includes('tidak valid')) {
-+           await new Promise((resolve) => auth.signinAsGuest(resolve));
-+           res = await bqo_api.getActiveOrders();
-+         }
-+       }
-+ 
-// Line 501:
--           // QR mode: auto re-login lalu retry submit
-+           // QR mode: auto re-login lalu retry submit — silent, tanpa pesan ke user
--             ToastBar('info', 'Session habis. Sedang login ulang...', 2000);
-// Line 637:
-+     setReceiptDownloaded(true);
-+   const [receiptDownloaded, setReceiptDownloaded] = useState(false);
-+ 
--     // Print guard hanya berlaku jika tombol print ditampilkan (bukan QR/HP mode)
-+     // Print guard: cetak dulu (mode PC/kasir)
-+     // Download guard: wajib download dulu (mode HP/QR)
-+     if (!showPrint && !receiptDownloaded) {
-+       AlertDialog('warning', 'Belum Download Bukti Pesanan',
-+         'Silakan download bukti pesanan terlebih dahulu.',
-+         () => handleDownloadReceipt());
-+       return;
-+     }
-+     setReceiptDownloaded(false);
-```
-
----
-
-#### 7. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_094055]
-**Fungsi:** Halaman checkout & submit order  
-**Perubahan:** Pembaruan kode  
-**Lines:** 382-383
-
-```javascript
-// Line 379:
--           <p>Tambahkan Pesanan?</p>,
--           'Ya, Tambahkan',
-+           <p>Pesanan baru akan dibuat terpisah dengan nomor order baru. Lanjutkan?</p>,
-+           'Ya, Buat Pesanan Baru',
-```
-
----
-
-#### 8. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_092723]
-**Fungsi:** Halaman checkout & submit order  
-**Perubahan:** Import: ConfirmDialog  
-**Lines:** 34, 378-388
-
-```javascript
-// Line 31:
-+ import ConfirmDialog from '../../../components/ConfirmDialog';
-// Line 375:
-+       if (isTableLocked) {
-+         // QR mode — tampilkan warning tapi tetap bisa lanjut (bisa jadi satu grup)
-+         ConfirmDialog(
-+           'Meja ini ada pesanan aktif',
-+           <p>Tambahkan Pesanan?</p>,
-+           'Ya, Tambahkan',
-+           () => setShowPaymentMethodDlg(true),
-+         );
-+         return;
-+       }
-+       // Mode manual (dropdown) — blokir total
-```
-
----
-
-#### 9. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_084541]
-**Fungsi:** Halaman checkout & submit order  
-**Perubahan:** Import: AuthContext  
-**Lines:** 39, 71, 480, 482-498
-
-```javascript
-// Line 36:
-+ import { useAuth } from '../../../contexts/AuthContext';
-// Line 68:
-+   const auth = useAuth();
-// Line 477:
--         // Deteksi session expired — simpan state lalu redirect ke login
-+         // Deteksi session expired
-+           // QR mode: auto re-login lalu retry submit
-+           if (getTableId()) {
-+             ToastBar('info', 'Session habis. Sedang login ulang...', 2000);
-+             await new Promise((resolve) => auth.signinAsGuest(resolve));
-+             // Retry submit setelah re-login
-+             const retryResult = await bqo_api.add(payload);
-+             if (retryResult.result === true) {
-+               const bon2    = retryResult.onsuccess?.cordernum || retryResult.onsuccess?.csonum || '';
-+               const cqonum2 = retryResult.onsuccess?.cqonum    || bon2;
-+               setKasirResult({ nomorBon: bon2, cqonum: cqonum2, cartItems, subtotal, taxAmount, total });
-+               fetchOccupiedTables();
-+             } else {
-+               ToastBar('error', `Gagal: ${retryResult.onfail?.cerror || 'Error setelah re-login'}`, 5000);
-+             }
-+             return;
-+           }
-+           // Mode biasa: redirect ke login
-```
-
----
-
-#### 10. rc/scripts/modules/BQO/views/bqo_checkout.js [20260813_111505]
-**Fungsi:** Halaman checkout & submit order  
-**Perubahan:** Pembaruan kode  
-
----
-
-#### 11. src/scripts/modules/BQO/views/bqo_home.js [20260813_111505]
+#### 2. src/scripts/modules/BQO/views/bqo_home.js [20260813_111508]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Tambah state management  
 **Lines:** 42, 44, 48-52, 73, 78, 80-92, 96, 487, 495-501, 734-735
@@ -279,9 +77,278 @@
 
 ---
 
+#### 3. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_110015]
+**Fungsi:** Halaman checkout & submit order  
+**Perubahan:** Pembaruan kode  
+**Lines:** 390-392, 396, 399
+
+```javascript
+// Line 387:
++     // Normalisasi seatNumber agar cocok dengan format di occupiedTables (tanpa leading zero)
++     const normalizedSeat = String(parseInt(info.seatNumber, 10) || info.seatNumber);
++ 
+-       ToastBar('info', `DEBUG meja terisi: [${occList}] | seatNumber: "${info.seatNumber}"`, 5000);
++       ToastBar('info', `DEBUG meja terisi: [${occList}] | seatNumber: "${normalizedSeat}"`, 5000);
+-     if (occupiedTablesRef.current.has(info.seatNumber)) {
++     if (occupiedTablesRef.current.has(normalizedSeat)) {
+```
+
+---
+
+#### 4. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_105608]
+**Fungsi:** Halaman checkout & submit order  
+**Perubahan:** Pembaruan kode  
+**Lines:** 42, 47-49, 187
+
+```javascript
+// Line 39:
+- /** Deteksi apakah error dari backend adalah session expired */
++ /** Deteksi apakah error dari backend adalah session expired/invalid */
+-    msg.includes('expired'));
++    msg.includes('expired') ||
++    msg.includes('di-LOCK') ||
++    msg.includes('proses lain'));
+// Line 184:
+-         if (errMsg.includes('expired') || errMsg.includes('tidak valid')) {
++         if (errMsg.includes('expired') || errMsg.includes('tidak valid') || errMsg.includes('LOCK') || errMsg.includes('proses lain')) {
+```
+
+---
+
+#### 5. src/scripts/modules/BQO/views/bqo_home.js [20260813_105608]
+**Fungsi:** Halaman utama / dashboard  
+**Perubahan:** Pembaruan kode  
+**Lines:** 500, 502-503, 505-506, 508-509
+
+```javascript
+// Line 497:
+-           position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 9999,
++           position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9999,
+-           fontSize: '11px', padding: '6px 8px', maxHeight: '200px', overflowY: 'auto',
++           fontSize: '10px', padding: '4px 8px', maxHeight: '120px', overflowY: 'auto',
++           pointerEvents: 'none', // tidak menghalangi klik di belakangnya
+-           <div style={{ color: '#ff0', fontWeight: 'bold', marginBottom: 4 }}>
+-             🐛 DEBUG — tableId: {getTableId() || '(none)'} | key: {Config.SESSION_KEY()?.substring(0,10) ?? 'null'}...
++           <div style={{ color: '#ff0', fontWeight: 'bold', marginBottom: 2 }}>
++             🐛 tableId:{getTableId() || '-'} | key:{Config.SESSION_KEY()?.substring(0,8) ?? 'null'}
+-           {debugLog.length === 0 && <div style={{ color: '#aaa' }}>Menunggu log...</div>}
+-           {debugLog.map((l, i) => (
+-             <div key={i} style={{ color: l.isError ? '#f66' : '#0f0', lineHeight: 1.5 }}>
++           {debugLog.slice(-5).map((l, i) => (
++             <div key={i} style={{ color: l.isError ? '#f66' : '#0f0', lineHeight: 1.3 }}>
+```
+
+---
+
+#### 6. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_104007]
+**Fungsi:** Halaman checkout & submit order  
+**Perubahan:** Pembaruan kode  
+**Lines:** 387-393
+
+```javascript
+// Line 384:
++ 
++     // DEBUG: tampilkan data occupied saat checkout
++     if (getAppConfig().debug_screen) {
++       const occList = Array.from(occupiedTablesRef.current).join(', ') || '(kosong)';
++       ToastBar('info', `DEBUG meja terisi: [${occList}] | seatNumber: "${info.seatNumber}"`, 5000);
++     }
++ 
+```
+
+---
+
+#### 7. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_101423]
+**Fungsi:** Halaman checkout & submit order  
+**Perubahan:** Pembaruan kode  
+**Lines:** 248
+
+```javascript
+// Line 245:
+-   }, []);
++   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+```
+
+---
+
+#### 8. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_100856]
+**Fungsi:** Halaman checkout & submit order  
+**Perubahan:** Tambah state management  
+**Lines:** 180-190, 504, 640, 643-644, 647, 654-660, 662
+
+```javascript
+// Line 177:
+-       const res = await bqo_api.getActiveOrders();
++       let res = await bqo_api.getActiveOrders();
++ 
++       // Jika session expired di QR mode → silent re-login lalu retry
++       if (res && res.result === false && getTableId()) {
++         const errMsg = res.onfail?.cerror || '';
++         if (errMsg.includes('expired') || errMsg.includes('tidak valid')) {
++           await new Promise((resolve) => auth.signinAsGuest(resolve));
++           res = await bqo_api.getActiveOrders();
++         }
++       }
++ 
+// Line 501:
+-           // QR mode: auto re-login lalu retry submit
++           // QR mode: auto re-login lalu retry submit — silent, tanpa pesan ke user
+-             ToastBar('info', 'Session habis. Sedang login ulang...', 2000);
+// Line 637:
++     setReceiptDownloaded(true);
++   const [receiptDownloaded, setReceiptDownloaded] = useState(false);
++ 
+-     // Print guard hanya berlaku jika tombol print ditampilkan (bukan QR/HP mode)
++     // Print guard: cetak dulu (mode PC/kasir)
++     // Download guard: wajib download dulu (mode HP/QR)
++     if (!showPrint && !receiptDownloaded) {
++       AlertDialog('warning', 'Belum Download Bukti Pesanan',
++         'Silakan download bukti pesanan terlebih dahulu.',
++         () => handleDownloadReceipt());
++       return;
++     }
++     setReceiptDownloaded(false);
+```
+
+---
+
+#### 9. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_094055]
+**Fungsi:** Halaman checkout & submit order  
+**Perubahan:** Pembaruan kode  
+**Lines:** 382-383
+
+```javascript
+// Line 379:
+-           <p>Tambahkan Pesanan?</p>,
+-           'Ya, Tambahkan',
++           <p>Pesanan baru akan dibuat terpisah dengan nomor order baru. Lanjutkan?</p>,
++           'Ya, Buat Pesanan Baru',
+```
+
+---
+
+#### 10. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_092723]
+**Fungsi:** Halaman checkout & submit order  
+**Perubahan:** Import: ConfirmDialog  
+**Lines:** 34, 378-388
+
+```javascript
+// Line 31:
++ import ConfirmDialog from '../../../components/ConfirmDialog';
+// Line 375:
++       if (isTableLocked) {
++         // QR mode — tampilkan warning tapi tetap bisa lanjut (bisa jadi satu grup)
++         ConfirmDialog(
++           'Meja ini ada pesanan aktif',
++           <p>Tambahkan Pesanan?</p>,
++           'Ya, Tambahkan',
++           () => setShowPaymentMethodDlg(true),
++         );
++         return;
++       }
++       // Mode manual (dropdown) — blokir total
+```
+
+---
+
+#### 11. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_084541]
+**Fungsi:** Halaman checkout & submit order  
+**Perubahan:** Import: AuthContext  
+**Lines:** 39, 71, 480, 482-498
+
+```javascript
+// Line 36:
++ import { useAuth } from '../../../contexts/AuthContext';
+// Line 68:
++   const auth = useAuth();
+// Line 477:
+-         // Deteksi session expired — simpan state lalu redirect ke login
++         // Deteksi session expired
++           // QR mode: auto re-login lalu retry submit
++           if (getTableId()) {
++             ToastBar('info', 'Session habis. Sedang login ulang...', 2000);
++             await new Promise((resolve) => auth.signinAsGuest(resolve));
++             // Retry submit setelah re-login
++             const retryResult = await bqo_api.add(payload);
++             if (retryResult.result === true) {
++               const bon2    = retryResult.onsuccess?.cordernum || retryResult.onsuccess?.csonum || '';
++               const cqonum2 = retryResult.onsuccess?.cqonum    || bon2;
++               setKasirResult({ nomorBon: bon2, cqonum: cqonum2, cartItems, subtotal, taxAmount, total });
++               fetchOccupiedTables();
++             } else {
++               ToastBar('error', `Gagal: ${retryResult.onfail?.cerror || 'Error setelah re-login'}`, 5000);
++             }
++             return;
++           }
++           // Mode biasa: redirect ke login
+```
+
+---
+
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260813.md [20260813_110015]
+#### 1. docs/changelog/daily/codeChange-20260813.md [20260813_111508]
+**Fungsi:** Implementasi: codeChange-20260813  
+**Perubahan:** Tambah state management; Akses localStorage  
+**Lines:** 7-25, 45, 70, 88, 101, 142, 157, 181, 215, 221-281, 284-345, 406, 467, 528, 589, 650, 711, 772, 948-949, 951
+
+```javascript
+// Line 4:
+- #### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_105608]
++ #### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_110015]
++ **Fungsi:** Halaman checkout & submit order  
++ **Perubahan:** Pembaruan kode  
++ **Lines:** 390-392, 396, 399
++ 
++ ```javascript
++ // Line 387:
++ +     // Normalisasi seatNumber agar cocok dengan format di occupiedTables (tanpa leading zero)
++ +     const normalizedSeat = String(parseInt(info.seatNumber, 10) || info.seatNumber);
++ + 
++ -       ToastBar('info', `DEBUG meja terisi: [${occList}] | seatNumber: "${info.seatNumber}"`, 5000);
++ +       ToastBar('info', `DEBUG meja terisi: [${occList}] | seatNumber: "${normalizedSeat}"`, 5000);
++ -     if (occupiedTablesRef.current.has(info.seatNumber)) {
++ +     if (occupiedTablesRef.current.has(normalizedSeat)) {
++ ```
++ 
++ ---
++ 
++ #### 2. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_105608]
+// Line 42:
+- #### 2. src/scripts/modules/BQO/views/bqo_home.js [20260813_105608]
++ #### 3. src/scripts/modules/BQO/views/bqo_home.js [20260813_105608]
+// Line 67:
+  // ... (truncated)
+// Line 464:
+- #### 3. docs/changelog/daily/codeChange-20260813.md [20260813_101423]
++ #### 4. docs/changelog/daily/codeChange-20260813.md [20260813_101423]
+// Line 525:
+- #### 4. docs/changelog/daily/codeChange-20260813.md [20260813_100856]
++ #### 5. docs/changelog/daily/codeChange-20260813.md [20260813_100856]
+// Line 586:
+- #### 5. docs/changelog/daily/codeChange-20260813.md [20260813_094055]
++ #### 6. docs/changelog/daily/codeChange-20260813.md [20260813_094055]
+// Line 647:
+- #### 6. docs/changelog/daily/codeChange-20260813.md [20260813_092723]
++ #### 7. docs/changelog/daily/codeChange-20260813.md [20260813_092723]
+// Line 708:
+- #### 7. docs/changelog/daily/codeChange-20260813.md [20260813_085040]
++ #### 8. docs/changelog/daily/codeChange-20260813.md [20260813_085040]
+// Line 769:
+- #### 8. docs/changelog/daily/codeChange-20260813.md [20260813_084541]
++ #### 9. docs/changelog/daily/codeChange-20260813.md [20260813_084541]
+// Line 945:
+- - **✨ Features:** 9 items
+- - **📖 Documentation:** 8 items
++ - **✨ Features:** 11 items
++ - **📖 Documentation:** 9 items
+- - **Total Files Modified:** 20
++ - **Total Files Modified:** 23
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260813.md [20260813_110015]
 **Fungsi:** Implementasi: codeChange-20260813  
 **Perubahan:** Akses localStorage  
 **Lines:** 7-52, 70, 83, 124, 139, 163, 197, 203-208, 211-261, 266, 327, 388, 449, 510, 571, 632, 808-809, 811
@@ -342,7 +409,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260813.md [20260813_105608]
+#### 3. docs/changelog/daily/codeChange-20260813.md [20260813_105608]
 **Fungsi:** Implementasi: codeChange-20260813  
 **Perubahan:** Akses localStorage  
 **Lines:** 7-25, 38, 79, 94, 118, 152, 158-182, 185-246, 307, 368, 429, 490, 551, 727-728, 730
@@ -403,7 +470,7 @@
 
 ---
 
-#### 3. docs/changelog/daily/codeChange-20260813.md [20260813_104007]
+#### 4. docs/changelog/daily/codeChange-20260813.md [20260813_104007]
 **Fungsi:** Implementasi: codeChange-20260813  
 **Perubahan:** Akses localStorage  
 **Lines:** 7-20, 61, 76, 100, 134, 142-203, 264, 325, 386, 447, 623-624, 626
@@ -464,7 +531,7 @@
 
 ---
 
-#### 4. docs/changelog/daily/codeChange-20260813.md [20260813_101423]
+#### 5. docs/changelog/daily/codeChange-20260813.md [20260813_101423]
 **Fungsi:** Implementasi: codeChange-20260813  
 **Perubahan:** Tambah state management; Akses localStorage  
 **Lines:** 7-48, 63, 87, 121, 129-190, 251, 312, 373, 549-550, 552
@@ -525,7 +592,7 @@
 
 ---
 
-#### 5. docs/changelog/daily/codeChange-20260813.md [20260813_100856]
+#### 6. docs/changelog/daily/codeChange-20260813.md [20260813_100856]
 **Fungsi:** Implementasi: codeChange-20260813  
 **Perubahan:** Akses localStorage  
 **Lines:** 7-22, 46, 80, 88-149, 210, 271, 447-448, 450
@@ -586,7 +653,7 @@
 
 ---
 
-#### 6. docs/changelog/daily/codeChange-20260813.md [20260813_094055]
+#### 7. docs/changelog/daily/codeChange-20260813.md [20260813_094055]
 **Fungsi:** Implementasi: codeChange-20260813  
 **Perubahan:** Akses localStorage  
 **Lines:** 7-31, 65, 73-134, 195, 371-372, 374-375
@@ -647,7 +714,7 @@
 
 ---
 
-#### 7. docs/changelog/daily/codeChange-20260813.md [20260813_092723]
+#### 8. docs/changelog/daily/codeChange-20260813.md [20260813_092723]
 **Fungsi:** Implementasi: codeChange-20260813  
 **Perubahan:** Akses localStorage; Tambah state management  
 **Lines:** 41-46, 49-110, 173-234, 249, 286-287, 289
@@ -708,7 +775,7 @@
 
 ---
 
-#### 8. docs/changelog/daily/codeChange-20260813.md [20260813_085040]
+#### 9. docs/changelog/daily/codeChange-20260813.md [20260813_085040]
 **Fungsi:** Implementasi: codeChange-20260813  
 **Perubahan:** Akses localStorage; Tambah state management; Tambah side effect  
 **Lines:** 7, 41-103, 106, 108-117, 121, 157-162, 165-167
@@ -769,7 +836,7 @@
 
 ---
 
-#### 9. docs/changelog/daily/codeChange-20260813.md [20260813_084541]
+#### 10. docs/changelog/daily/codeChange-20260813.md [20260813_084541]
 **Fungsi:** Implementasi: codeChange-20260813  
 **Perubahan:** Akses localStorage; Tambah state management; Tambah side effect  
 **Lines:** 1-89
@@ -827,6 +894,12 @@
 + - **Total Files Modified:** 3
 + - **Main Focus:** 🔐 Auth/Session
 ```
+
+---
+
+#### 11. docs/ALUR-QORESTOWEB.md [20260813_114457]
+**Fungsi:** Implementasi: ALUR-QORESTOWEB  
+**Perubahan:** Pembaruan kode  
 
 ---
 
@@ -946,7 +1019,7 @@
 
 ## 📊 **Summary**
 - **✨ Features:** 11 items
-- **📖 Documentation:** 9 items
+- **📖 Documentation:** 11 items
 - **🔐 Auth/Session:** 3 items
-- **Total Files Modified:** 23
+- **Total Files Modified:** 25
 - **Main Focus:** Features
