@@ -4,7 +4,25 @@
 
 ### ✨ Features
 
-#### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_105608]
+#### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_110015]
+**Fungsi:** Halaman checkout & submit order  
+**Perubahan:** Pembaruan kode  
+**Lines:** 390-392, 396, 399
+
+```javascript
+// Line 387:
++     // Normalisasi seatNumber agar cocok dengan format di occupiedTables (tanpa leading zero)
++     const normalizedSeat = String(parseInt(info.seatNumber, 10) || info.seatNumber);
++ 
+-       ToastBar('info', `DEBUG meja terisi: [${occList}] | seatNumber: "${info.seatNumber}"`, 5000);
++       ToastBar('info', `DEBUG meja terisi: [${occList}] | seatNumber: "${normalizedSeat}"`, 5000);
+-     if (occupiedTablesRef.current.has(info.seatNumber)) {
++     if (occupiedTablesRef.current.has(normalizedSeat)) {
+```
+
+---
+
+#### 2. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_105608]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Pembaruan kode  
 **Lines:** 42, 47-49, 187
@@ -24,7 +42,7 @@
 
 ---
 
-#### 2. src/scripts/modules/BQO/views/bqo_home.js [20260813_105608]
+#### 3. src/scripts/modules/BQO/views/bqo_home.js [20260813_105608]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Pembaruan kode  
 **Lines:** 500, 502-503, 505-506, 508-509
@@ -49,7 +67,7 @@
 
 ---
 
-#### 3. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_104007]
+#### 4. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_104007]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Pembaruan kode  
 **Lines:** 387-393
@@ -67,7 +85,7 @@
 
 ---
 
-#### 4. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_101423]
+#### 5. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_101423]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Pembaruan kode  
 **Lines:** 248
@@ -80,7 +98,7 @@
 
 ---
 
-#### 5. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_100856]
+#### 6. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_100856]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Tambah state management  
 **Lines:** 180-190, 504, 640, 643-644, 647, 654-660, 662
@@ -121,7 +139,7 @@
 
 ---
 
-#### 6. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_094055]
+#### 7. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_094055]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Pembaruan kode  
 **Lines:** 382-383
@@ -136,7 +154,7 @@
 
 ---
 
-#### 7. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_092723]
+#### 8. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_092723]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Import: ConfirmDialog  
 **Lines:** 34, 378-388
@@ -160,7 +178,7 @@
 
 ---
 
-#### 8. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_084541]
+#### 9. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_084541]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Import: AuthContext  
 **Lines:** 39, 71, 480, 482-498
@@ -194,15 +212,137 @@
 
 ---
 
-#### 9. rc/scripts/modules/BQO/views/bqo_checkout.js [20260813_110014]
+#### 10. rc/scripts/modules/BQO/views/bqo_checkout.js [20260813_111505]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Pembaruan kode  
 
 ---
 
+#### 11. src/scripts/modules/BQO/views/bqo_home.js [20260813_111505]
+**Fungsi:** Halaman utama / dashboard  
+**Perubahan:** Tambah state management  
+**Lines:** 42, 44, 48-52, 73, 78, 80-92, 96, 487, 495-501, 734-735
+
+```javascript
+// Line 39:
+- const NoteDialog = memo(function NoteDialog({ open, initialValue, onSave, onClose }) {
++ const NoteDialog = memo(function NoteDialog({ open, initialValue, initialValue2, onSave, onClose }) {
++   const [value2, setValue2] = useState(initialValue2 || '');
+-     if (open) setValue(initialValue || '');
+-   }, [open, initialValue]);
++     if (open) {
++       setValue(initialValue || '');
++       setValue2(initialValue2 || '');
++     }
++   }, [open, initialValue, initialValue2]);
+// Line 70:
+-           sx={{ '& .MuiInputBase-root': { padding: 1 } }}
++           sx={{ '& .MuiInputBase-root': { padding: 1 }, mb: 1.5 }}
+-           rows={3}
++           rows={2}
+-           placeholder="Tulis catatan untuk menu ini..."
++           label="Catatan 1"
++           placeholder="Misal: tidak pedas, tanpa bawang..."
++         />
++         <TextField
++           sx={{ '& .MuiInputBase-root': { padding: 1 } }}
++           multiline
++           fullWidth
++           value={value2}
+  // ... (truncated)
+// Line 492:
+-   const handleSaveNoteForm = useCallback((value, accessorID) => {
+-     if (value !== '') {
+-       setCart((prev) => ({
+-         ...prev,
+-         [accessorID]: { ...prev[accessorID], note: value },
+-       }));
+-     } else {
+-       setCart((prev) => {
+-         const next = { ...prev, [accessorID]: { ...prev[accessorID] } };
+-         delete next[accessorID].note;
+-         return next;
+-       });
+-     }
++   const handleSaveNoteForm = useCallback((value, value2, accessorID) => {
++     setCart((prev) => {
++       const updated = { ...prev[accessorID] };
++       if (value)  updated.note = value;   else delete updated.note;
++       if (value2) updated.note2 = value2; else delete updated.note2;
++       return { ...prev, [accessorID]: updated };
++     });
+// Line 731:
+-         onSave={(value) => handleSaveNoteForm(value, showDialog.accessorID)}
++         initialValue2={showDialog.isShow && showDialog.isForm ? (cart[showDialog.accessorID]?.note2 || '') : ''}
++         onSave={(v1, v2) => handleSaveNoteForm(v1, v2, showDialog.accessorID)}
+```
+
+---
+
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260813.md [20260813_105608]
+#### 1. docs/changelog/daily/codeChange-20260813.md [20260813_110015]
+**Fungsi:** Implementasi: codeChange-20260813  
+**Perubahan:** Akses localStorage  
+**Lines:** 7-52, 70, 83, 124, 139, 163, 197, 203-208, 211-261, 266, 327, 388, 449, 510, 571, 632, 808-809, 811
+
+```javascript
+// Line 4:
+- #### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_104007]
++ #### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_105608]
++ **Fungsi:** Halaman checkout & submit order  
++ **Perubahan:** Pembaruan kode  
++ **Lines:** 42, 47-49, 187
++ 
++ ```javascript
++ // Line 39:
++ - /** Deteksi apakah error dari backend adalah session expired */
++ + /** Deteksi apakah error dari backend adalah session expired/invalid */
++ -    msg.includes('expired'));
++ +    msg.includes('expired') ||
++ +    msg.includes('di-LOCK') ||
++ +    msg.includes('proses lain'));
++ // Line 184:
++ -         if (errMsg.includes('expired') || errMsg.includes('tidak valid')) {
++ +         if (errMsg.includes('expired') || errMsg.includes('tidak valid') || errMsg.includes('LOCK') || errMsg.includes('proses lain')) {
++ ```
++ 
++ ---
++ 
++ #### 2. src/scripts/modules/BQO/views/bqo_home.js [20260813_105608]
++ **Fungsi:** Halaman utama / dashboard  
++ **Perubahan:** Pembaruan kode  
+  // ... (truncated)
+// Line 324:
+- #### 2. docs/changelog/daily/codeChange-20260813.md [20260813_101423]
++ #### 3. docs/changelog/daily/codeChange-20260813.md [20260813_101423]
+// Line 385:
+- #### 3. docs/changelog/daily/codeChange-20260813.md [20260813_100856]
++ #### 4. docs/changelog/daily/codeChange-20260813.md [20260813_100856]
+// Line 446:
+- #### 4. docs/changelog/daily/codeChange-20260813.md [20260813_094055]
++ #### 5. docs/changelog/daily/codeChange-20260813.md [20260813_094055]
+// Line 507:
+- #### 5. docs/changelog/daily/codeChange-20260813.md [20260813_092723]
++ #### 6. docs/changelog/daily/codeChange-20260813.md [20260813_092723]
+// Line 568:
+- #### 6. docs/changelog/daily/codeChange-20260813.md [20260813_085040]
++ #### 7. docs/changelog/daily/codeChange-20260813.md [20260813_085040]
+// Line 629:
+- #### 7. docs/changelog/daily/codeChange-20260813.md [20260813_084541]
++ #### 8. docs/changelog/daily/codeChange-20260813.md [20260813_084541]
+// Line 805:
+- - **✨ Features:** 8 items
+- - **📖 Documentation:** 7 items
++ - **✨ Features:** 9 items
++ - **📖 Documentation:** 8 items
+- - **Total Files Modified:** 18
++ - **Total Files Modified:** 20
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260813.md [20260813_105608]
 **Fungsi:** Implementasi: codeChange-20260813  
 **Perubahan:** Akses localStorage  
 **Lines:** 7-25, 38, 79, 94, 118, 152, 158-182, 185-246, 307, 368, 429, 490, 551, 727-728, 730
@@ -263,7 +403,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260813.md [20260813_104007]
+#### 3. docs/changelog/daily/codeChange-20260813.md [20260813_104007]
 **Fungsi:** Implementasi: codeChange-20260813  
 **Perubahan:** Akses localStorage  
 **Lines:** 7-20, 61, 76, 100, 134, 142-203, 264, 325, 386, 447, 623-624, 626
@@ -324,7 +464,7 @@
 
 ---
 
-#### 3. docs/changelog/daily/codeChange-20260813.md [20260813_101423]
+#### 4. docs/changelog/daily/codeChange-20260813.md [20260813_101423]
 **Fungsi:** Implementasi: codeChange-20260813  
 **Perubahan:** Tambah state management; Akses localStorage  
 **Lines:** 7-48, 63, 87, 121, 129-190, 251, 312, 373, 549-550, 552
@@ -385,7 +525,7 @@
 
 ---
 
-#### 4. docs/changelog/daily/codeChange-20260813.md [20260813_100856]
+#### 5. docs/changelog/daily/codeChange-20260813.md [20260813_100856]
 **Fungsi:** Implementasi: codeChange-20260813  
 **Perubahan:** Akses localStorage  
 **Lines:** 7-22, 46, 80, 88-149, 210, 271, 447-448, 450
@@ -446,7 +586,7 @@
 
 ---
 
-#### 5. docs/changelog/daily/codeChange-20260813.md [20260813_094055]
+#### 6. docs/changelog/daily/codeChange-20260813.md [20260813_094055]
 **Fungsi:** Implementasi: codeChange-20260813  
 **Perubahan:** Akses localStorage  
 **Lines:** 7-31, 65, 73-134, 195, 371-372, 374-375
@@ -507,7 +647,7 @@
 
 ---
 
-#### 6. docs/changelog/daily/codeChange-20260813.md [20260813_092723]
+#### 7. docs/changelog/daily/codeChange-20260813.md [20260813_092723]
 **Fungsi:** Implementasi: codeChange-20260813  
 **Perubahan:** Akses localStorage; Tambah state management  
 **Lines:** 41-46, 49-110, 173-234, 249, 286-287, 289
@@ -568,7 +708,7 @@
 
 ---
 
-#### 7. docs/changelog/daily/codeChange-20260813.md [20260813_085040]
+#### 8. docs/changelog/daily/codeChange-20260813.md [20260813_085040]
 **Fungsi:** Implementasi: codeChange-20260813  
 **Perubahan:** Akses localStorage; Tambah state management; Tambah side effect  
 **Lines:** 7, 41-103, 106, 108-117, 121, 157-162, 165-167
@@ -629,7 +769,7 @@
 
 ---
 
-#### 8. docs/changelog/daily/codeChange-20260813.md [20260813_084541]
+#### 9. docs/changelog/daily/codeChange-20260813.md [20260813_084541]
 **Fungsi:** Implementasi: codeChange-20260813  
 **Perubahan:** Akses localStorage; Tambah state management; Tambah side effect  
 **Lines:** 1-89
@@ -805,8 +945,8 @@
 ---
 
 ## 📊 **Summary**
-- **✨ Features:** 9 items
-- **📖 Documentation:** 8 items
+- **✨ Features:** 11 items
+- **📖 Documentation:** 9 items
 - **🔐 Auth/Session:** 3 items
-- **Total Files Modified:** 20
+- **Total Files Modified:** 23
 - **Main Focus:** Features

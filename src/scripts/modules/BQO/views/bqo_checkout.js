@@ -457,6 +457,7 @@ export default function BQOCheckout() {
           ndisc:    discPct > 0 ? discPct : 0,
           nrpdisc,
           cremark:  d.note || '',
+          cremark2: d.note2 || '',
           cremark2: d.note || '',
         };
       });

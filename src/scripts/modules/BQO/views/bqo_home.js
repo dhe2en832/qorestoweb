@@ -39,13 +39,17 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { getTableId, initTableId } from '../../../utils/table-session';
 
 // ── Komponen Dialog Catatan — dipisah agar tidak memicu re-render list saat ketik ──
-const NoteDialog = memo(function NoteDialog({ open, initialValue, onSave, onClose }) {
+const NoteDialog = memo(function NoteDialog({ open, initialValue, initialValue2, onSave, onClose }) {
   const [value, setValue] = useState(initialValue || '');
+  const [value2, setValue2] = useState(initialValue2 || '');
 
   // Sync nilai awal saat dialog dibuka
   useEffect(() => {
-    if (open) setValue(initialValue || '');
-  }, [open, initialValue]);
+    if (open) {
+      setValue(initialValue || '');
+      setValue2(initialValue2 || '');
+    }
+  }, [open, initialValue, initialValue2]);
 
   return (
     <Dialog
@@ -66,18 +70,30 @@ const NoteDialog = memo(function NoteDialog({ open, initialValue, onSave, onClos
           Catatan
         </Typography>
         <TextField
-          sx={{ '& .MuiInputBase-root': { padding: 1 } }}
+          sx={{ '& .MuiInputBase-root': { padding: 1 }, mb: 1.5 }}
           multiline
           fullWidth
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          rows={3}
+          rows={2}
           variant="filled"
-          placeholder="Tulis catatan untuk menu ini..."
+          label="Catatan 1"
+          placeholder="Misal: tidak pedas, tanpa bawang..."
+        />
+        <TextField
+          sx={{ '& .MuiInputBase-root': { padding: 1 } }}
+          multiline
+          fullWidth
+          value={value2}
+          onChange={(e) => setValue2(e.target.value)}
+          rows={2}
+          variant="filled"
+          label="Catatan 2"
+          placeholder="Catatan tambahan..."
         />
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" onClick={() => onSave(value)} size="small">
+        <Button variant="contained" onClick={() => onSave(value, value2)} size="small">
           Konfirmasi
         </Button>
         <Button variant="contained" color="error" onClick={onClose} size="small">
@@ -468,7 +484,7 @@ export default function BQOHome() {
   // Note Form — noteValue dikelola di dalam NoteDialog (tidak di sini)
   // agar list tidak re-render setiap keystroke
   const isNoteExist = (id) => {
-    return !!cart[id]?.note;
+    return !!(cart[id]?.note || cart[id]?.note2);
   };
   const handleOpenNoteForm = useCallback((accessorID) => {
     handleOpenDialog(true, accessorID);
@@ -476,19 +492,13 @@ export default function BQOHome() {
   const handleCloseNoteForm = useCallback(() => {
     handleCloseDialog();
   }, []);
-  const handleSaveNoteForm = useCallback((value, accessorID) => {
-    if (value !== '') {
-      setCart((prev) => ({
-        ...prev,
-        [accessorID]: { ...prev[accessorID], note: value },
-      }));
-    } else {
-      setCart((prev) => {
-        const next = { ...prev, [accessorID]: { ...prev[accessorID] } };
-        delete next[accessorID].note;
-        return next;
-      });
-    }
+  const handleSaveNoteForm = useCallback((value, value2, accessorID) => {
+    setCart((prev) => {
+      const updated = { ...prev[accessorID] };
+      if (value)  updated.note = value;   else delete updated.note;
+      if (value2) updated.note2 = value2; else delete updated.note2;
+      return { ...prev, [accessorID]: updated };
+    });
     handleCloseDialog();
   }, []);
 
@@ -721,7 +731,8 @@ export default function BQOHome() {
       <NoteDialog
         open={showDialog.isShow && showDialog.isForm}
         initialValue={showDialog.isShow && showDialog.isForm ? (cart[showDialog.accessorID]?.note || '') : ''}
-        onSave={(value) => handleSaveNoteForm(value, showDialog.accessorID)}
+        initialValue2={showDialog.isShow && showDialog.isForm ? (cart[showDialog.accessorID]?.note2 || '') : ''}
+        onSave={(v1, v2) => handleSaveNoteForm(v1, v2, showDialog.accessorID)}
         onClose={handleCloseNoteForm}
       />
       {/* Info */}
