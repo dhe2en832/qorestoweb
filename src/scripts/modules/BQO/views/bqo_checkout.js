@@ -245,7 +245,7 @@ export default function BQOCheckout() {
       window.removeEventListener('focus', fetchOccupiedTables);
       clearInterval(intervalId);
     };
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Generate daftar nomor meja 1..TABLE_COUNT
   const tableOptions = Array.from({ length: TABLE_COUNT }, (_, i) => {
