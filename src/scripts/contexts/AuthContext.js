@@ -8,6 +8,7 @@ import useLocalStorage from '../hooks/useLocalStorage';
 import { typesError } from '../utils/types-error';
 import ApiRoute from '../routes/ApiRoute';
 import { getAppConfig } from '../utils/app-config';
+import { getTableId } from '../utils/table-session';
 
 const authContext = createContext();
 
@@ -208,6 +209,8 @@ function useProvideAuth() {
   };
 
   const handleOnIdle = () => {
+    // Di QR mode, jangan invalidasi session — biarkan silent retry yang handle
+    if (getTableId()) return;
     setUserID(null);
     setSessionTimeout(true);
     setSessionKey('Session Has Been Timed Out');

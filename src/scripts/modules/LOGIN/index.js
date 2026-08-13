@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
@@ -15,8 +15,30 @@ import CompanyName from '../../components/CompanyName';
 import AlertContainer from '../../components/AlertContainer';
 import ServerLabel from '../../components/ServerLabel';
 import { ReactComponent as Logo } from '../../../images/logo.svg';
+import { getTableId } from '../../utils/table-session';
+import ProgressLoader from '../../components/ProgressLoader';
 
 function Login({ isForm, afterLogin }) {
+  const authForQR = useAuth();
+  const navigateQR = useNavigate();
+  const tableId = getTableId();
+
+  // QR mode: jika pelanggan sampai di halaman login (misal session expired redirect),
+  // auto re-login tanpa tampilkan form
+  const [autoLogging, setAutoLogging] = useState(false);
+  useEffect(() => {
+    if (tableId && !isForm && !authForQR.loggedIn) {
+      setAutoLogging(true);
+      authForQR.signinAsGuest(() => {
+        const returnPath = window.localStorage.getItem('QoReturnPath') || '/menu';
+        window.localStorage.removeItem('QoReturnPath');
+        navigateQR(returnPath, { replace: true });
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (autoLogging) return <ProgressLoader />;
   const styles = {
     root: {
       padding: '16px',

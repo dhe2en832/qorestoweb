@@ -36,6 +36,7 @@ import usePrintReceipt from '../hooks/usePrintReceipt';
 import BQOOrderSlip from '../reports/BQOOrderSlip';
 import { getTableId } from '../../../utils/table-session';
 import { getAppConfig } from '../../../utils/app-config';
+import { useAuth } from '../../../contexts/AuthContext';
 
 /** Deteksi apakah error dari backend adalah session expired */
 const isSessionExpired = (msg) =>
@@ -67,6 +68,7 @@ const CASH_BANK_CODE = (process.env.REACT_APP_CASH_BANK_CODE || 'T000').trim();
 export default function BQOCheckout() {
   const { smUp } = useResponsive();
   const navigate = useNavigate();
+  const auth = useAuth();
   const styles = {
     container: {
       background: '#eee',
@@ -475,8 +477,25 @@ export default function BQOCheckout() {
         fetchOccupiedTables();
       } else {
         const errMsg = result.onfail?.cerror || 'Gagal mengirim pesanan.';
-        // Deteksi session expired — simpan state lalu redirect ke login
+        // Deteksi session expired
         if (isSessionExpired(errMsg)) {
+          // QR mode: auto re-login lalu retry submit
+          if (getTableId()) {
+            ToastBar('info', 'Session habis. Sedang login ulang...', 2000);
+            await new Promise((resolve) => auth.signinAsGuest(resolve));
+            // Retry submit setelah re-login
+            const retryResult = await bqo_api.add(payload);
+            if (retryResult.result === true) {
+              const bon2    = retryResult.onsuccess?.cordernum || retryResult.onsuccess?.csonum || '';
+              const cqonum2 = retryResult.onsuccess?.cqonum    || bon2;
+              setKasirResult({ nomorBon: bon2, cqonum: cqonum2, cartItems, subtotal, taxAmount, total });
+              fetchOccupiedTables();
+            } else {
+              ToastBar('error', `Gagal: ${retryResult.onfail?.cerror || 'Error setelah re-login'}`, 5000);
+            }
+            return;
+          }
+          // Mode biasa: redirect ke login
           window.localStorage.setItem('QoOrderInfo', JSON.stringify(info));
           window.localStorage.setItem('QoReturnPath', '/checkout');
           ToastBar('warning', 'Session habis. Silakan login kembali — pesanan Anda tersimpan.', 4000);
