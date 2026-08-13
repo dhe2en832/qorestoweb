@@ -387,13 +387,16 @@ export default function BQOCheckout() {
     // Refresh data meja tepat sebelum submit — cegah race condition antar device
     await fetchOccupiedTables();
 
+    // Normalisasi seatNumber agar cocok dengan format di occupiedTables (tanpa leading zero)
+    const normalizedSeat = String(parseInt(info.seatNumber, 10) || info.seatNumber);
+
     // DEBUG: tampilkan data occupied saat checkout
     if (getAppConfig().debug_screen) {
       const occList = Array.from(occupiedTablesRef.current).join(', ') || '(kosong)';
-      ToastBar('info', `DEBUG meja terisi: [${occList}] | seatNumber: "${info.seatNumber}"`, 5000);
+      ToastBar('info', `DEBUG meja terisi: [${occList}] | seatNumber: "${normalizedSeat}"`, 5000);
     }
 
-    if (occupiedTablesRef.current.has(info.seatNumber)) {
+    if (occupiedTablesRef.current.has(normalizedSeat)) {
       if (isTableLocked) {
         // QR mode — tampilkan warning tapi tetap bisa lanjut (bisa jadi satu grup)
         ConfirmDialog(
