@@ -379,8 +379,8 @@ export default function BQOCheckout() {
         // QR mode — tampilkan warning tapi tetap bisa lanjut (bisa jadi satu grup)
         ConfirmDialog(
           'Meja ini ada pesanan aktif',
-          <p>Tambahkan Pesanan?</p>,
-          'Ya, Tambahkan',
+          <p>Pesanan baru akan dibuat terpisah dengan nomor order baru. Lanjutkan?</p>,
+          'Ya, Buat Pesanan Baru',
           () => setShowPaymentMethodDlg(true),
         );
         return;

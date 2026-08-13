@@ -4,7 +4,31 @@
 
 ### ✨ Features
 
-#### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_084541]
+#### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_092723]
+**Fungsi:** Halaman checkout & submit order  
+**Perubahan:** Import: ConfirmDialog  
+**Lines:** 34, 378-388
+
+```javascript
+// Line 31:
++ import ConfirmDialog from '../../../components/ConfirmDialog';
+// Line 375:
++       if (isTableLocked) {
++         // QR mode — tampilkan warning tapi tetap bisa lanjut (bisa jadi satu grup)
++         ConfirmDialog(
++           'Meja ini ada pesanan aktif',
++           <p>Tambahkan Pesanan?</p>,
++           'Ya, Tambahkan',
++           () => setShowPaymentMethodDlg(true),
++         );
++         return;
++       }
++       // Mode manual (dropdown) — blokir total
+```
+
+---
+
+#### 2. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_084541]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Import: AuthContext  
 **Lines:** 39, 71, 480, 482-498
@@ -38,7 +62,7 @@
 
 ---
 
-#### 2. rc/scripts/modules/BQO/views/bqo_checkout.js [20260813_092722]
+#### 3. rc/scripts/modules/BQO/views/bqo_checkout.js [20260813_094054]
 **Fungsi:** Halaman checkout & submit order  
 **Perubahan:** Pembaruan kode  
 
@@ -46,7 +70,68 @@
 
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260813.md [20260813_085040]
+#### 1. docs/changelog/daily/codeChange-20260813.md [20260813_092723]
+**Fungsi:** Implementasi: codeChange-20260813  
+**Perubahan:** Akses localStorage; Tambah state management  
+**Lines:** 41-46, 49-110, 173-234, 249, 286-287, 289
+
+```javascript
+// Line 38:
++ #### 2. rc/scripts/modules/BQO/views/bqo_checkout.js [20260813_092722]
++ **Fungsi:** Halaman checkout & submit order  
++ **Perubahan:** Pembaruan kode  
++ 
++ ---
++ 
+- #### 1. docs/changelog/daily/codeChange-20260813.md [20260813_084541]
++ #### 1. docs/changelog/daily/codeChange-20260813.md [20260813_085040]
++ **Fungsi:** Implementasi: codeChange-20260813  
++ **Perubahan:** Akses localStorage; Tambah state management; Tambah side effect  
++ **Lines:** 7, 41-103, 106, 108-117, 121, 157-162, 165-167
++ 
++ ```javascript
++ // Line 4:
++ - #### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_084540]
++ + #### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_084541]
++ // Line 38:
++ + ### 📖 Documentation
++ + 
++ + #### 1. docs/changelog/daily/codeChange-20260813.md [20260813_084541]
++ + **Fungsi:** Implementasi: codeChange-20260813  
++ + **Perubahan:** Akses localStorage; Tambah state management; Tambah side effect  
++ + **Lines:** 1-89
++ + 
+  // ... (truncated)
++ +         window.localStorage.removeItem('QoReturnPath');
++ // Line 76:
++ +   // Early return setelah semua hooks
++ +   if (autoLogging) return <ProgressLoader />;
++ + 
++ ```
++ 
++ ---
++ 
++ #### 2. src/scripts/contexts/AuthContext.js [20260813_084541]
+// Line 246:
+- #### 2. src/scripts/modules/LOGIN/index.js [20260813_084541]
++ #### 3. src/scripts/modules/LOGIN/index.js [20260813_084541]
+// Line 282:
+- #### 3. rc/scripts/modules/LOGIN/index.js [20260813_085040]
+- **Fungsi:** Entry point / registrasi React  
+- **Perubahan:** Pembaruan kode  
+- 
+- 
+- - **✨ Features:** 1 item
+- - **📖 Documentation:** 1 item
++ - **✨ Features:** 2 items
++ - **📖 Documentation:** 2 items
+- - **Total Files Modified:** 5
++ - **Total Files Modified:** 7
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260813.md [20260813_085040]
 **Fungsi:** Implementasi: codeChange-20260813  
 **Perubahan:** Akses localStorage; Tambah state management; Tambah side effect  
 **Lines:** 7, 41-103, 106, 108-117, 121, 157-162, 165-167
@@ -107,7 +192,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260813.md [20260813_084541]
+#### 3. docs/changelog/daily/codeChange-20260813.md [20260813_084541]
 **Fungsi:** Implementasi: codeChange-20260813  
 **Perubahan:** Akses localStorage; Tambah state management; Tambah side effect  
 **Lines:** 1-89
@@ -283,8 +368,8 @@
 ---
 
 ## 📊 **Summary**
-- **✨ Features:** 2 items
-- **📖 Documentation:** 2 items
+- **✨ Features:** 3 items
+- **📖 Documentation:** 3 items
 - **🔐 Auth/Session:** 3 items
-- **Total Files Modified:** 7
-- **Main Focus:** 🔐 Auth/Session
+- **Total Files Modified:** 9
+- **Main Focus:** Features
