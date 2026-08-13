@@ -177,7 +177,17 @@ export default function BQOCheckout() {
   const fetchOccupiedTables = async () => {
     setLoadingTables(true);
     try {
-      const res = await bqo_api.getActiveOrders();
+      let res = await bqo_api.getActiveOrders();
+
+      // Jika session expired di QR mode → silent re-login lalu retry
+      if (res && res.result === false && getTableId()) {
+        const errMsg = res.onfail?.cerror || '';
+        if (errMsg.includes('expired') || errMsg.includes('tidak valid')) {
+          await new Promise((resolve) => auth.signinAsGuest(resolve));
+          res = await bqo_api.getActiveOrders();
+        }
+      }
+
       if (res && res.result && Array.isArray(res.data)) {
         let orders = [];
 
@@ -491,9 +501,8 @@ export default function BQOCheckout() {
         const errMsg = result.onfail?.cerror || 'Gagal mengirim pesanan.';
         // Deteksi session expired
         if (isSessionExpired(errMsg)) {
-          // QR mode: auto re-login lalu retry submit
+          // QR mode: auto re-login lalu retry submit — silent, tanpa pesan ke user
           if (getTableId()) {
-            ToastBar('info', 'Session habis. Sedang login ulang...', 2000);
             await new Promise((resolve) => auth.signinAsGuest(resolve));
             // Retry submit setelah re-login
             const retryResult = await bqo_api.add(payload);
@@ -628,18 +637,29 @@ export default function BQOCheckout() {
     link.download = `pesanan-${meja}-${noPesanan}.png`;
     link.href = canvas.toDataURL('image/png');
     link.click();
+    setReceiptDownloaded(true);
   };
+
+  const [receiptDownloaded, setReceiptDownloaded] = useState(false);
 
   const handleNewOrderAfterKasir = () => {
     const showPrint = getAppConfig().show_print_button !== false; // default true
-    // Print guard hanya berlaku jika tombol print ditampilkan (bukan QR/HP mode)
+    // Print guard: cetak dulu (mode PC/kasir)
     if (showPrint && printCount === 0) {
       AlertDialog('warning', 'Belum Cetak Tanda Pesanan',
         'Silakan cetak tanda pesanan terlebih dahulu sebelum membuat pesanan baru.',
         () => handlePrint());
       return;
     }
+    // Download guard: wajib download dulu (mode HP/QR)
+    if (!showPrint && !receiptDownloaded) {
+      AlertDialog('warning', 'Belum Download Bukti Pesanan',
+        'Silakan download bukti pesanan terlebih dahulu.',
+        () => handleDownloadReceipt());
+      return;
+    }
     setKasirResult(null);
+    setReceiptDownloaded(false);
     window.localStorage.removeItem('QoCart');
     window.localStorage.removeItem('QoOrderInfo');
     navigate('/menu');
