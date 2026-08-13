@@ -19,13 +19,27 @@ import { getTableId } from '../../utils/table-session';
 import ProgressLoader from '../../components/ProgressLoader';
 
 function Login({ isForm, afterLogin }) {
-  const authForQR = useAuth();
+  // ── Semua hooks harus di atas, sebelum conditional return apapun ──
+  const authForQR  = useAuth();
   const navigateQR = useNavigate();
+  const location   = useLocation();
+  const auth       = useAuth();
+  const navigate   = useNavigate();
+
+  const [state,       setState]       = useState({ cuserid: '', cpassw: '' });
+  const [loading,     setLoading]     = useState(false);
+  const [autoLogging, setAutoLogging] = useState(false);
+
   const tableId = getTableId();
+  const { from } = location.state || { from: { pathname: '/' } };
+
+  const styles = {
+    root:   { padding: '16px' },
+    margin: { margin: '8px'   },
+  };
 
   // QR mode: jika pelanggan sampai di halaman login (misal session expired redirect),
   // auto re-login tanpa tampilkan form
-  const [autoLogging, setAutoLogging] = useState(false);
   useEffect(() => {
     if (tableId && !isForm && !authForQR.loggedIn) {
       setAutoLogging(true);
@@ -38,55 +52,32 @@ function Login({ isForm, afterLogin }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (autoLogging) return <ProgressLoader />;
-  const styles = {
-    root: {
-      padding: '16px',
-    },
-    margin: {
-      margin: '8px',
-    },
-  };
-  const [state, setState] = useState({ cuserid: '', cpassw: '' });
-  const [loading, setLoading] = useState(false);
   const handleChange = (event) => {
-    setState((prevState) => {
-      return { ...prevState, [event.target.id]: event.target.value };
-    });
+    setState((prevState) => ({ ...prevState, [event.target.id]: event.target.value }));
   };
 
   const handleKeyPress = (event) => {
-    if (event.defaultPrevented) {
-      return;
-    }
-    switch (event.key) {
-      case 'Enter':
-        login(event);
-        break;
-      default:
-        return;
-    }
+    if (event.defaultPrevented) return;
+    if (event.key === 'Enter') login(event);
     event.preventDefault();
   };
 
-  let auth = useAuth();
-  let navigate = useNavigate();
-  let location = useLocation();
-  let { from } = location.state || { from: { pathname: '/' } };
-  let login = (event) => {
+  const login = (event) => {
     event.preventDefault();
     setLoading(true);
     auth.signin(state, () => {
-      // Setelah login berhasil — cek apakah ada returnPath dari session expired
       const returnPath = window.localStorage.getItem('QoReturnPath');
       if (returnPath) {
-        window.localStorage.removeItem('QoReturnPath'); // clear flag re-login
+        window.localStorage.removeItem('QoReturnPath');
         isForm ? afterLogin() : navigate(returnPath);
       } else {
         isForm ? afterLogin() : navigate(from);
       }
     }, isForm, setLoading);
   };
+
+  // Early return setelah semua hooks
+  if (autoLogging) return <ProgressLoader />;
 
   return (
     <>
