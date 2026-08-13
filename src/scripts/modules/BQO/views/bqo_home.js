@@ -497,16 +497,16 @@ export default function BQOHome() {
       {/* Debug Panel — hanya tampil jika debug_screen: true di app.cfg */}
       {debugEnabled && (
         <div style={{
-          position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 9999,
+          position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9999,
           background: 'rgba(0,0,0,0.85)', color: '#0f0', fontFamily: 'monospace',
-          fontSize: '11px', padding: '6px 8px', maxHeight: '200px', overflowY: 'auto',
+          fontSize: '10px', padding: '4px 8px', maxHeight: '120px', overflowY: 'auto',
+          pointerEvents: 'none', // tidak menghalangi klik di belakangnya
         }}>
-          <div style={{ color: '#ff0', fontWeight: 'bold', marginBottom: 4 }}>
-            🐛 DEBUG — tableId: {getTableId() || '(none)'} | key: {Config.SESSION_KEY()?.substring(0,10) ?? 'null'}...
+          <div style={{ color: '#ff0', fontWeight: 'bold', marginBottom: 2 }}>
+            🐛 tableId:{getTableId() || '-'} | key:{Config.SESSION_KEY()?.substring(0,8) ?? 'null'}
           </div>
-          {debugLog.length === 0 && <div style={{ color: '#aaa' }}>Menunggu log...</div>}
-          {debugLog.map((l, i) => (
-            <div key={i} style={{ color: l.isError ? '#f66' : '#0f0', lineHeight: 1.5 }}>
+          {debugLog.slice(-5).map((l, i) => (
+            <div key={i} style={{ color: l.isError ? '#f66' : '#0f0', lineHeight: 1.3 }}>
               [{l.time}] {l.msg}
             </div>
           ))}

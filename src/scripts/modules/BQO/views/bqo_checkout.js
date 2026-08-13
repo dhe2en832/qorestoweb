@@ -39,12 +39,14 @@ import { getTableId } from '../../../utils/table-session';
 import { getAppConfig } from '../../../utils/app-config';
 import { useAuth } from '../../../contexts/AuthContext';
 
-/** Deteksi apakah error dari backend adalah session expired */
+/** Deteksi apakah error dari backend adalah session expired/invalid */
 const isSessionExpired = (msg) =>
   typeof msg === 'string' &&
   (msg.includes('Session Id telah expired') ||
    msg.includes('Session Id tidak valid') ||
-   msg.includes('expired'));
+   msg.includes('expired') ||
+   msg.includes('di-LOCK') ||
+   msg.includes('proses lain'));
 
 // Pajak — BASE_TAX × EFFECTIVE_RATE dari env (pola webcsa-v2)
 // Contoh: 12 × (11/12) = 11%
@@ -182,7 +184,7 @@ export default function BQOCheckout() {
       // Jika session expired di QR mode → silent re-login lalu retry
       if (res && res.result === false && getTableId()) {
         const errMsg = res.onfail?.cerror || '';
-        if (errMsg.includes('expired') || errMsg.includes('tidak valid')) {
+        if (errMsg.includes('expired') || errMsg.includes('tidak valid') || errMsg.includes('LOCK') || errMsg.includes('proses lain')) {
           await new Promise((resolve) => auth.signinAsGuest(resolve));
           res = await bqo_api.getActiveOrders();
         }
