@@ -38,9 +38,76 @@
 
 ---
 
+#### 2. rc/scripts/modules/BQO/views/bqo_checkout.js [20260813_092722]
+**Fungsi:** Halaman checkout & submit order  
+**Perubahan:** Pembaruan kode  
+
+---
+
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260813.md [20260813_084541]
+#### 1. docs/changelog/daily/codeChange-20260813.md [20260813_085040]
+**Fungsi:** Implementasi: codeChange-20260813  
+**Perubahan:** Akses localStorage; Tambah state management; Tambah side effect  
+**Lines:** 7, 41-103, 106, 108-117, 121, 157-162, 165-167
+
+```javascript
+// Line 4:
+- #### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_084540]
++ #### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_084541]
+// Line 38:
++ ### 📖 Documentation
++ 
++ #### 1. docs/changelog/daily/codeChange-20260813.md [20260813_084541]
++ **Fungsi:** Implementasi: codeChange-20260813  
++ **Perubahan:** Akses localStorage; Tambah state management; Tambah side effect  
++ **Lines:** 1-89
++ 
++ ```javascript
++ // Line 1:
++ + # Code Changes Summary
++ + 
++ + ## 13 Agustus 2026
++ + 
++ + ### ✨ Features
++ + 
++ + #### 1. src/scripts/modules/BQO/views/bqo_checkout.js [20260813_084540]
++ + **Fungsi:** Halaman checkout & submit order  
++ + **Perubahan:** Import: AuthContext  
++ + **Lines:** 39, 71, 480, 482-498
++ + 
++ + ```javascript
+  // ... (truncated)
+- **Perubahan:** Pembaruan kode  
++ **Perubahan:** Import: table-session  
++ **Lines:** 11, 212-213
++ 
++ ```javascript
++ // Line 8:
++ + import { getTableId } from '../utils/table-session';
++ // Line 209:
++ +     // Di QR mode, jangan invalidasi session — biarkan silent retry yang handle
++ +     if (getTableId()) return;
++ ```
+- #### 2. src/scripts/modules/LOGIN/index.js [20260813_084540]
++ #### 2. src/scripts/modules/LOGIN/index.js [20260813_084541]
+// Line 154:
++ #### 3. rc/scripts/modules/LOGIN/index.js [20260813_085040]
++ **Fungsi:** Entry point / registrasi React  
++ **Perubahan:** Pembaruan kode  
++ 
++ ---
++ 
+- - **🔐 Auth/Session:** 2 items
+- - **Total Files Modified:** 3
++ - **📖 Documentation:** 1 item
++ - **🔐 Auth/Session:** 3 items
++ - **Total Files Modified:** 5
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260813.md [20260813_084541]
 **Fungsi:** Implementasi: codeChange-20260813  
 **Perubahan:** Akses localStorage; Tambah state management; Tambah side effect  
 **Lines:** 1-89
@@ -103,7 +170,68 @@
 
 ### 🔐 Auth/Session
 
-#### 1. src/scripts/contexts/AuthContext.js [20260813_084541]
+#### 1. src/scripts/modules/LOGIN/index.js [20260813_085040]
+**Fungsi:** Entry point / registrasi React  
+**Perubahan:** Tambah state management; Tambah fungsi: login; Akses localStorage  
+**Lines:** 22-23, 25-32, 34-39, 56, 60-61, 65, 71, 79-81
+
+```javascript
+// Line 19:
+-   const authForQR = useAuth();
++   // ── Semua hooks harus di atas, sebelum conditional return apapun ──
++   const authForQR  = useAuth();
++   const location   = useLocation();
++   const auth       = useAuth();
++   const navigate   = useNavigate();
++ 
++   const [state,       setState]       = useState({ cuserid: '', cpassw: '' });
++   const [loading,     setLoading]     = useState(false);
++   const [autoLogging, setAutoLogging] = useState(false);
++ 
++   const { from } = location.state || { from: { pathname: '/' } };
++ 
++   const styles = {
++     root:   { padding: '16px' },
++     margin: { margin: '8px'   },
++   };
+-   const [autoLogging, setAutoLogging] = useState(false);
+// Line 52:
+-   if (autoLogging) return <ProgressLoader />;
+-   const styles = {
+-     root: {
+-       padding: '16px',
+-     },
+  // ... (truncated)
+-     if (event.defaultPrevented) {
+-       return;
+-     }
+-     switch (event.key) {
+-       case 'Enter':
+-         login(event);
+-         break;
+-       default:
+-         return;
+-     }
++     if (event.defaultPrevented) return;
++     if (event.key === 'Enter') login(event);
+-   let auth = useAuth();
+-   let navigate = useNavigate();
+-   let location = useLocation();
+-   let { from } = location.state || { from: { pathname: '/' } };
+-   let login = (event) => {
++   const login = (event) => {
+-       // Setelah login berhasil — cek apakah ada returnPath dari session expired
+-         window.localStorage.removeItem('QoReturnPath'); // clear flag re-login
++         window.localStorage.removeItem('QoReturnPath');
+// Line 76:
++   // Early return setelah semua hooks
++   if (autoLogging) return <ProgressLoader />;
++ 
+```
+
+---
+
+#### 2. src/scripts/contexts/AuthContext.js [20260813_084541]
 **Fungsi:** Context autentikasi global  
 **Perubahan:** Import: table-session  
 **Lines:** 11, 212-213
@@ -118,7 +246,7 @@
 
 ---
 
-#### 2. src/scripts/modules/LOGIN/index.js [20260813_084541]
+#### 3. src/scripts/modules/LOGIN/index.js [20260813_084541]
 **Fungsi:** Entry point / registrasi React  
 **Perubahan:** Import: react; Tambah state management; Tambah side effect; Import: table-session; Import: ProgressLoader; Akses localStorage  
 **Lines:** 1, 18-19, 22-41
@@ -154,15 +282,9 @@
 
 ---
 
-#### 3. rc/scripts/modules/LOGIN/index.js [20260813_085040]
-**Fungsi:** Entry point / registrasi React  
-**Perubahan:** Pembaruan kode  
-
----
-
 ## 📊 **Summary**
-- **✨ Features:** 1 item
-- **📖 Documentation:** 1 item
+- **✨ Features:** 2 items
+- **📖 Documentation:** 2 items
 - **🔐 Auth/Session:** 3 items
-- **Total Files Modified:** 5
+- **Total Files Modified:** 7
 - **Main Focus:** 🔐 Auth/Session

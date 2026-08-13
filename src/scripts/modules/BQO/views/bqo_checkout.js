@@ -31,6 +31,7 @@ import useResponsive from '../../../hooks/useResponsive';
 import { toCurrencyIDR } from '../../../utils/formatter';
 import ToastBar from '../../../components/ToastBar';
 import AlertDialog from '../../../components/AlertDialog';
+import ConfirmDialog from '../../../components/ConfirmDialog';
 import bqo_api from '../controllers/bqo_api';
 import usePrintReceipt from '../hooks/usePrintReceipt';
 import BQOOrderSlip from '../reports/BQOOrderSlip';
@@ -374,6 +375,17 @@ export default function BQOCheckout() {
     // Refresh data meja tepat sebelum submit — cegah race condition antar device
     await fetchOccupiedTables();
     if (occupiedTablesRef.current.has(info.seatNumber)) {
+      if (isTableLocked) {
+        // QR mode — tampilkan warning tapi tetap bisa lanjut (bisa jadi satu grup)
+        ConfirmDialog(
+          'Meja ini ada pesanan aktif',
+          <p>Tambahkan Pesanan?</p>,
+          'Ya, Tambahkan',
+          () => setShowPaymentMethodDlg(true),
+        );
+        return;
+      }
+      // Mode manual (dropdown) — blokir total
       ToastBar('error', `Meja ${info.seatNumber} baru saja dipesan orang lain. Pilih meja lain.`, 4000);
       return;
     }
