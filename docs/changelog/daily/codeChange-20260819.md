@@ -4,7 +4,129 @@
 
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260819.md [20260819_104757]
+#### 1. docs/ALUR-QORESTOWEB.md [20260819_104952]
+**Fungsi:** Implementasi: ALUR-QORESTOWEB  
+**Perubahan:** Pembaruan kode  
+**Lines:** 238-241, 243, 245-248, 250, 252-294
+
+```javascript
+// Line 235:
+- Akses: `http://{SERVER}/qorestoweb/qr-tables.html`
++ ### Akses
++ ```
++ http://192.168.100.13/qorestoweb/qr-tables.html
++ ```
+- Fitur:
++ ### Fitur
+- - URL otomatis sesuai mode
++ - **Dual QR per meja**: QR utama (besar) + QR cadangan (kecil)
++ - QR utama → server `.13`, QR cadangan → server `.85`
++ - Label "Jika tidak bisa dibuka, scan ini:" di QR cadangan
++ - URL server utama dan cadangan bisa diedit manual
+- - Print-friendly (Ctrl+P)
++ - Print-friendly (Ctrl+P) — layout 3 kolom
++ - Mode Development tidak tampilkan QR backup
++ 
++ ### Layout Card Meja (Production)
++ ```
++ ┌──────────────────────┐
++ │      QORESTO         │
++ │     Meja 07          │
++ │  ┌──────────────┐    │
++ │  │  QR UTAMA    │    │
++ │  │  (150x150)   │    │
+  // ... (truncated)
++ └──────────────────────┘
++ ```
++ 
++ ---
++ 
++ ## 10. Fallback Server Cadangan
++ 
++ ### Arsitektur
++ - Server utama: `192.168.100.13` (host web app + API)
++ - Server cadangan: `192.168.100.85` (host web app + API yang sama)
++ - Qorestoweb di-deploy di **kedua server**
++ 
++ ### Fallback API (level aplikasi)
++ Jika server utama tidak bisa dijangkau (timeout/network error), semua API call otomatis dicoba ke server cadangan:
++ 
++ | Komponen | Primary | Fallback |
++ |----------|---------|----------|
++ | Login (`signinAsGuest`) | `.13/api/csa/resto/login_x` | `.85/api/csa/resto/login_x` |
++ | Menu (`bstock_x`) | `.13/api/csa/resto/bstock_x` | `.85/api/csa/resto/bstock_x` |
++ | Order (`bqo_x`) | `.13/api/csa/resto/bqo_x` | `.85/api/csa/resto/bqo_x` |
++ 
++ ### Keterbatasan
++ - Jika server utama mati dan pelanggan **belum pernah** mengakses app → halaman tidak bisa load (browser error)
++ - Solusi: **2 QR per meja** — pelanggan scan QR cadangan yang mengarah ke `.85`
++ - Jika pelanggan **pernah** mengakses sebelumnya → service worker bisa serve halaman dari cache
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260819.md [20260819_104952]
+**Fungsi:** Implementasi: codeChange-20260819  
+**Perubahan:** Tambah error handling; Tambah HTTP request  
+**Lines:** 5-73, 182, 185-239, 244, 248-249
+
+```javascript
+// Line 2:
++ ### 📖 Documentation
++ 
++ #### 1. docs/changelog/daily/codeChange-20260819.md [20260819_104757]
++ **Fungsi:** Implementasi: codeChange-20260819  
++ **Perubahan:** Tambah error handling; Tambah HTTP request  
++ **Lines:** 1-124
++ 
++ ```javascript
++ // Line 1:
++ + # Code Changes Summary
++ + 
++ + ## 19 Agustus 2026
++ + 
++ + ### 🔐 Auth/Session
++ + 
++ + #### 1. src/scripts/contexts/AuthContext.js [20260819_104757]
++ + **Fungsi:** Context autentikasi global  
++ + **Perubahan:** Tambah fungsi: localUrl; Tambah error handling; Tambah HTTP request  
++ + **Lines:** 94-122
++ + 
++ + ```javascript
++ + // Line 91:
++ + -       // Network error — fallback ke static key
++ + +       // Network error pada server utama — coba login ke server cadangan
+  // ... (truncated)
++ -         // Generate QR
++ +         // QR utama — besar
++ -           text:         url,
++ +           text:         urlPrimary,
++ -           colorDark:    isDev ? '#c0390b' : '#222222',  // merah untuk dev, hitam untuk prod
++ +           colorDark:    isDev ? '#c0390b' : '#222222',
++ + 
++ +         // QR cadangan — kecil
++ +         if (urlBackup && !isDev) {
++ +           new QRCode(document.getElementById(`qr-backup-${tableId}`), {
++ +             text:         urlBackup,
++ +             width:        80,
++ +             height:       80,
++ +             colorDark:    '#666666',
++ +             colorLight:   '#ffffff',
++ +             correctLevel: QRCode.CorrectLevel.L,
++ +           });
++ +         }
++ -     // Auto-generate saat halaman load
++ ```
++ - **📖 Documentation:** 2 items
+- - **Total Files Modified:** 3
+- - **Main Focus:** 🔐 Auth/Session
++ - **Total Files Modified:** 5
++ - **Main Focus:** 📖 Documentation
+```
+
+---
+
+#### 3. docs/changelog/daily/codeChange-20260819.md [20260819_104757]
 **Fungsi:** Implementasi: codeChange-20260819  
 **Perubahan:** Tambah error handling; Tambah HTTP request  
 **Lines:** 1-124
@@ -62,12 +184,6 @@
 + - **Total Files Modified:** 3
 + - **Main Focus:** 🔐 Auth/Session
 ```
-
----
-
-#### 2. ocs/ALUR-QORESTOWEB.md [20260819_104952]
-**Fungsi:** Implementasi: ALUR-QORESTOWEB  
-**Perubahan:** Pembaruan kode  
 
 ---
 
@@ -240,10 +356,22 @@
 
 ---
 
+#### 2. ublic/qr-tables.html [20260819_105513]
+**Fungsi:** Implementasi: qr-tables  
+**Perubahan:** Pembaruan kode  
+
+---
+
+#### 3. public/vendor/ [20260819_105513]
+**Fungsi:** Implementasi: vendor  
+**Perubahan:** Pembaruan kode  
+
+---
+
 ## 📊 **Summary**
-- **📖 Documentation:** 2 items
+- **📖 Documentation:** 3 items
 - **🔐 Auth/Session:** 1 item
 - **🔌 API:** 1 item
-- **⚙️ Others:** 1 item
-- **Total Files Modified:** 5
+- **⚙️ Others:** 3 items
+- **Total Files Modified:** 8
 - **Main Focus:** 📖 Documentation
