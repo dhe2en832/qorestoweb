@@ -3,7 +3,7 @@ import ApiRoute from '../../../routes/ApiRoute';
 import bqo_mock from './bqo_mock';
 import { getAppConfig } from '../../../utils/app-config';
 
-// URL server lokal sebagai fallback. Kosong = fitur lokal tidak aktif.
+// URL server cadangan sebagai fallback. Kosong = fitur fallback tidak aktif.
 const LOCAL_BASE_URL = (process.env.REACT_APP_API_LOCAL_ENDPOINT || '').trim();
 
 // Field minimal yang diambil dari bstock_x untuk katalog menu
@@ -12,14 +12,58 @@ const MENU_LISTFIELDS = [
   'cfamcode', 'cprocod', 'csatuan', 'cnotes1',
 ];
 
-// usebrwdef dikontrol via Config.USE_BRWDEF (bukan env — konsisten dengan webcsa-v2)
+// usebrwdef dikontrol via Config.USE_BRWDEF
 // getimage dikontrol via env REACT_APP_MENU_GETIMAGE
 const MENU_GETIMAGE = process.env.REACT_APP_MENU_GETIMAGE === 'Y';
+
+/**
+ * Helper: cek apakah error adalah network error (server tidak bisa dijangkau)
+ */
+const isNetworkError = (err) =>
+  err instanceof TypeError ||
+  err instanceof DOMException ||
+  (err && err.name === 'AbortError') ||
+  (err && err.message && (
+    err.message.includes('Failed to fetch') ||
+    err.message.includes('NetworkError') ||
+    err.message.includes('timeout')
+  ));
 
 class bqo_api {
   // ── Mock mode check ──────────────────────────────────────────────────────
   static _useMock() {
     return getAppConfig().use_mock_bqo === true;
+  }
+
+  // ── Generic fetch dengan fallback ke server cadangan ─────────────────────
+  /**
+   * _fetchWithFallback — coba fetch ke URL utama, jika gagal (network) coba ke cadangan.
+   * @param {string} primaryUrl - URL endpoint utama
+   * @param {string} fallbackUrl - URL endpoint cadangan (opsional)
+   * @param {object} options - fetch options (method, headers, body, signal)
+   * @returns {object} response JSON
+   */
+  static async _fetchWithFallback(primaryUrl, fallbackUrl, options) {
+    try {
+      const res = await fetch(primaryUrl, options);
+      return await res.json();
+    } catch (primaryErr) {
+      // Jika server cadangan tidak dikonfigurasi, langsung return error
+      if (!fallbackUrl) return primaryErr;
+
+      // Coba ke server cadangan
+      try {
+        const res = await fetch(fallbackUrl, {
+          ...options,
+          signal: AbortSignal.timeout(15000), // timeout baru untuk cadangan
+        });
+        const json = await res.json();
+        return { ...json, _source: 'fallback' };
+      } catch (fallbackErr) {
+        // Kedua server gagal — return error utama
+        return primaryErr;
+      }
+    }
   }
 
   // ── fetch ke BQO_X (transaksi pesanan) ───────────────────────────────────
@@ -28,19 +72,23 @@ class bqo_api {
       try { return await bqo_mock.handle(action, data); }
       catch (error) { return error; }
     }
-    try {
-      const res = await fetch(ApiRoute.BQO_X, {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          secretkey: Config.SESSION_KEY(),
-          sessionid: Config.SESSION_ID(),
-        },
-        body: JSON.stringify({ action, ...data }, null, 2),
-        signal: AbortSignal.timeout(15000),
-      });
-      return await res.json();
-    } catch (error) { return error; }
+
+    const body = JSON.stringify({ action, ...data }, null, 2);
+    const headers = {
+      'content-type': 'application/json',
+      secretkey: Config.SESSION_KEY(),
+      sessionid: Config.SESSION_ID(),
+    };
+
+    const primaryUrl  = ApiRoute.BQO_X;
+    const fallbackUrl = LOCAL_BASE_URL ? `${LOCAL_BASE_URL}/csa/resto/bqo_x` : '';
+
+    return this._fetchWithFallback(primaryUrl, fallbackUrl, {
+      method: 'POST',
+      headers,
+      body,
+      signal: AbortSignal.timeout(15000),
+    });
   }
 
   // ── fetch ke BSTOCK_X (katalog menu) ─────────────────────────────────────
@@ -49,25 +97,27 @@ class bqo_api {
       try { return await bqo_mock.handle(action, data); }
       catch (error) { return error; }
     }
-    try {
-      const res = await fetch(ApiRoute.BSTOCK_X, {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          secretkey: Config.SESSION_KEY(),
-          sessionid: Config.SESSION_ID(),
-        },
-        body: JSON.stringify({ action, ...data }, null, 2),
-        signal: AbortSignal.timeout(15000),
-      });
-      return await res.json();
-    } catch (error) { return error; }
+
+    const body = JSON.stringify({ action, ...data }, null, 2);
+    const headers = {
+      'content-type': 'application/json',
+      secretkey: Config.SESSION_KEY(),
+      sessionid: Config.SESSION_ID(),
+    };
+
+    const primaryUrl  = ApiRoute.BSTOCK_X;
+    const fallbackUrl = LOCAL_BASE_URL ? `${LOCAL_BASE_URL}/csa/resto/bstock_x` : '';
+
+    return this._fetchWithFallback(primaryUrl, fallbackUrl, {
+      method: 'POST',
+      headers,
+      body,
+      signal: AbortSignal.timeout(15000),
+    });
   }
 
   /**
    * getList — ambil katalog menu dari bstock_x.
-   * usebrwdef : Config.USE_BRWDEF (true/false di Config.js)
-   * getimage  : REACT_APP_MENU_GETIMAGE env (Y/N)
    */
   static getList(data) {
     return this.fetchStock('getlist', {
@@ -85,8 +135,7 @@ class bqo_api {
   }
 
   /**
-   * add — simpan pesanan ke bqo_x.
-   * Payload: { qoHeaderInfo, lineItemsInfo, paymentInfo }
+   * getActiveOrders — ambil daftar order aktif hari ini.
    */
   static getActiveOrders() {
     return this.fetching('getlist', {
@@ -95,7 +144,7 @@ class bqo_api {
       usebrwdef:  Config.USE_BRWDEF,
       listfields: ['cqonum', 'ctabid', 'cstatus', 'dqodate'],
       query: {
-        freefilter: { search: 'dqodate >= date()' },  // hanya order hari ini
+        freefilter: { search: 'dqodate >= date()' },
         textfilter: { search: '' },
       },
     });
@@ -103,22 +152,18 @@ class bqo_api {
 
   /**
    * add — simpan pesanan ke bqo_x.
-   * Payload: { qoHeaderInfo, lineItemsInfo, paymentInfo }
    */
   static add(data) {
     return this.fetching('add', data);
   }
 
   /**
-   * addToLocal — kirim transaksi ke server lokal sebagai fallback.
-   * Dipanggil saat server utama tidak bisa dijangkau.
-   *
-   * Mekanisme: auto-login ke server lokal dengan credential dari localStorage,
-   * kirim transaksi, lalu auto-logout.
+   * addToLocal — kirim transaksi ke server cadangan (legacy method).
+   * Untuk backward compatibility dengan bqo_payment.js yang sudah pakai ini.
    */
   static async addToLocal(data) {
     if (!LOCAL_BASE_URL) {
-      throw new Error('Server lokal tidak dikonfigurasi (REACT_APP_API_LOCAL_ENDPOINT kosong).');
+      throw new Error('Server cadangan tidak dikonfigurasi (REACT_APP_API_LOCAL_ENDPOINT kosong).');
     }
 
     const localUser = window.localStorage.getItem('auth_local_user');
@@ -128,7 +173,7 @@ class bqo_api {
       throw new Error('Credential fallback tidak tersedia. Silakan login ulang.');
     }
 
-    // Login ke server lokal
+    // Login ke server cadangan
     const loginRes = await fetch(`${LOCAL_BASE_URL}/csa/resto/login_x`, {
       method: 'POST',
       headers: {
@@ -145,15 +190,10 @@ class bqo_api {
     const loginJson       = await loginRes.json();
 
     if (!loginJson.result) {
-      throw new Error('Login ke server lokal gagal: ' + (loginJson.onfail?.cerror || 'Unknown error'));
+      throw new Error('Login ke server cadangan gagal: ' + (loginJson.onfail?.cerror || 'Unknown error'));
     }
 
-    // Safety net — bersihkan jika terjadi crash sebelum logout
-    window.sessionStorage.setItem('local_stale_secretkey', localSessionKey);
-    window.sessionStorage.setItem('local_stale_sessionid', localSessionID);
-    window.sessionStorage.setItem('local_stale_userid',    localUser);
-
-    // Kirim transaksi ke server lokal
+    // Kirim transaksi ke server cadangan
     const res = await fetch(`${LOCAL_BASE_URL}/csa/resto/bqo_x`, {
       method: 'POST',
       headers: {
@@ -165,7 +205,7 @@ class bqo_api {
       signal: AbortSignal.timeout(15000),
     });
 
-    // Logout dari server lokal
+    // Logout dari server cadangan
     try {
       await fetch(`${LOCAL_BASE_URL}/csa/resto/login_x`, {
         method: 'POST',
@@ -179,11 +219,6 @@ class bqo_api {
         signal: AbortSignal.timeout(5000),
       });
     } catch (_) { /* silent */ }
-
-    // Bersihkan safety net
-    window.sessionStorage.removeItem('local_stale_secretkey');
-    window.sessionStorage.removeItem('local_stale_sessionid');
-    window.sessionStorage.removeItem('local_stale_userid');
 
     const json = await res.json();
     return { ...json, source: 'local' };

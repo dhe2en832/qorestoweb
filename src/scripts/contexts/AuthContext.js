@@ -91,7 +91,35 @@ function useProvideAuth() {
         if (typeof cb === 'function') cb();
       }
     } catch (_) {
-      // Network error — fallback ke static key
+      // Network error pada server utama — coba login ke server cadangan
+      const localUrl = (process.env.REACT_APP_API_LOCAL_ENDPOINT || '').trim();
+      if (localUrl) {
+        try {
+          const res2 = await fetch(`${localUrl}/csa/resto/login_x`, {
+            method: 'POST',
+            headers: {
+              'content-type': 'application/json',
+              'x-user':     guestUser,
+              'x-password': guestPass,
+            },
+            body: JSON.stringify({ action: 'login' }),
+            signal: AbortSignal.timeout(10000),
+          });
+          const key2 = res2.headers.get('secretkey');
+          const id2  = res2.headers.get('sessionid');
+          const json2 = await res2.json();
+          if (json2.result === true) {
+            setLoggedIn(true);
+            setUserID(guestUser);
+            setSessionTimeout(false);
+            setSessionKey(key2);
+            setSessionID(id2);
+            if (typeof cb === 'function') cb();
+            return;
+          }
+        } catch (_2) { /* server cadangan juga gagal */ }
+      }
+      // Kedua server gagal — fallback ke static key
       const staticKey = cfg.qr_session_key || '';
       setLoggedIn(true);
       setUserID('GUEST');

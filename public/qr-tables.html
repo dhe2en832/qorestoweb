@@ -81,7 +81,7 @@
       background: #fff;
       border-radius: 8px;
       padding: 16px 20px;
-      max-width: 640px;
+      max-width: 700px;
       margin: 0 auto 24px;
       box-shadow: 0 2px 8px rgba(0,0,0,.1);
       display: flex;
@@ -97,7 +97,7 @@
       font-size: 0.82rem;
       color: #444;
       flex: 1;
-      min-width: 160px;
+      min-width: 140px;
     }
 
     .config-panel input[type="text"],
@@ -127,7 +127,7 @@
     /* ── Grid QR ──────────────────────────────────────────────────── */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       gap: 16px;
       max-width: 1200px;
       margin: 0 auto;
@@ -143,12 +143,10 @@
       break-inside: avoid;
     }
 
-    .card.dev-card {
-      border: 2px dashed #e67e22;
-    }
+    .card.dev-card { border: 2px dashed #e67e22; }
 
     .card .mode-label {
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1px;
@@ -157,7 +155,6 @@
       border-radius: 4px;
       display: inline-block;
     }
-
     .card .mode-label.prod { background: #eafaf1; color: #27ae60; }
     .card .mode-label.dev  { background: #fef5e7; color: #e67e22; }
 
@@ -167,34 +164,53 @@
       color: #3f50b5;
       text-transform: uppercase;
       letter-spacing: 1px;
-      margin-bottom: 4px;
-      margin-top: 4px;
+      margin: 4px 0;
     }
 
     .card .table-label {
       font-size: 1.5rem;
       font-weight: 700;
       color: #222;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .card .qr-wrapper {
       display: flex;
       justify-content: center;
-      margin-bottom: 12px;
-    }
-
-    .card .url-text {
-      font-size: 0.62rem;
-      color: #888;
-      word-break: break-all;
-      line-height: 1.4;
+      margin-bottom: 8px;
     }
 
     .card .scan-hint {
       font-size: 0.72rem;
       color: #555;
-      margin-top: 8px;
+      margin-top: 6px;
+    }
+
+    /* Backup QR section */
+    .card .backup-section {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px dashed #ddd;
+    }
+
+    .card .backup-label {
+      font-size: 0.62rem;
+      color: #999;
+      margin-bottom: 6px;
+    }
+
+    .card .backup-qr {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 4px;
+    }
+
+    .card .url-text {
+      font-size: 0.55rem;
+      color: #aaa;
+      word-break: break-all;
+      line-height: 1.3;
+      margin-top: 4px;
     }
 
     /* ── Print ────────────────────────────────────────────────────── */
@@ -202,16 +218,13 @@
       body { background: #fff; padding: 0; }
       h1, .subtitle, .mode-toggle, .mode-badge, .config-panel, .print-btn { display: none !important; }
       .grid {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: 8px;
       }
       .card {
         box-shadow: none;
         border: 1px solid #ddd;
-        padding: 12px;
-      }
-      .card.dev-card {
-        border: 2px dashed #e67e22;
+        padding: 12px 8px;
       }
     }
 
@@ -226,7 +239,6 @@
       cursor: pointer;
       font-size: 1rem;
     }
-
     .print-btn:hover { background: #1e8449; }
   </style>
 </head>
@@ -247,8 +259,12 @@
   <!-- Config Panel -->
   <div class="config-panel">
     <label>
-      URL Server
+      URL Server Utama
       <input type="text" id="baseUrl" value="http://192.168.100.13/qorestoweb/menu" />
+    </label>
+    <label>
+      URL Server Cadangan
+      <input type="text" id="backupUrl" value="http://192.168.100.85/qorestoweb/menu" />
     </label>
     <label>
       Nama Restoran
@@ -270,38 +286,30 @@
   <div class="grid" id="qrGrid"></div>
 
   <script>
-    // ── Preset URL per mode ──────────────────────────────────────────
-    // Dev: pakai hostname/IP dari browser yang sedang membuka halaman ini
-    // (otomatis sesuai IP laptop, tidak perlu diubah manual)
-    const devHost = window.location.hostname; // localhost atau IP LAN laptop
+    const devHost = window.location.hostname;
     const PRESETS = {
-      prod: 'http://192.168.100.13/qorestoweb/menu',
-      dev:  `http://${devHost}:3000/menu`,
+      prod: { primary: 'http://192.168.100.13/qorestoweb/menu', backup: 'http://192.168.100.85/qorestoweb/menu' },
+      dev:  { primary: `http://${devHost}:3000/menu`, backup: '' },
     };
 
     let currentMode = 'prod';
 
     function setMode(mode) {
       currentMode = mode;
-
-      // Update tombol aktif
       document.querySelector('.prod-btn').classList.toggle('active', mode === 'prod');
       document.querySelector('.dev-btn').classList.toggle('active', mode === 'dev');
 
-      // Update badge
       const badge = document.getElementById('modeBadge');
       if (mode === 'prod') {
         badge.className = 'mode-badge prod';
-        badge.innerHTML = '✅ Mode: <b>Production</b> — QR mengarah ke server production';
+        badge.innerHTML = '✅ Mode: <b>Production</b> — QR utama + cadangan';
       } else {
         badge.className = 'mode-badge dev';
-        badge.innerHTML = `🛠️ Mode: <b>Development</b> — URL: <code>${PRESETS.dev}</code><br>
-          <small style="color:#999">Untuk scan dari HP: ganti hostname dengan IP LAN laptop kamu</small>`;
+        badge.innerHTML = `🛠️ Mode: <b>Development</b> — URL: <code>${PRESETS.dev.primary}</code>`;
       }
 
-      // Update URL field dengan preset, tapi izinkan edit manual
-      document.getElementById('baseUrl').value = PRESETS[mode];
-
+      document.getElementById('baseUrl').value   = PRESETS[mode].primary;
+      document.getElementById('backupUrl').value  = PRESETS[mode].backup;
       generate();
     }
 
@@ -311,49 +319,70 @@
 
     function generate() {
       const baseUrl   = document.getElementById('baseUrl').value.trim();
+      const backupUrl = document.getElementById('backupUrl').value.trim();
       const restoName = document.getElementById('restoName').value.trim() || 'Qoresto';
       const count     = parseInt(document.getElementById('tableCount').value) || 10;
       const startNum  = parseInt(document.getElementById('tableStart').value) || 1;
       const grid      = document.getElementById('qrGrid');
       const isDev     = currentMode === 'dev';
 
-      // Tentukan padding — misal 20 meja → pad 2 digit (01..20)
       const padLen = String(startNum + count - 1).length;
-
-      // Bersihkan grid lama
       grid.innerHTML = '';
 
       for (let i = 0; i < count; i++) {
         const num     = startNum + i;
         const tableId = padNum(num, padLen);
-        const url     = `${baseUrl}?table=${tableId}`;
+        const urlPrimary = `${baseUrl}?table=${tableId}`;
+        const urlBackup  = backupUrl ? `${backupUrl}?table=${tableId}` : '';
 
-        // Buat card
         const card = document.createElement('div');
         card.className = isDev ? 'card dev-card' : 'card';
+
+        let backupHTML = '';
+        if (urlBackup && !isDev) {
+          backupHTML = `
+            <div class="backup-section">
+              <div class="backup-label">⚠️ Jika tidak bisa dibuka, scan ini:</div>
+              <div class="backup-qr" id="qr-backup-${tableId}"></div>
+              <div class="url-text">${urlBackup}</div>
+            </div>
+          `;
+        }
+
         card.innerHTML = `
           <div class="mode-label ${isDev ? 'dev' : 'prod'}">${isDev ? '🛠 DEV' : '🏪 PROD'}</div>
           <div class="resto-name">${restoName}</div>
           <div class="table-label">Meja ${tableId}</div>
           <div class="qr-wrapper" id="qr-${tableId}"></div>
-          <div class="url-text">${url}</div>
           <div class="scan-hint">📱 Scan untuk memesan</div>
+          ${backupHTML}
         `;
         grid.appendChild(card);
 
-        // Generate QR
+        // QR utama — besar
         new QRCode(document.getElementById(`qr-${tableId}`), {
-          text:         url,
+          text:         urlPrimary,
           width:        150,
           height:       150,
-          colorDark:    isDev ? '#c0390b' : '#222222',  // merah untuk dev, hitam untuk prod
+          colorDark:    isDev ? '#c0390b' : '#222222',
           colorLight:   '#ffffff',
           correctLevel: QRCode.CorrectLevel.M,
         });
+
+        // QR cadangan — kecil
+        if (urlBackup && !isDev) {
+          new QRCode(document.getElementById(`qr-backup-${tableId}`), {
+            text:         urlBackup,
+            width:        80,
+            height:       80,
+            colorDark:    '#666666',
+            colorLight:   '#ffffff',
+            correctLevel: QRCode.CorrectLevel.L,
+          });
+        }
       }
     }
 
-    // Auto-generate saat halaman load
     window.addEventListener('load', generate);
   </script>
 
