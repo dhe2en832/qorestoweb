@@ -235,11 +235,60 @@ File ini bisa diedit di server tanpa rebuild. Efek langsung setelah hard refresh
 
 ## 9. QR Code Generator
 
-Akses: `http://{SERVER}/qorestoweb/qr-tables.html`
+### Akses
+```
+http://192.168.100.13/qorestoweb/qr-tables.html
+```
 
-Fitur:
+### Fitur
 - Toggle Production / Development mode
-- URL otomatis sesuai mode
+- **Dual QR per meja**: QR utama (besar) + QR cadangan (kecil)
+- QR utama → server `.13`, QR cadangan → server `.85`
+- Label "Jika tidak bisa dibuka, scan ini:" di QR cadangan
+- URL server utama dan cadangan bisa diedit manual
 - Generate QR untuk semua meja sekaligus
-- Print-friendly (Ctrl+P)
+- Print-friendly (Ctrl+P) — layout 3 kolom
 - QR dev mode berwarna merah untuk pembeda visual
+- Mode Development tidak tampilkan QR backup
+
+### Layout Card Meja (Production)
+```
+┌──────────────────────┐
+│      QORESTO         │
+│     Meja 07          │
+│  ┌──────────────┐    │
+│  │  QR UTAMA    │    │
+│  │  (150x150)   │    │
+│  └──────────────┘    │
+│  📱 Scan untuk pesan │
+│ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ │
+│ ⚠️ Jika tidak bisa:  │
+│  ┌────────┐          │
+│  │QR CADG │          │
+│  │(80x80) │          │
+│  └────────┘          │
+└──────────────────────┘
+```
+
+---
+
+## 10. Fallback Server Cadangan
+
+### Arsitektur
+- Server utama: `192.168.100.13` (host web app + API)
+- Server cadangan: `192.168.100.85` (host web app + API yang sama)
+- Qorestoweb di-deploy di **kedua server**
+
+### Fallback API (level aplikasi)
+Jika server utama tidak bisa dijangkau (timeout/network error), semua API call otomatis dicoba ke server cadangan:
+
+| Komponen | Primary | Fallback |
+|----------|---------|----------|
+| Login (`signinAsGuest`) | `.13/api/csa/resto/login_x` | `.85/api/csa/resto/login_x` |
+| Menu (`bstock_x`) | `.13/api/csa/resto/bstock_x` | `.85/api/csa/resto/bstock_x` |
+| Order (`bqo_x`) | `.13/api/csa/resto/bqo_x` | `.85/api/csa/resto/bqo_x` |
+
+### Keterbatasan
+- Jika server utama mati dan pelanggan **belum pernah** mengakses app → halaman tidak bisa load (browser error)
+- Solusi: **2 QR per meja** — pelanggan scan QR cadangan yang mengarah ke `.85`
+- Jika pelanggan **pernah** mengakses sebelumnya → service worker bisa serve halaman dari cache
