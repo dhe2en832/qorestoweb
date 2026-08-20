@@ -118,11 +118,12 @@ class bqo_api {
 
   /**
    * getList — ambil katalog menu dari bstock_x.
+   * Supports pagination: pass { offset, limit } di data untuk override.
    */
   static getList(data) {
     return this.fetchStock('getlist', {
       offset:     0,
-      limit:      999,
+      limit:      30,
       usebrwdef:  Config.USE_BRWDEF,
       listfields: MENU_LISTFIELDS,
       query: {
@@ -130,6 +131,24 @@ class bqo_api {
         textfilter: { search: '' },
       },
       getimage: MENU_GETIMAGE,
+      ...data,
+    });
+  }
+
+  /**
+   * getListTotal — ambil total record yang tersedia (limit=0 → hanya metadata).
+   */
+  static getListTotal(data) {
+    return this.fetchStock('getlist', {
+      offset:     0,
+      limit:      0,
+      usebrwdef:  Config.USE_BRWDEF,
+      listfields: ['cstocode'],
+      query: {
+        freefilter: { search: '!LDISCONT' },
+        textfilter: { search: '' },
+      },
+      getimage: false,
       ...data,
     });
   }

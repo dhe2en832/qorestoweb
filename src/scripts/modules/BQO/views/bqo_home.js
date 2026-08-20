@@ -168,6 +168,31 @@ export default function BQOHome() {
   const [isLoading, setIsLoading] = useState(false);
   const [debugLog, setDebugLog] = useState([]);
 
+  // Server-side pagination
+  const PAGE_SIZE = 30;
+  const [totalItems, setTotalItems] = useState(0);
+  const [currentOffset, setCurrentOffset] = useState(0);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const hasMore = lists.length < totalItems;
+
+  const handleLoadMore = async () => {
+    const nextOffset = currentOffset + PAGE_SIZE;
+    setIsLoadingMore(true);
+    const resJson = await getDatas({ offset: nextOffset, limit: PAGE_SIZE });
+    setIsLoadingMore(false);
+    if (resJson && resJson.datas) {
+      setLists((prev) => [...prev, ...resJson.datas]);
+      setCurrentOffset(nextOffset);
+    }
+  };
+
+  // Helper: reset list dan pagination
+  const resetAndSetLists = (newList, total) => {
+    setLists(newList);
+    setCurrentOffset(0);
+    if (typeof total === 'number') setTotalItems(total);
+  };
+
   const debugEnabled = getAppConfig().debug_screen === true;
 
   const addDebugLog = (msg, isError = false) => {
@@ -288,21 +313,31 @@ export default function BQOHome() {
 
     async function loadMenu() {
       setIsLoading(true);
-      let resJson = await getDatas();
 
-      // Jika gagal di QR mode → coba re-login dulu lalu retry sekali
-      if (!resJson && getTableId()) {
-        addDebugLog('getDatas gagal, coba re-login...', true);
+      // 1. Ambil total count dulu
+      let totalRes = await bqo_api.getListTotal();
+      if (!totalRes?.result && getTableId()) {
+        addDebugLog('getTotal gagal, coba re-login...', true);
         await new Promise((resolve) => auth.signinAsGuest(resolve));
         addDebugLog(`re-login selesai, key:${Config.SESSION_KEY()?.substring(0,8) ?? 'null'}...`);
-        resJson = await getDatas();
+        totalRes = await bqo_api.getListTotal();
+      }
+      const total = totalRes?.metadata?.total || 0;
+      if (isActive) setTotalItems(total);
+      addDebugLog(`total items: ${total}`);
+
+      // 2. Ambil halaman pertama
+      let resJson = await getDatas({ offset: 0, limit: PAGE_SIZE });
+      if (!resJson && getTableId()) {
+        await new Promise((resolve) => auth.signinAsGuest(resolve));
+        resJson = await getDatas({ offset: 0, limit: PAGE_SIZE });
       }
 
       if (!isActive) return;
       if (resJson && resJson.datas) {
-        setLists(resJson.datas);
+        resetAndSetLists(resJson.datas, total);
         setCategories(resJson.categories ?? []);
-        addDebugLog(`lists loaded: ${resJson.datas.length} items`);
+        addDebugLog(`page 1 loaded: ${resJson.datas.length} items`);
       } else {
         addDebugLog('lists empty or null', true);
       }
@@ -313,59 +348,72 @@ export default function BQOHome() {
     return () => (isActive = false);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // List -> Category
+  // List -> Category — fetch semua untuk filter client-side (kategori hanya subset)
   const [tabValue, setTabValue] = useState('all');
   const handleTabChange = async (event, newValue) => {
     setTabValue(newValue);
+    if (newValue === 'all') {
+      // Reset ke server pagination
+      setIsLoading(true);
+      const resJson = await getDatas({ offset: 0, limit: PAGE_SIZE });
+      setIsLoading(false);
+      if (!resJson || !resJson.datas) return;
+      const totalRes = await bqo_api.getListTotal();
+      const total = totalRes?.metadata?.total || 0;
+      resetAndSetLists(resJson.datas, total);
+      return;
+    }
+    // Untuk filter kategori/promo — fetch semua dulu (tanpa limit), filter client-side
     setIsLoading(true);
-    const resJson = await getDatas();
+    const resJson = await getDatas({ offset: 0, limit: 9999 });
     setIsLoading(false);
     if (!resJson || !resJson.datas) return;
     let datasFilter;
     switch (newValue) {
-      case 'all':
-        setLists(resJson.datas);
-        break;
       case 'promos':
         datasFilter = resJson.datas.filter((data) => data.price !== data.sellPrice);
-        setLists(datasFilter);
         break;
       default:
         datasFilter = resJson.datas.filter((data) => data.category === newValue);
-        setLists(datasFilter);
         break;
     }
+    resetAndSetLists(datasFilter, datasFilter.length);
   };
 
-  // List - Search — dengan debounce 500ms agar tidak fetch setiap keystroke
+  // List - Search — dengan debounce 500ms
   const searchTimerRef = React.useRef(null);
   const handleChangeSearch = (event) => {
     const keyword = (event.target.value || '').trim();
-    // Clear timer sebelumnya
     if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
-    // Jika kosong, langsung reload semua tanpa delay
     if (!keyword) {
+      // Reset ke tampilan awal (page 1)
       setTabValue('all');
       setIsLoading(true);
-      getDatas().then((resJson) => {
+      Promise.all([
+        getDatas({ offset: 0, limit: PAGE_SIZE }),
+        bqo_api.getListTotal(),
+      ]).then(([resJson, totalRes]) => {
         setIsLoading(false);
         if (resJson?.datas) {
-          setLists(resJson.datas);
+          const total = totalRes?.metadata?.total || 0;
+          resetAndSetLists(resJson.datas, total);
           setCategories(resJson.categories ?? []);
         }
       });
       return;
     }
-    // Fetch setelah 500ms berhenti mengetik
+    // Fetch dengan textfilter dari server
     searchTimerRef.current = setTimeout(async () => {
       setIsLoading(true);
-      const resJson = await getDatas({ query: { freefilter: { search: '!LDISCONT' }, textfilter: { search: keyword } } });
+      const queryOverride = { query: { freefilter: { search: '!LDISCONT' }, textfilter: { search: keyword } } };
+      const resJson = await getDatas({ ...queryOverride, offset: 0, limit: 9999 });
       setIsLoading(false);
       if (!resJson || !resJson.datas) return;
-      const datasFilter = keyword
-        ? resJson.datas.filter((data) => data.name.toLowerCase().includes(keyword.toLowerCase()))
-        : resJson.datas;
-      setLists(datasFilter);
+      // Fallback filter client-side juga
+      const datasFilter = resJson.datas.filter((data) =>
+        data.name.toLowerCase().includes(keyword.toLowerCase())
+      );
+      resetAndSetLists(datasFilter, datasFilter.length);
       setTabValue('none');
     }, 500);
   };
@@ -718,6 +766,20 @@ export default function BQOHome() {
                 Maaf, Menu Ini Belum Tersedia.
               </Typography>
             </Paper>
+          )}
+          {/* Tombol Load More */}
+          {hasMore && !isLoading && (
+            <Box textAlign="center" my={2}>
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={handleLoadMore}
+                disabled={isLoadingMore}
+                sx={{ borderRadius: 4, px: 4 }}
+              >
+                {isLoadingMore ? 'Memuat...' : `Muat Lebih Banyak (${totalItems - lists.length} item lagi)`}
+              </Button>
+            </Box>
           )}
         </Container>
         {/* List -> Copyright */}
