@@ -4,39 +4,7 @@
 
 ### ✨ Features
 
-#### 1. src/scripts/modules/BQO/views/bqo_payment.js [20260820_141526]
-**Fungsi:** Modul: bqo_payment  
-**Perubahan:** Tambah navigasi halaman  
-**Lines:** 717-725, 1022-1030
-
-```javascript
-// Line 714:
--         <Button size="small" onClick={() => setActiveView('choose')}>← Kembali</Button>
-+         <Button size="small" onClick={() => {
-+           const showTunai = getAppConfig().show_tunai_button !== false;
-+           if (showTunai) {
-+             setActiveView('choose');
-+           } else {
-+             // Tunai di-hide → kembali ke checkout karena 'choose' akan redirect balik
-+             navigate('/checkout');
-+           }
-+         }}>← Kembali</Button>
-// Line 1019:
--           <Button size="small" onClick={() => { resetXenditPaymentInfo(); setActiveView('choose'); }}>
-+           <Button size="small" onClick={() => {
-+             resetXenditPaymentInfo();
-+             const showTunai = getAppConfig().show_tunai_button !== false;
-+             if (showTunai) {
-+               setActiveView('choose');
-+             } else {
-+               setActiveView('xendit-channel'); // kembali ke pilihan channel
-+             }
-+           }}>
-```
-
----
-
-#### 2. src/scripts/modules/BQO/views/bqo_home.js [20260820_151420]
+#### 1. src/scripts/modules/BQO/views/bqo_home.js [20260820_151421]
 **Fungsi:** Halaman utama / dashboard  
 **Perubahan:** Tambah state management; Tambah fungsi: handleLoadMore; Tambah fungsi: resetAndSetLists  
 **Lines:** 171-195, 317-320, 323-333, 338, 340, 351, 355-366, 368, 380, 383, 389, 392-395, 398-399, 405, 408-409, 412-416, 770-783
@@ -97,9 +65,174 @@
 
 ---
 
+#### 2. src/scripts/modules/BQO/views/bqo_payment.js [20260820_141526]
+**Fungsi:** Modul: bqo_payment  
+**Perubahan:** Tambah navigasi halaman  
+**Lines:** 717-725, 1022-1030
+
+```javascript
+// Line 714:
+-         <Button size="small" onClick={() => setActiveView('choose')}>← Kembali</Button>
++         <Button size="small" onClick={() => {
++           const showTunai = getAppConfig().show_tunai_button !== false;
++           if (showTunai) {
++             setActiveView('choose');
++           } else {
++             // Tunai di-hide → kembali ke checkout karena 'choose' akan redirect balik
++             navigate('/checkout');
++           }
++         }}>← Kembali</Button>
+// Line 1019:
+-           <Button size="small" onClick={() => { resetXenditPaymentInfo(); setActiveView('choose'); }}>
++           <Button size="small" onClick={() => {
++             resetXenditPaymentInfo();
++             const showTunai = getAppConfig().show_tunai_button !== false;
++             if (showTunai) {
++               setActiveView('choose');
++             } else {
++               setActiveView('xendit-channel'); // kembali ke pilihan channel
++             }
++           }}>
+```
+
+---
+
+#### 3. src/scripts/modules/BQO/views/bqo_checkout.js [20260820_154433]
+**Fungsi:** Halaman checkout & submit order  
+**Perubahan:** Pembaruan kode  
+
+```javascript
+// Line 458:
+-           cremark2: d.note || '',
+```
+
+---
+
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260820.md [20260820_141526]
+#### 1. docs/PAGINATION.md [20260820_151421]
+**Fungsi:** Implementasi: PAGINATION  
+**Perubahan:** Tambah state management  
+**Lines:** 1-151
+
+```javascript
+// Line 1:
++ # Server-Side Pagination — Katalog Menu Qorestoweb
++ 
++ ## Ringkasan
++ 
++ Katalog menu menggunakan server-side pagination untuk mengatasi performa saat database memiliki ribuan item (1891+ record). Hanya 30 item yang di-fetch per halaman, sisanya dimuat on-demand saat user klik "Muat Lebih Banyak".
++ 
++ ---
++ 
++ ## API Backend (`bstock_x`)
++ 
++ ### Endpoint
++ ```
++ POST http://{SERVER_IP}/api/csa/resto/bstock_x
++ ```
++ 
++ ### Parameter Pagination
++ | Parameter | Tipe | Fungsi |
++ |-----------|------|--------|
++ | `offset` | number | Jumlah record yang di-skip (bukan page number) |
++ | `limit` | number | Jumlah record per halaman. `0` = hanya return metadata |
++ 
++ ### Response Metadata
++ ```json
++ {
+  // ... (truncated)
++ 
++ ## Method di `bqo_api.js`
++ 
++ ### `getList(data)`
++ Fetch menu dengan pagination. Default `offset=0, limit=30`.
++ ```js
++ bqo_api.getList({ offset: 60, limit: 30 })
++ ```
++ 
++ ### `getListTotal(data)`
++ Fetch total record tanpa data (limit=0). Ringan dan cepat.
++ ```js
++ bqo_api.getListTotal()
++ // → response.metadata.total = 1891
++ ```
++ 
++ ---
++ 
++ ## Catatan
++ 
++ - `offset` = jumlah record yang di-skip (BUKAN page number)
++ - Halaman 1 = offset 0, halaman 2 = offset 30, dst.
++ - Filter kategori dan search **tidak pakai pagination** — fetch semua lalu filter client-side. Ini karena backend `bstock_x` tidak support filter by `cfamcode` di level query.
++ - Saat kembali ke tab "Semua", pagination di-reset ke page 1.
++ - Load more **append** data ke list yang sudah ada (bukan replace).
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260820.md [20260820_151421]
+**Fungsi:** Implementasi: codeChange-20260820  
+**Perubahan:** Tambah navigasi halaman; Tambah state management; Akses localStorage  
+**Lines:** 7, 9-96, 102-163, 224, 285, 346, 373-386, 403-405, 407
+
+```javascript
+// Line 4:
+- #### 1. rc/scripts/modules/BQO/views/bqo_payment.js [20260820_141524]
++ #### 1. src/scripts/modules/BQO/views/bqo_payment.js [20260820_141526]
+- **Perubahan:** Pembaruan kode  
++ **Perubahan:** Tambah navigasi halaman  
++ **Lines:** 717-725, 1022-1030
++ 
++ ```javascript
++ // Line 714:
++ -         <Button size="small" onClick={() => setActiveView('choose')}>← Kembali</Button>
++ +         <Button size="small" onClick={() => {
++ +           const showTunai = getAppConfig().show_tunai_button !== false;
++ +           if (showTunai) {
++ +             setActiveView('choose');
++ +           } else {
++ +             // Tunai di-hide → kembali ke checkout karena 'choose' akan redirect balik
++ +             navigate('/checkout');
++ +           }
++ +         }}>← Kembali</Button>
++ // Line 1019:
++ -           <Button size="small" onClick={() => { resetXenditPaymentInfo(); setActiveView('choose'); }}>
++ +           <Button size="small" onClick={() => {
++ +             resetXenditPaymentInfo();
++ +             const showTunai = getAppConfig().show_tunai_button !== false;
++ +             if (showTunai) {
+  // ... (truncated)
+- #### 4. docs/changelog/daily/codeChange-20260820.md [20260820_104133]
++ #### 5. docs/changelog/daily/codeChange-20260820.md [20260820_104133]
+// Line 370:
++ #### 6. docs/PAGINATION.md [20260820_151420]
++ **Fungsi:** Implementasi: PAGINATION  
++ **Perubahan:** Pembaruan kode  
++ 
++ ---
++ 
++ ### 🔌 API
++ 
++ #### 1. rc/scripts/modules/BQO/controllers/bqo_api.js [20260820_151420]
++ **Fungsi:** Modul: bqo_api  
++ **Perubahan:** Pembaruan kode  
++ 
++ ---
++ 
+// Line 400:
+- - **✨ Features:** 1 item
+- - **📖 Documentation:** 4 items
++ - **✨ Features:** 2 items
++ - **📖 Documentation:** 6 items
++ - **🔌 API:** 1 item
+- - **Total Files Modified:** 6
++ - **Total Files Modified:** 10
+```
+
+---
+
+#### 3. docs/changelog/daily/codeChange-20260820.md [20260820_141526]
 **Fungsi:** Implementasi: codeChange-20260820  
 **Perubahan:** Akses localStorage  
 **Lines:** 5-12, 15-76, 137, 198, 241-242, 244
@@ -160,7 +293,7 @@
 
 ---
 
-#### 2. docs/changelog/daily/codeChange-20260820.md [20260820_134034]
+#### 4. docs/changelog/daily/codeChange-20260820.md [20260820_134034]
 **Fungsi:** Implementasi: codeChange-20260820  
 **Perubahan:** Akses localStorage  
 **Lines:** 7-68, 129, 158, 161-167, 172, 174
@@ -221,7 +354,7 @@
 
 ---
 
-#### 3. docs/changelog/daily/codeChange-20260820.md [20260820_131534]
+#### 5. docs/changelog/daily/codeChange-20260820.md [20260820_131534]
 **Fungsi:** Implementasi: codeChange-20260820  
 **Perubahan:** Akses localStorage  
 **Lines:** 7, 9-98, 104-106
@@ -282,7 +415,7 @@
 
 ---
 
-#### 4. docs/ALUR-QORESTOWEB.md [20260820_104133]
+#### 6. docs/ALUR-QORESTOWEB.md [20260820_104133]
 **Fungsi:** Implementasi: ALUR-QORESTOWEB  
 **Perubahan:** Akses localStorage  
 **Lines:** 1, 7-8, 15-16, 26-27, 44, 81-82, 88, 93, 96-103, 125-130, 132-134, 138-145, 150-152, 155-157, 160-161, 163-165, 170-173, 177, 181-182, 194, 197, 199, 205, 210-211, 213, 215, 219-220, 229-233, 239, 243-251, 254, 256, 260-272, 276-292, 294-345, 349, 358-361, 366, 370-392, 397, 399-419, 421, 423, 425-468
@@ -343,7 +476,7 @@
 
 ---
 
-#### 5. docs/changelog/daily/codeChange-20260820.md [20260820_104133]
+#### 7. docs/changelog/daily/codeChange-20260820.md [20260820_104133]
 **Fungsi:** Implementasi: codeChange-20260820  
 **Perubahan:** Pembaruan kode  
 **Lines:** 1-16
@@ -370,15 +503,42 @@
 
 ---
 
-#### 6. docs/PAGINATION.md [20260820_151420]
-**Fungsi:** Implementasi: PAGINATION  
+### 🔌 API
+
+#### 1. src/scripts/modules/BQO/controllers/bqo_api.js [20260820_151421]
+**Fungsi:** Modul: bqo_api  
 **Perubahan:** Pembaruan kode  
+**Lines:** 121, 126, 138-155
+
+```javascript
+// Line 118:
++    * Supports pagination: pass { offset, limit } di data untuk override.
+-       limit:      999,
++       limit:      30,
+// Line 135:
++   /**
++    * getListTotal — ambil total record yang tersedia (limit=0 → hanya metadata).
++    */
++   static getListTotal(data) {
++     return this.fetchStock('getlist', {
++       offset:     0,
++       limit:      0,
++       usebrwdef:  Config.USE_BRWDEF,
++       listfields: ['cstocode'],
++       query: {
++         freefilter: { search: '!LDISCONT' },
++         textfilter: { search: '' },
++       },
++       getimage: false,
++       ...data,
++     });
++   }
++ 
+```
 
 ---
 
-### 🔌 API
-
-#### 1. rc/scripts/modules/BQO/controllers/bqo_api.js [20260820_151420]
+#### 2. rc/scripts/modules/BQO/controllers/bqo_api.js [20260820_154433]
 **Fungsi:** Modul: bqo_api  
 **Perubahan:** Pembaruan kode  
 
@@ -400,9 +560,9 @@
 ---
 
 ## 📊 **Summary**
-- **✨ Features:** 2 items
-- **📖 Documentation:** 6 items
-- **🔌 API:** 1 item
+- **✨ Features:** 3 items
+- **📖 Documentation:** 7 items
+- **🔌 API:** 2 items
 - **⚙️ Others:** 1 item
-- **Total Files Modified:** 10
+- **Total Files Modified:** 13
 - **Main Focus:** 📖 Documentation

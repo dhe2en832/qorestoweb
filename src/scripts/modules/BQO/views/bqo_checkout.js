@@ -458,7 +458,6 @@ export default function BQOCheckout() {
           nrpdisc,
           cremark:  d.note || '',
           cremark2: d.note2 || '',
-          cremark2: d.note || '',
         };
       });
 

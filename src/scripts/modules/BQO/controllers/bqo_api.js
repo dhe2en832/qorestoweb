@@ -19,6 +19,7 @@ const MENU_GETIMAGE = process.env.REACT_APP_MENU_GETIMAGE === 'Y';
 /**
  * Helper: cek apakah error adalah network error (server tidak bisa dijangkau)
  */
+// eslint-disable-next-line no-unused-vars
 const isNetworkError = (err) =>
   err instanceof TypeError ||
   err instanceof DOMException ||
