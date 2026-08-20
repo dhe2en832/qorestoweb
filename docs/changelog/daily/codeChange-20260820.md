@@ -2,9 +2,78 @@
 
 ## 20 Agustus 2026
 
+### ✨ Features
+
+#### 1. rc/scripts/modules/BQO/views/bqo_payment.js [20260820_141524]
+**Fungsi:** Modul: bqo_payment  
+**Perubahan:** Pembaruan kode  
+
+---
+
 ### 📖 Documentation
 
-#### 1. docs/changelog/daily/codeChange-20260820.md [20260820_131534]
+#### 1. docs/changelog/daily/codeChange-20260820.md [20260820_134034]
+**Fungsi:** Implementasi: codeChange-20260820  
+**Perubahan:** Akses localStorage  
+**Lines:** 7-68, 129, 158, 161-167, 172, 174
+
+```javascript
+// Line 4:
+- #### 1. docs/ALUR-QORESTOWEB.md [20260820_104133]
++ #### 1. docs/changelog/daily/codeChange-20260820.md [20260820_131534]
++ **Fungsi:** Implementasi: codeChange-20260820  
++ **Perubahan:** Akses localStorage  
++ **Lines:** 7, 9-98, 104-106
++ 
++ ```javascript
++ // Line 4:
++ - #### 1. ocs/ALUR-QORESTOWEB.md [20260820_104133]
++ + #### 1. docs/ALUR-QORESTOWEB.md [20260820_104133]
++ + **Perubahan:** Akses localStorage  
++ + **Lines:** 1, 7-8, 15-16, 26-27, 44, 81-82, 88, 93, 96-103, 125-130, 132-134, 138-145, 150-152, 155-157, 160-161, 163-165, 170-173, 177, 181-182, 194, 197, 199, 205, 210-211, 213, 215, 219-220, 229-233, 239, 243-251, 254, 256, 260-272, 276-292, 294-345, 349, 358-361, 366, 370-392, 397, 399-419, 421, 423, 425-468
++ + 
++ + ```javascript
++ + // Line 1:
++ + - # Alur Lengkap Qorestoweb — Self-Order Restoran via QR Code
++ + + # Dokumentasi Lengkap Qorestoweb — Self-Order Restoran via QR Code
++ + + **Tech Stack:** React (CRA), MUI, SweetAlert2, react-qr-code
++ + + 
++ + - http://{SERVER_IP}/qorestoweb/menu?table={NOMOR_MEJA}
++ + + Server Utama  : http://192.168.100.13/qorestoweb/menu?table={NOMOR_MEJA}
++ + + Server Cadangan: http://192.168.100.85/qorestoweb-cad/menu?table={NOMOR_MEJA}
++ + // Line 23:
++ + - 6. Setelah login berhasil → render halaman menu
+  // ... (truncated)
++ + - **📖 Documentation:** 2 items
++ + - **⚙️ Others:** 1 item
++ + - **Total Files Modified:** 3
++ ```
++ 
++ ---
++ 
++ #### 2. docs/ALUR-QORESTOWEB.md [20260820_104133]
+// Line 126:
+- #### 2. docs/changelog/daily/codeChange-20260820.md [20260820_104133]
++ #### 3. docs/changelog/daily/codeChange-20260820.md [20260820_104133]
+// Line 155:
+- #### 1. ublic/qr-tables.html [20260820_131534]
++ #### 1. public/qr-tables.html [20260820_131534]
++ **Lines:** 273
++ 
++ ```javascript
++ // Line 270:
++ -       <input type="text" id="backupUrl" value="http://192.168.100.85/qorestoweb/menu" />
++ +       <input type="text" id="backupUrl" value="http://192.168.100.85/qorestoweb-cad/menu" />
++ ```
+- - **📖 Documentation:** 2 items
++ - **📖 Documentation:** 3 items
+- - **Total Files Modified:** 3
++ - **Total Files Modified:** 4
+```
+
+---
+
+#### 2. docs/changelog/daily/codeChange-20260820.md [20260820_131534]
 **Fungsi:** Implementasi: codeChange-20260820  
 **Perubahan:** Akses localStorage  
 **Lines:** 7, 9-98, 104-106
@@ -65,7 +134,7 @@
 
 ---
 
-#### 2. docs/ALUR-QORESTOWEB.md [20260820_104133]
+#### 3. docs/ALUR-QORESTOWEB.md [20260820_104133]
 **Fungsi:** Implementasi: ALUR-QORESTOWEB  
 **Perubahan:** Akses localStorage  
 **Lines:** 1, 7-8, 15-16, 26-27, 44, 81-82, 88, 93, 96-103, 125-130, 132-134, 138-145, 150-152, 155-157, 160-161, 163-165, 170-173, 177, 181-182, 194, 197, 199, 205, 210-211, 213, 215, 219-220, 229-233, 239, 243-251, 254, 256, 260-272, 276-292, 294-345, 349, 358-361, 366, 370-392, 397, 399-419, 421, 423, 425-468
@@ -126,7 +195,7 @@
 
 ---
 
-#### 3. docs/changelog/daily/codeChange-20260820.md [20260820_104133]
+#### 4. docs/changelog/daily/codeChange-20260820.md [20260820_104133]
 **Fungsi:** Implementasi: codeChange-20260820  
 **Perubahan:** Pembaruan kode  
 **Lines:** 1-16
@@ -169,7 +238,8 @@
 ---
 
 ## 📊 **Summary**
-- **📖 Documentation:** 3 items
+- **✨ Features:** 1 item
+- **📖 Documentation:** 4 items
 - **⚙️ Others:** 1 item
-- **Total Files Modified:** 4
+- **Total Files Modified:** 6
 - **Main Focus:** 📖 Documentation

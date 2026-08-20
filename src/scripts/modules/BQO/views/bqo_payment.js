@@ -714,7 +714,15 @@ export default function BQOPayment() {
         onSelect={handleSelectXenditChannel}
       />
       <Box mt={1}>
-        <Button size="small" onClick={() => setActiveView('choose')}>← Kembali</Button>
+        <Button size="small" onClick={() => {
+          const showTunai = getAppConfig().show_tunai_button !== false;
+          if (showTunai) {
+            setActiveView('choose');
+          } else {
+            // Tunai di-hide → kembali ke checkout karena 'choose' akan redirect balik
+            navigate('/checkout');
+          }
+        }}>← Kembali</Button>
       </Box>
     </Container>
   );
@@ -1011,7 +1019,15 @@ export default function BQOPayment() {
         )}
 
         <Box mt={2}>
-          <Button size="small" onClick={() => { resetXenditPaymentInfo(); setActiveView('choose'); }}>
+          <Button size="small" onClick={() => {
+            resetXenditPaymentInfo();
+            const showTunai = getAppConfig().show_tunai_button !== false;
+            if (showTunai) {
+              setActiveView('choose');
+            } else {
+              setActiveView('xendit-channel'); // kembali ke pilihan channel
+            }
+          }}>
             ← Kembali
           </Button>
         </Box>
