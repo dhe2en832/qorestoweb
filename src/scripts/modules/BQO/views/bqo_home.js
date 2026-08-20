@@ -168,28 +168,31 @@ export default function BQOHome() {
   const [isLoading, setIsLoading] = useState(false);
   const [debugLog, setDebugLog] = useState([]);
 
-  // Server-side pagination
+  // Server-side pagination — numbered pages
   const PAGE_SIZE = 30;
   const [totalItems, setTotalItems] = useState(0);
-  const [currentOffset, setCurrentOffset] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const hasMore = lists.length < totalItems;
+  const totalPages = Math.ceil(totalItems / PAGE_SIZE);
 
-  const handleLoadMore = async () => {
-    const nextOffset = currentOffset + PAGE_SIZE;
+  const handlePageChange = async (page) => {
+    if (page < 1 || page > totalPages || page === currentPage) return;
+    setCurrentPage(page);
     setIsLoadingMore(true);
-    const resJson = await getDatas({ offset: nextOffset, limit: PAGE_SIZE });
+    const offset = (page - 1) * PAGE_SIZE;
+    const resJson = await getDatas({ offset, limit: PAGE_SIZE });
     setIsLoadingMore(false);
     if (resJson && resJson.datas) {
-      setLists((prev) => [...prev, ...resJson.datas]);
-      setCurrentOffset(nextOffset);
+      setLists(resJson.datas);
+      // Scroll ke atas setelah pindah halaman
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   // Helper: reset list dan pagination
   const resetAndSetLists = (newList, total) => {
     setLists(newList);
-    setCurrentOffset(0);
+    setCurrentPage(1);
     if (typeof total === 'number') setTotalItems(total);
   };
 
@@ -767,18 +770,51 @@ export default function BQOHome() {
               </Typography>
             </Paper>
           )}
-          {/* Tombol Load More */}
-          {hasMore && !isLoading && (
-            <Box textAlign="center" my={2}>
+          {/* Pagination */}
+          {totalPages > 1 && !isLoading && (
+            <Box display="flex" justifyContent="center" alignItems="center" gap={0.5} my={2} flexWrap="wrap">
               <Button
-                variant="outlined"
-                size="small"
-                onClick={handleLoadMore}
-                disabled={isLoadingMore}
-                sx={{ borderRadius: 4, px: 4 }}
+                size="small" variant="text" disabled={currentPage === 1 || isLoadingMore}
+                onClick={() => handlePageChange(currentPage - 1)}
+                sx={{ minWidth: 36 }}
               >
-                {isLoadingMore ? 'Memuat...' : `Muat Lebih Banyak (${totalItems - lists.length} item lagi)`}
+                ‹
               </Button>
+              {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+                // Tampilkan max 7 tombol halaman di sekitar currentPage
+                let page;
+                if (totalPages <= 7) {
+                  page = i + 1;
+                } else if (currentPage <= 4) {
+                  page = i + 1;
+                } else if (currentPage >= totalPages - 3) {
+                  page = totalPages - 6 + i;
+                } else {
+                  page = currentPage - 3 + i;
+                }
+                return (
+                  <Button
+                    key={page}
+                    size="small"
+                    variant={page === currentPage ? 'contained' : 'text'}
+                    onClick={() => handlePageChange(page)}
+                    disabled={isLoadingMore}
+                    sx={{ minWidth: 32, px: 0.5, fontSize: '0.8rem' }}
+                  >
+                    {page}
+                  </Button>
+                );
+              })}
+              <Button
+                size="small" variant="text" disabled={currentPage === totalPages || isLoadingMore}
+                onClick={() => handlePageChange(currentPage + 1)}
+                sx={{ minWidth: 36 }}
+              >
+                ›
+              </Button>
+              <Typography variant="caption" color="text.secondary" sx={{ ml: 1 }}>
+                {totalItems} item
+              </Typography>
             </Box>
           )}
         </Container>
