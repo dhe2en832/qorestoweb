@@ -466,3 +466,241 @@ Berjalan di `http://localhost:3000/qorestoweb/`
 - Panel debug muncul di bagian atas layar (tidak menghalangi klik — `pointerEvents: none`)
 - Tampilkan: table ID, session key, log fetch, error login
 - **Matikan di production** (`debug_screen: false`)
+
+
+---
+
+## 14. Fitur yang Belum Ada — Item Bundling / Package Menu
+
+> **Status: Belum diimplementasi — Akan segera dibangun**
+
+### Latar Belakang
+
+User bertanya mengenai item bundling seperti "Grand Steak Package" yang berisi beberapa group pilihan (Appetizer, Main Course, Dessert, Beverage). Pertanyaannya: apakah 1 menu package harus dibuat jadi belasan menu terpisah?
+
+### Jawaban
+
+**Tidak perlu dibuat belasan menu terpisah.** Cukup 1 item menu "Grand Steak Package" dengan konfigurasi group di dalamnya. Yang diperlukan:
+
+1. **1 item induk (parent)** → "Grand Steak Package" dengan harga tetap (misal Rp612.820)
+2. **Konfigurasi group** di dalam item tersebut:
+   - Appetizer (pilih 1): Classic Caesar Supreme
+   - Main Course (pilih 2): Tenderloin / Sirloin / Ribeye
+   - Dessert (pilih 2): Peach / Strawberry / Cherry / Lychee
+   - Beverage (pilih 2): Red Jasmine / Jasmine Fizz / Osmanthus Flower / Coffee Libre / Mango Peach / Peach Blossom Peach
+3. **Saat pelanggan order**, mereka memilih dari setiap group sesuai qty yang ditentukan
+
+Meskipun secara kombinasi bisa menghasilkan ratusan variasi pesanan, **di sistem tetap cukup 1 menu** dengan konfigurasi group & pilihan. Bukan dibuat ratusan menu terpisah.
+
+### Kondisi Saat Ini di Codebase
+
+| Aspek | Status |
+|-------|--------|
+| Struktur menu | **Flat** — setiap item berdiri sendiri, 1 harga, tanpa sub-item |
+| Field `cgroup` di `lineItemsInfo` | **Ada tapi selalu kosong** (`''`) — tidak pernah diisi |
+| Field `cprocod` di `MENU_LISTFIELDS` | **Di-fetch tapi tidak dipakai** di frontend |
+| UI pemilihan group/variant | **Tidak ada** |
+| Cart support composite item | **Tidak ada** — cart hanya `{ item, qty, note, note2 }` |
+| Endpoint API khusus bundling | **Tidak ada** |
+
+### Petunjuk dari Backend (Field yang Sudah Ada)
+
+- **`cgroup`** (di payload `lineItemsInfo`): kemungkinan besar ini field backend untuk mengelompokkan beberapa line item dalam satu paket/bundle. Saat ini selalu diisi `''`.
+- **`cprocod`** (di `MENU_LISTFIELDS`): bisa jadi "product type code" untuk menandai apakah item adalah bundling atau reguler. Saat ini di-fetch tapi diabaikan di frontend.
+
+---
+
+### Opsi Implementasi
+
+#### Opsi A: Backend-Driven (Rekomendasi)
+
+Pendekatan ini memanfaatkan backend CSA sebagai sumber data utama bundle.
+
+**Cara kerja:**
+1. Backend menyediakan field/endpoint yang menandai item sebagai "bundling" (misal via `cprocod` atau field baru)
+2. Backend menyediakan data composition: group apa saja + pilihan per group + qty per group
+3. Frontend membaca flag bundling → jika item adalah bundle, tampilkan UI pemilihan group
+4. Saat submit order, sub-item dikirim sebagai multiple `lineItemsInfo` dengan `cgroup` yang sama (ID parent)
+
+**Keuntungan:**
+- Single source of truth di backend
+- Mudah diubah/ditambah paket tanpa update frontend
+- Konsisten dengan sistem POS/kasir yang mungkin juga butuh data ini
+
+**Yang perlu dikerjakan:**
+- [Backend] Endpoint atau field tambahan di `bstock_x` untuk data bundle composition
+- [Frontend] Deteksi item bundling saat render menu
+- [Frontend] UI modal/dialog pemilihan group saat item bundling ditambah ke cart
+- [Frontend] Cart structure yang support composite item (parent + children)
+- [Frontend] Mapping ke `lineItemsInfo` dengan `cgroup` terisi saat submit order
+
+#### Opsi B: Frontend-Driven (Workaround)
+
+Pendekatan ini mendefinisikan bundle config di sisi frontend tanpa perubahan backend.
+
+**Cara kerja:**
+1. Definisikan bundle config di frontend (file JSON atau config)
+2. Mapping: jika `cstocode` tertentu ada di config → treat sebagai bundling
+3. Saat item tersebut dipilih, tampilkan modal pemilihan group
+4. Kirim sebagai multiple `lineItemsInfo` dengan `cgroup` = kode item parent
+
+**Keuntungan:**
+- Tidak perlu tunggu backend ready
+- Bisa diimplementasi langsung
+
+**Kekurangan:**
+- Config bundling harus di-maintain di 2 tempat (frontend + backend)
+- Perlu update frontend setiap kali ada paket baru
+- Tidak scalable untuk banyak paket
+
+---
+
+### Contoh Struktur Data Bundle (Target)
+
+```json
+{
+  "cstocode": "PKG-001",
+  "cstoname": "Grand Steak Package",
+  "nhrgjua": 612820,
+  "type": "bundling",
+  "groups": [
+    {
+      "name": "Appetizer",
+      "qty_to_select": 1,
+      "options": [
+        { "cstocode": "APT-001", "cstoname": "Classic Caesar Supreme" }
+      ]
+    },
+    {
+      "name": "Main Course",
+      "qty_to_select": 2,
+      "options": [
+        { "cstocode": "MC-001", "cstoname": "Meltique Steak Tenderloin" },
+        { "cstocode": "MC-002", "cstoname": "Meltique Steak Sirloin" },
+        { "cstocode": "MC-003", "cstoname": "Meltique Steak Ribeye" }
+      ]
+    },
+    {
+      "name": "Dessert",
+      "qty_to_select": 2,
+      "options": [
+        { "cstocode": "DST-001", "cstoname": "Fruit Cruffin Peach" },
+        { "cstocode": "DST-002", "cstoname": "Fruit Cruffin Strawberry" },
+        { "cstocode": "DST-003", "cstoname": "Fruit Cruffin Cherry" },
+        { "cstocode": "DST-004", "cstoname": "Fruit Cruffin Lychee" }
+      ]
+    },
+    {
+      "name": "Beverage",
+      "qty_to_select": 2,
+      "options": [
+        { "cstocode": "BEV-001", "cstoname": "Mocktail Red Jasmine" },
+        { "cstocode": "BEV-002", "cstoname": "Jasmine Fizz" },
+        { "cstocode": "BEV-003", "cstoname": "Osmanthus Flower" },
+        { "cstocode": "BEV-004", "cstoname": "Coffee Libre" },
+        { "cstocode": "BEV-005", "cstoname": "Mango Peach" },
+        { "cstocode": "BEV-006", "cstoname": "Peach Blossom Peach" }
+      ]
+    }
+  ]
+}
+```
+
+### Contoh Payload Order (Bundling → `lineItemsInfo`)
+
+Saat pelanggan order "Grand Steak Package" dan memilih item-itemnya:
+
+```json
+{
+  "lineItemsInfo": [
+    {
+      "nline": 1,
+      "cgroup": "PKG-001",
+      "cstocode": "PKG-001",
+      "cstoname": "Grand Steak Package",
+      "nqqo": 1,
+      "nhrgjua": 612820,
+      "cremark": "PARENT BUNDLE"
+    },
+    {
+      "nline": 2,
+      "cgroup": "PKG-001",
+      "cstocode": "APT-001",
+      "cstoname": "Classic Caesar Supreme",
+      "nqqo": 1,
+      "nhrgjua": 0,
+      "cremark": "Appetizer"
+    },
+    {
+      "nline": 3,
+      "cgroup": "PKG-001",
+      "cstocode": "MC-001",
+      "cstoname": "Meltique Steak Tenderloin",
+      "nqqo": 1,
+      "nhrgjua": 0,
+      "cremark": "Main Course"
+    },
+    {
+      "nline": 4,
+      "cgroup": "PKG-001",
+      "cstocode": "MC-003",
+      "cstoname": "Meltique Steak Ribeye",
+      "nqqo": 1,
+      "nhrgjua": 0,
+      "cremark": "Main Course"
+    },
+    {
+      "nline": 5,
+      "cgroup": "PKG-001",
+      "cstocode": "DST-001",
+      "cstoname": "Fruit Cruffin Peach",
+      "nqqo": 1,
+      "nhrgjua": 0,
+      "cremark": "Dessert"
+    },
+    {
+      "nline": 6,
+      "cgroup": "PKG-001",
+      "cstocode": "DST-003",
+      "cstoname": "Fruit Cruffin Cherry",
+      "nqqo": 1,
+      "nhrgjua": 0,
+      "cremark": "Dessert"
+    },
+    {
+      "nline": 7,
+      "cgroup": "PKG-001",
+      "cstocode": "BEV-002",
+      "cstoname": "Jasmine Fizz",
+      "nqqo": 1,
+      "nhrgjua": 0,
+      "cremark": "Beverage"
+    },
+    {
+      "nline": 8,
+      "cgroup": "PKG-001",
+      "cstocode": "BEV-005",
+      "cstoname": "Mango Peach",
+      "nqqo": 1,
+      "nhrgjua": 0,
+      "cremark": "Beverage"
+    }
+  ]
+}
+```
+
+**Logika:**
+- Line 1 = parent bundle (harga penuh, `cgroup` = kode diri sendiri)
+- Line 2-8 = sub-item pilihan pelanggan (harga 0, `cgroup` = kode parent)
+- Backend mengenali `cgroup` yang sama → ini satu paket
+- Total tetap = harga parent saja (Rp612.820), sub-item harga 0
+
+---
+
+### Prioritas & Timeline
+
+| Tahap | Deskripsi | Prasyarat |
+|-------|-----------|-----------|
+| 1 | Konfirmasi ke tim backend: apakah `cgroup` memang untuk bundling? Format data bundle dari backend seperti apa? | Koordinasi tim |
+| 2 | Implementasi frontend (Opsi A atau B tergantung jawaban tahap 1) | Tahap 1 selesai |
+| 3 | Testing end-to-end (order bundling masuk ke POS/dapur dengan benar) | Tahap 2 selesai |
