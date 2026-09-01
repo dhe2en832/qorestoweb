@@ -1,7 +1,27 @@
-# Konfigurasi Pajak / PPN — Qorestoweb
+# Konfigurasi Pajak / PPN
 
+> Berlaku untuk: **Qorestoweb** dan **Webcsa-v2 (Trenly)**  
 > Konfigurasi pajak dibaca dari `public/app.cfg` saat runtime.  
 > **Tidak perlu rebuild** — cukup edit file dan hard-refresh browser.
+
+---
+
+## Status Implementasi per Web App
+
+| Web App | Status | Catatan |
+|---------|--------|---------|
+| **Qorestoweb** | ✅ Implementasi penuh | Ketiga mode aktif langsung dari `app.cfg`. Customer hardcode `UMUM` — tax berlaku untuk semua transaksi |
+| **Webcsa-v2 Trenly** | ✅ Implementasi penuh | `app.cfg` menentukan rate & mode. Tax aktif/tidak juga bergantung flag `lppn` di master customer |
+
+### Perbedaan Perilaku
+
+| | Qorestoweb | Webcsa-v2 Trenly |
+|--|--|--|
+| Tax dikontrol oleh | `app.cfg` saja | `app.cfg` × `lppn` customer |
+| Customer | Hardcode (`UMUM`) — tidak bisa pilih | Dipilih dari lookup |
+| Tax aktif saat | Selalu — sesuai `tax_mode` di `app.cfg` | `tax_mode ≠ NONE` **dan** customer `lppn = 'Y'` |
+| Skema 3 (NONE) | ✅ Set `tax_mode: "NONE"` | ✅ Set `tax_mode: "NONE"` atau customer `lppn = 'N'` |
+| File `app.cfg` | `public/app.cfg` (satu file) | `public/app.cfg.primary` dan `public/app.cfg.cadangan` |
 
 ---
 
@@ -202,10 +222,33 @@ Sama dengan Skenario D — NONE selalu kirim `npctppn = 0`.
 
 ## Cara Ganti Konfigurasi di Server
 
+### Qorestoweb
+
 1. Buka file `app.cfg` di folder deploy (misal `/var/www/html/qorestoweb/app.cfg`)
 2. Edit tiga key: `tax_mode`, `tax_rate`, `tax_effective_rate`
 3. Simpan
 4. Hard-refresh browser (`Ctrl+Shift+R`)
+
+### Webcsa-v2 Trenly
+
+Trenly punya dua `app.cfg` terpisah per server:
+
+| Server | File yang diedit setelah deploy |
+|--------|--------------------------------|
+| Server utama (`.13`) | `app.cfg` di folder `/pos/` |
+| Server cadangan (`.85`) | `app.cfg` di folder `/pos-cad/` |
+
+File ini berasal dari `public/app.cfg.primary` atau `public/app.cfg.cadangan` saat build, dan bisa diedit langsung di server setelah deploy.
+
+**Contoh untuk database testing (PPN 10%, flat):**
+```json
+{
+  "tax_mode": "EXCLUSIVE",
+  "tax_rate": 10,
+  "tax_effective_rate": "11/12"
+}
+```
+> Catatan: Sesuaikan `tax_effective_rate` dengan konfigurasi backend. Jika backend menggunakan faktor DPP 11/12, gunakan `"11/12"`. Jika flat, gunakan `"1"`.
 
 **Tidak perlu rebuild, tidak perlu restart server.**
 
@@ -213,14 +256,16 @@ Sama dengan Skenario D — NONE selalu kirim `npctppn = 0`.
 
 ## Implementasi Teknis
 
-Konfigurasi dibaca oleh `getTaxConfig()` di `src/scripts/utils/app-config.js`:
+### Fungsi Utama: `getTaxConfig()`
+
+Tersedia di kedua web app di `src/scripts/utils/app-config.js`:
 
 ```javascript
 import { getTaxConfig } from '../utils/app-config';
 
 const { mode, rate, effectiveRate, effectivePct } = getTaxConfig();
 // mode        : 'EXCLUSIVE' | 'INCLUSIVE' | 'NONE'
-// rate        : 12   (tax_rate)
+// rate        : 12   (tax_rate dari app.cfg)
 // effectiveRate: 0.9166... (hasil parse "11/12")
 // effectivePct: 11   (rate × effectiveRate — persen efektif ke pelanggan)
 ```
@@ -229,9 +274,57 @@ Fungsi ini dipanggil saat runtime (bukan saat build), sehingga perubahan `app.cf
 
 ---
 
+### Detail per Web App
+
+#### Qorestoweb
+
+| File | Peran |
+|------|-------|
+| `public/app.cfg` | Satu file runtime config — edit langsung di server |
+| `src/scripts/utils/app-config.js` | `getTaxConfig()`, `getAppConfig()` |
+| `src/scripts/modules/BQO/views/bqo_checkout.js` | Kalkulasi & payload — semua 3 mode ditangani |
+
+**Alur kalkulasi di `bqo_checkout.js`:**
+```
+EXCLUSIVE → subtotal + taxAmount = total
+            npctppn = rate, namount = subtotal
+
+INCLUSIVE → total = rawSubtotal (harga sudah all-in)
+            taxAmount = di-extract untuk info struk
+            npctppn = rate, namount = total
+
+NONE      → total = rawSubtotal, taxAmount = 0
+            npctppn = 0, namount = total
+```
+
+---
+
+#### Webcsa-v2 Trenly
+
+| File | Peran |
+|------|-------|
+| `public/app.cfg.primary` | Runtime config server utama (.13) |
+| `public/app.cfg.cadangan` | Runtime config server cadangan (.85) |
+| `src/scripts/utils/app-config.js` | `getTaxConfig()`, `getAppConfig()` |
+| `src/scripts/modules/BJUAL/hooks/useExternalSystem.jsx` | Baca `getTaxConfig()` saat customer dipilih — set `taxPercent` dan `effectiveTaxRate` ke state |
+| `src/scripts/modules/BJUAL/hooks/useCashierSystem.js` | State `taxPercent` dan `effectiveTaxRate` — diupdate dari `headerInfo` setelah customer dipilih |
+| `src/scripts/modules/BJUAL/views/bjual_payment.jsx` | Payload `npctppn = taxPercent`, `csalesid` dari customer |
+
+**Catatan khusus Trenly:**
+Tax hanya aktif jika customer yang dipilih memiliki `lppn = 'Y'` di master customer. `app.cfg` mengontrol rate dan mode, tapi flag `lppn` di master customer yang menentukan apakah transaksi ini kena PPN atau tidak. Jika `lppn = 'N'` → `taxPercent = 0` terlepas dari `tax_mode` di `app.cfg`.
+
+---
+
 ## Referensi
 
 - PMK 131 Tahun 2024 — DPP Nilai Lain untuk PPN: faktor `11/12` dari harga jual
-- `public/app.cfg` — runtime config qorestoweb
-- `src/scripts/utils/app-config.js` — `getTaxConfig()`, `getAppConfig()`
-- `src/scripts/modules/BQO/views/bqo_checkout.js` — implementasi kalkulasi & payload
+- **Qorestoweb:**
+  - `public/app.cfg`
+  - `src/scripts/utils/app-config.js`
+  - `src/scripts/modules/BQO/views/bqo_checkout.js`
+- **Webcsa-v2 Trenly:**
+  - `public/app.cfg.primary` / `public/app.cfg.cadangan`
+  - `src/scripts/utils/app-config.js`
+  - `src/scripts/modules/BJUAL/hooks/useExternalSystem.jsx`
+  - `src/scripts/modules/BJUAL/hooks/useCashierSystem.js`
+  - `src/scripts/modules/BJUAL/views/bjual_payment.jsx`
