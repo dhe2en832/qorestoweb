@@ -28,6 +28,29 @@ const DEFAULT_CONFIG = {
   debug_screen:                  false,
   show_print_button:             true,  // false = sembunyikan tombol print di struk kasir
   show_tunai_button:             true,  // false = sembunyikan opsi bayar tunai
+
+  // ── Konfigurasi Pajak / PPN ──────────────────────────────────────────────
+  // tax_mode          : 'EXCLUSIVE' | 'INCLUSIVE' | 'NONE'
+  //   EXCLUSIVE → harga item BELUM include PPN; frontend tambahkan PPN di akhir;
+  //               payload kirim npctppn = tax_rate
+  //   INCLUSIVE → harga item SUDAH include PPN; tampilkan breakdown PPN sebagai
+  //               informasi; payload tetap kirim npctppn = tax_rate (backend
+  //               reverse-hitung PPN dari nilai transaksi)
+  //   NONE      → frontend tidak peduli PPN; payload kirim npctppn = 0;
+  //               backend yang memutuskan penanganan PPN sepenuhnya
+  //
+  // tax_rate          : rate PPN dasar dalam persen (angka), contoh: 12
+  //                     Diabaikan saat tax_mode = 'NONE'
+  //
+  // tax_effective_rate: faktor DPP — bisa angka (1) atau pecahan string ("11/12")
+  //                     Sesuai PMK 131/2024: DPP Nilai Lain = 11/12 dari harga
+  //                     Diabaikan saat tax_mode = 'NONE'
+  //                     Contoh: tax_rate=12, tax_effective_rate="11/12"
+  //                             → pajak efektif ke pelanggan = 12 × 11/12 = 11%
+  // ────────────────────────────────────────────────────────────────────────
+  tax_mode:           'EXCLUSIVE', // 'EXCLUSIVE' | 'INCLUSIVE' | 'NONE'
+  tax_rate:           12,
+  tax_effective_rate: '11/12',
 };
 
 let _cachedConfig = null;
@@ -70,4 +93,46 @@ export const getAppConfig = () => {
 export const isFeatureEnabled = (key) => {
   const config = getAppConfig();
   return config[key] === true;
+};
+
+/**
+ * Baca dan parse konfigurasi pajak dari app.cfg.
+ *
+ * Return:
+ *   mode          : 'EXCLUSIVE' | 'INCLUSIVE' | 'NONE'
+ *   rate          : number  — rate PPN dasar (contoh: 12)
+ *   effectiveRate : number  — faktor DPP sudah di-parse (contoh: 11/12 → 0.9166...)
+ *   effectivePct  : number  — persen PPN efektif ke pelanggan (rate × effectiveRate)
+ *                            Contoh: 12 × (11/12) = 11
+ *
+ * Penggunaan:
+ *   const { mode, rate, effectivePct } = getTaxConfig();
+ *   if (mode === 'EXCLUSIVE') { ... tambah PPN ke subtotal ... }
+ *   if (mode === 'NONE')      { npctppn = 0 }
+ *   else                      { npctppn = rate }
+ */
+export const getTaxConfig = () => {
+  const config = getAppConfig();
+
+  const mode = (config.tax_mode || 'EXCLUSIVE').toUpperCase();
+
+  if (mode === 'NONE') {
+    return { mode: 'NONE', rate: 0, effectiveRate: 1, effectivePct: 0 };
+  }
+
+  const rate = parseFloat(config.tax_rate ?? 12);
+
+  // tax_effective_rate bisa string "11/12" atau angka 1
+  const rawEffRate = config.tax_effective_rate ?? 1;
+  let effectiveRate;
+  if (typeof rawEffRate === 'string' && rawEffRate.includes('/')) {
+    const [a, b] = rawEffRate.split('/');
+    effectiveRate = parseFloat(a) / parseFloat(b);
+  } else {
+    effectiveRate = parseFloat(rawEffRate) || 1;
+  }
+
+  const effectivePct = rate * effectiveRate; // mis: 12 × (11/12) = 11
+
+  return { mode, rate, effectiveRate, effectivePct };
 };

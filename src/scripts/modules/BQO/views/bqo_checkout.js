@@ -36,7 +36,7 @@ import bqo_api from '../controllers/bqo_api';
 import usePrintReceipt from '../hooks/usePrintReceipt';
 import BQOOrderSlip from '../reports/BQOOrderSlip';
 import { getTableId } from '../../../utils/table-session';
-import { getAppConfig } from '../../../utils/app-config';
+import { getAppConfig, getTaxConfig } from '../../../utils/app-config';
 import { useAuth } from '../../../contexts/AuthContext';
 
 /** Deteksi apakah error dari backend adalah session expired/invalid */
@@ -48,14 +48,11 @@ const isSessionExpired = (msg) =>
    msg.includes('di-LOCK') ||
    msg.includes('proses lain'));
 
-// Pajak — BASE_TAX × EFFECTIVE_RATE dari env (pola webcsa-v2)
-// Contoh: 12 × (11/12) = 11%
-const TAX_BASE = parseFloat(process.env.REACT_APP_TAX_BASE || '12');
-const TAX_RATE_STR = (process.env.REACT_APP_TAX_EFFECTIVE_RATE || '11/12').trim();
-const TAX_RATE = TAX_RATE_STR.includes('/')
-  ? (() => { const [a, b] = TAX_RATE_STR.split('/'); return parseFloat(a) / parseFloat(b); })() // "11/12" → 0.9166...
-  : parseFloat(TAX_RATE_STR);
-const TAX_PERCENT = TAX_BASE * TAX_RATE; // 12 * (11/12) = 11
+// Pajak — dibaca dari app.cfg saat runtime (bisa ganti tanpa rebuild)
+// getTaxConfig() mengembalikan { mode, rate, effectiveRate, effectivePct }
+// mode: 'EXCLUSIVE' | 'INCLUSIVE' | 'NONE'
+// Dipanggil di dalam fungsi agar selalu baca nilai terkini dari app.cfg
+const getTax = () => getTaxConfig();
 
 // Jumlah meja dari env
 const TABLE_COUNT = parseInt(process.env.REACT_APP_TABLE_COUNT || '10', 10);
@@ -298,7 +295,16 @@ export default function BQOCheckout() {
     return totalPrice;
   };
   const calculateTaxItem = () => {
-    return Math.floor(parseFloat(calculatePriceItem() * (TAX_PERCENT / 100)));
+    const { mode, effectivePct } = getTax();
+    if (mode === 'NONE') return 0;
+    const subtotal = calculatePriceItem();
+    if (mode === 'INCLUSIVE') {
+      // PPN sudah di dalam harga — reverse-hitung untuk tampilan breakdown
+      // taxAmount = subtotal - subtotal / (1 + effectivePct/100)
+      return Math.floor(subtotal - subtotal / (1 + effectivePct / 100));
+    }
+    // EXCLUSIVE — PPN ditambahkan di atas subtotal
+    return Math.floor(subtotal * (effectivePct / 100));
   };
   const changeQtyItem = (event, data) => {
     event.stopPropagation();
@@ -422,9 +428,28 @@ export default function BQOCheckout() {
     setIsSubmittingKasir(true);
     try {
       const cartItems = Object.values(cart);
-      const subtotal  = cartItems.reduce((acc, d) => acc + parseFloat(d.item.sellPrice) * d.qty, 0);
-      const taxAmount = Math.floor(subtotal * (TAX_PERCENT / 100));
-      const total     = subtotal + taxAmount;
+      const { mode, rate, effectivePct } = getTax();
+      const rawSubtotal = cartItems.reduce((acc, d) => acc + parseFloat(d.item.sellPrice) * d.qty, 0);
+
+      // Hitung subtotal, taxAmount, total sesuai mode
+      // EXCLUSIVE : harga belum PPN → total = subtotal + tax
+      // INCLUSIVE : harga sudah include PPN → total = subtotal, tax di-extract untuk info
+      // NONE      : tidak ada kalkulasi PPN → total = subtotal, taxAmount = 0
+      let subtotal, taxAmount, total;
+      if (mode === 'EXCLUSIVE') {
+        subtotal  = rawSubtotal;
+        taxAmount = Math.floor(subtotal * (effectivePct / 100));
+        total     = subtotal + taxAmount;
+      } else if (mode === 'INCLUSIVE') {
+        total     = rawSubtotal;
+        taxAmount = Math.floor(total - total / (1 + effectivePct / 100));
+        subtotal  = total - taxAmount; // nilai sebelum PPN (untuk info struk)
+      } else {
+        // NONE
+        subtotal  = rawSubtotal;
+        taxAmount = 0;
+        total     = rawSubtotal;
+      }
 
       const today   = new Date();
       const pad     = (n) => String(n).padStart(2, '0');
@@ -486,8 +511,8 @@ export default function BQOCheckout() {
           ccrdnum:   '',
           nkupon:    0,
           npctdisc:  0,
-          npctppn:   TAX_PERCENT,
-          namount:   subtotal,
+          npctppn:   mode === 'NONE' ? 0 : rate,
+          namount:   mode === 'INCLUSIVE' ? total : subtotal,
           ndp:       total,
           nsaleschg: 0,
           cqofoot1:  '',
@@ -624,7 +649,7 @@ export default function BQOCheckout() {
     ctx.textAlign = 'left';
     y += lineH;
 
-    ctx.fillText(`Pajak (${TAX_PERCENT}%)`, padding, y + 12);
+    ctx.fillText(`Pajak (${getTax().effectivePct}%)`, padding, y + 12);
     ctx.textAlign = 'right';
     ctx.fillText(`Rp ${toCurrencyIDR(taxAmount)}`, canvasW - padding, y + 12);
     ctx.textAlign = 'left';
@@ -925,7 +950,12 @@ export default function BQOCheckout() {
           <Grid container justifyContent="space-between" borderTop="1px solid #ddd">
             <Grid item>
               <Typography variant="body2" component="h2" py={2}>
-                Pajak ({TAX_PERCENT}%)
+                Pajak ({getTax().mode === 'NONE' ? '0' : getTax().effectivePct}%)
+                {getTax().mode === 'INCLUSIVE' && (
+                  <Typography variant="caption" display="block" color="text.secondary">
+                    sudah termasuk dalam harga
+                  </Typography>
+                )}
               </Typography>
             </Grid>
             <Grid item>
@@ -942,7 +972,10 @@ export default function BQOCheckout() {
             </Grid>
             <Grid item>
               <Typography variant="body2" fontWeight={500} component="h2" color="green" py={2}>
-                Rp {toCurrencyIDR(calculatePriceItem() + calculateTaxItem())}
+                Rp {toCurrencyIDR(getTax().mode === 'EXCLUSIVE'
+                  ? calculatePriceItem() + calculateTaxItem()
+                  : calculatePriceItem()
+                )}
               </Typography>
             </Grid>
           </Grid>
@@ -1161,7 +1194,7 @@ export default function BQOCheckout() {
             <Typography variant="caption">Rp {toCurrencyIDR(kasirResult?.subtotal || 0)}</Typography>
           </Grid>
           <Grid container justifyContent="space-between">
-            <Typography variant="caption" color="text.secondary">Pajak ({TAX_PERCENT}%)</Typography>
+            <Typography variant="caption" color="text.secondary">Pajak ({getTax().effectivePct}%)</Typography>
             <Typography variant="caption">Rp {toCurrencyIDR(kasirResult?.taxAmount || 0)}</Typography>
           </Grid>
           <Grid container justifyContent="space-between" mt={0.3}>

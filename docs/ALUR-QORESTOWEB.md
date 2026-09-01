@@ -270,7 +270,27 @@ File ini bisa diedit langsung di server tanpa rebuild. Efek langsung setelah har
 | `enable_fail_download` | `false` | `true` = tampilkan opsi unduh data gagal (mode kasir) |
 | `use_mock_bqo` | `false` | `true` = pakai data mock tanpa backend |
 | `server_mode` | `"primary"` | `"primary"` atau `"local"` |
+| `tax_mode` | `"EXCLUSIVE"` | Mode perhitungan PPN — lihat penjelasan di bawah |
+| `tax_rate` | `12` | Rate PPN dasar dalam persen. Diabaikan saat `tax_mode = "NONE"` |
+| `tax_effective_rate` | `"11/12"` | Faktor DPP — angka (`1`) atau pecahan string (`"11/12"`). Sesuai PMK 131/2024. Diabaikan saat `tax_mode = "NONE"` |
 
+### Konfigurasi Tax Mode
+
+`tax_mode` mengontrol bagaimana PPN dihitung dan dikirim ke backend:
+
+| Mode | Harga di Katalog | Yang Ditampilkan | `npctppn` di Payload | Contoh |
+|------|-----------------|-----------------|----------------------|--------|
+| `EXCLUSIVE` | Belum include PPN | Subtotal + PPN terpisah, Total = subtotal + PPN | `tax_rate` (misal 12) | Soda Rp23.000 → +PPN 11% = Total Rp25.530 |
+| `INCLUSIVE` | Sudah include PPN | Total langsung, PPN di-breakdown sebagai info | `tax_rate` (misal 12) | Soda Rp25.530 → info PPN Rp2.530 → Total tetap Rp25.530 |
+| `NONE` | Terserah (frontend tidak peduli) | Total saja, tidak ada baris PPN | `0` | Soda Rp25.530 → Total Rp25.530 |
+
+**Pajak efektif ke pelanggan** = `tax_rate × tax_effective_rate`
+Contoh: `12 × (11/12) = 11%` — ini yang muncul di struk dan payload.
+
+**Kapan pakai mode apa:**
+- `EXCLUSIVE` → harga menu belum termasuk PPN, cocok untuk invoice B2B
+- `INCLUSIVE` → harga menu sudah all-in (termasuk service charge, tax, dll), cocok untuk restoran yang mau breakdown PPN di struk
+- `NONE` → backend CSA yang menangani PPN sepenuhnya dari konfigurasi master, frontend tidak perlu tahu rate-nya
 ---
 
 ## 8. Environment Variables
