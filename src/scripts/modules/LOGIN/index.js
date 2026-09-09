@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
@@ -29,6 +29,7 @@ function Login({ isForm, afterLogin }) {
   const [state,       setState]       = useState({ cuserid: '', cpassw: '' });
   const [loading,     setLoading]     = useState(false);
   const [autoLogging, setAutoLogging] = useState(false);
+  const inputPasswordRef = useRef();
 
   const tableId = getTableId();
   const { from } = location.state || { from: { pathname: '/' } };
@@ -109,6 +110,11 @@ function Login({ isForm, afterLogin }) {
                 }
                 type="text"
                 onChange={handleChange}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    inputPasswordRef.current && inputPasswordRef.current.focus();
+                  }
+                }}
                 autoFocus
               />
             </FormControl>
@@ -118,6 +124,7 @@ function Login({ isForm, afterLogin }) {
               <InputLabel htmlFor="cpassw">Password</InputLabel>
               <Input
                 id="cpassw"
+                inputRef={inputPasswordRef}
                 startAdornment={
                   <InputAdornment position="start">
                     <LockOpen />

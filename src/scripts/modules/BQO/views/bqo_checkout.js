@@ -157,6 +157,8 @@ export default function BQOCheckout() {
     return { seatNumber: tableFromUrl, orderByName: '', phoneNumber: '' };
   });
 
+  const inputPhoneRef = useRef();
+
   // Apakah nomor meja dikunci (dari URL parameter)
   const isTableLocked = getTableId() !== '';
 
@@ -913,6 +915,11 @@ export default function BQOCheckout() {
                 name="orderByName"
                 value={info.orderByName}
                 onChange={handleChangeInfo}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    inputPhoneRef.current && inputPhoneRef.current.focus();
+                  }
+                }}
               />
             </Grid>
             <Grid item xs={12}>
@@ -923,6 +930,7 @@ export default function BQOCheckout() {
                 name="phoneNumber"
                 value={info.phoneNumber}
                 onChange={handleChangeInfo}
+                inputRef={inputPhoneRef}
               />
             </Grid>
           </Grid>
